@@ -1559,6 +1559,11 @@ bool CFileItem::IsAlbum() const
   return m_bIsAlbum;
 }
 
+void CFileItem::CopyProperties(const CFileItem &item, const std::string &contains /*=""*/)
+{
+    AppendProperties(item, contains);
+}
+
 void CFileItem::UpdateInfo(const CFileItem &item, bool replaceLabels /*=true*/)
 {
   if (item.HasVideoInfoTag())

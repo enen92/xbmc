@@ -3063,6 +3063,29 @@ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRes
 
   if (item.IsPlayList())
     return false;
+    
+  if (item.IsPVR())
+  {
+    std::string dyn_path = item.GetDynPath();
+    if (URIUtils::IsPlugin(dyn_path))
+    {
+      // PVR item has a plugin:// DynPath so attempt to resolve to a playable
+      // url, set the DynPath to the resolved url and copy possible inputstream
+      // properties accordingly
+      CFileItem item_new(item);
+      if (XFILE::CPluginDirectory::GetPluginResult(dyn_path, item_new, false) &&
+          item_new.HasProperty("isplayable") &&
+          item_new.GetProperty("isplayable").asBoolean())
+      {
+        item.CopyProperties(item_new, "inputstream");
+        item.SetDynPath(item_new.GetPath());
+      }
+      else
+      {
+        return false;
+      }
+    }
+  }
 
   if (item.IsPlugin())
   { // we modify the item so that it becomes a real URL

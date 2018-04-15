@@ -510,6 +510,12 @@ public:
    */
   void UpdateInfo(const CFileItem &item, bool replaceLabels = true);
 
+ /*! \brief Copy properties that contain an identifier from one item to another
+     \param item the item used to supplement information
+     \param contains a string the property to be copied must contain
+  */
+  void CopyProperties(const CFileItem &item, const std::string &contains = "");
+
   bool IsSamePath(const CFileItem *item) const;
 
   bool IsAlbum() const;

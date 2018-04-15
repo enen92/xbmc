@@ -168,6 +168,14 @@ public:
    */
   void AppendProperties(const CGUIListItem &item);
 
+  /*! \brief Append some of the properties of one CGUIListItem to another.
+  Only the properties that match the property filter will be set on the
+  original item
+  \param item the item containing the properties to append.
+  \param propertyfilter a string the property key has to contain to be copied
+  */
+  void AppendProperties(const CGUIListItem &item, const std::string &propertyfilter);
+
   void Archive(CArchive& ar);
   void Serialize(CVariant& value);
 

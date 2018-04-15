@@ -464,3 +464,10 @@ void CGUIListItem::AppendProperties(const CGUIListItem &item)
   for (PropertyMap::const_iterator i = item.m_mapProperties.begin(); i != item.m_mapProperties.end(); ++i)
     SetProperty(i->first, i->second);
 }
+
+void CGUIListItem::AppendProperties(const CGUIListItem &item, const std::string &propertyfilter)
+{
+    for (PropertyMap::const_iterator i = item.m_mapProperties.begin(); i != item.m_mapProperties.end(); ++i)
+        if (i->first.find(propertyfilter) != std::string::npos)
+          SetProperty(i->first, i->second);
+}
