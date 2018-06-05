@@ -112,9 +112,9 @@ std::string CGUIDialogSubtitleSettings::BrowseForSubtitle()
   else
     strPath = g_application.CurrentFileItem().GetPath();
 
-  std::string strMask = ".utf|.utf8|.utf-8|.sub|.srt|.smi|.rt|.txt|.ssa|.aqt|.jss|.ass|.idx|.rar|.zip";
+  std::string strMask = ".utf|.utf8|.utf-8|.sub|.srt|.smi|.rt|.txt|.ssa|.aqt|.jss|.ass|.idx|.rar|.zip|.vtt";
   if (g_application.GetCurrentPlayer() == "VideoPlayer")
-    strMask = ".srt|.rar|.zip|.ifo|.smi|.sub|.idx|.ass|.ssa|.txt";
+    strMask = ".srt|.rar|.zip|.ifo|.smi|.sub|.idx|.ass|.ssa|.txt|.vtt";
   VECSOURCES shares(*CMediaSourceSettings::GetInstance().GetSources("video"));
   if (CMediaSettings::GetInstance().GetAdditionalSubtitleDirectoryChecked() != -1 && !CServiceBroker::GetSettings().GetString(CSettings::SETTING_SUBTITLES_CUSTOMPATH).empty())
   {
