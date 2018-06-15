@@ -24,7 +24,8 @@
 
 namespace UTILS
 {
-
   typedef uint32_t Color;
-
+    namespace COLOR {
+      static const Color TRANSPARENT = 0x00000000;
+    } // namespace COLOR
 } // namespace UTILS
