@@ -31,6 +31,7 @@
 #include "guilib/GUITextLayout.h"
 #include "guilib/GUIFontManager.h"
 #include "guilib/GUIFont.h"
+#include "guilib/GUITexture.h"
 #include "cores/VideoPlayer/DVDCodecs/Overlay/DVDOverlayText.h"
 
 using namespace OVERLAY;
@@ -44,8 +45,16 @@ static UTILS::Color colors[8] = { 0xFFFFFF00
                                 , 0xFFE5E5E5
                                 , 0xFFC0C0C0 };
 
-CGUITextLayout* COverlayText::GetFontLayout(const std::string &font, int color, int height, int style,
-                                            const std::string &fontcache, const std::string &fontbordercache)
+static UTILS::Color bgcolors[6] = { UTILS::COLOR::TRANSPARENT
+                                  , 0xFF000000 // black
+                                  , 0xFFFFFF00 // yellow
+                                  , 0xFFFFFFFF // white
+                                  , 0xFFE5E5E5 // light grey
+                                  , 0xFFC0C0C0 }; // grey
+
+CGUITextLayout* COverlayText::GetFontLayout(const std::string &font, int color, int bgcolor,
+                                            int height, int style,const std::string &fontcache,
+                                            const std::string &fontbordercache)
 {
   if (CUtil::IsUsingTTFSubtitles())
   {
@@ -73,7 +82,7 @@ CGUITextLayout* COverlayText::GetFontLayout(const std::string &font, int color, 
     if (!subtitle_font || !border_font)
       CLog::Log(LOGERROR, "COverlayText::GetFontLayout - Unable to load subtitle font");
     else
-      return new CGUITextLayout(subtitle_font, true, 0, border_font);
+      return new CGUITextLayout(subtitle_font, true, 0, border_font, bgcolors[bgcolor]);
   }
 
   return NULL;
@@ -155,11 +164,11 @@ COverlayText::~COverlayText()
   delete m_layout;
 }
 
-void COverlayText::PrepareRender(const std::string &font, int color, int height, int style,
+void COverlayText::PrepareRender(const std::string &font, int color, int bgcolor, int height, int style,
                                  const std::string &fontcache, const std::string &fontbordercache)
 {
   if (!m_layout)
-    m_layout = GetFontLayout(font, color, height, style, fontcache, fontbordercache);
+    m_layout = GetFontLayout(font, color, bgcolor, height, style, fontcache, fontbordercache);
 
   if (m_layout == NULL)
   {
@@ -207,6 +216,14 @@ void COverlayText::Render(OVERLAY::SRenderState &state)
   // clamp inside screen
   y = std::max(y, (float) res.Overscan.top);
   y = std::min(y, res.Overscan.bottom - m_height);
+  
+  // draw background box if not transparent
+  UTILS::Color bgcolor = m_layout->GetBgColour();
+  if (bgcolor != UTILS::COLOR::TRANSPARENT)
+  {
+    CRect backgroundbox(x - (m_layout->GetTextWidth())* 0.55f, y, x + m_layout->GetTextWidth()* 0.55f, y + m_layout->GetTextHeight());
+    CGUITexture::DrawQuad(backgroundbox, bgcolor);
+  }
 
   m_layout->RenderOutline(x, y, 0, 0xFF000000, XBFONT_CENTER_X, width_max);
   CServiceBroker::GetWinSystem()->GetGfxContext().RemoveTransform();

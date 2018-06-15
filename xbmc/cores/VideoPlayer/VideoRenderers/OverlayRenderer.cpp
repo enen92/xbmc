@@ -179,6 +179,7 @@ void CRenderer::Render(int idx)
     {
       text->PrepareRender(CServiceBroker::GetSettings().GetString(CSettings::SETTING_SUBTITLES_FONT),
                           CServiceBroker::GetSettings().GetInt(CSettings::SETTING_SUBTITLES_COLOR),
+                          CServiceBroker::GetSettings().GetInt(CSettings::SETTING_SUBTITLES_BGCOLOR),
                           CServiceBroker::GetSettings().GetInt(CSettings::SETTING_SUBTITLES_HEIGHT),
                           CServiceBroker::GetSettings().GetInt(CSettings::SETTING_SUBTITLES_STYLE),
                           m_font, m_fontBorder);

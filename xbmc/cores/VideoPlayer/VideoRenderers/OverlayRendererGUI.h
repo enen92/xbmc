@@ -45,10 +45,11 @@ public:
   ~COverlayText() override;
   void Render(SRenderState& state) override;
   using COverlay::PrepareRender;
-  void PrepareRender(const std::string &font, int color, int height, int style,
+  void PrepareRender(const std::string &font, int color, int bgcolor, int height, int style,
                      const std::string &fontcache, const std::string &fontbordercache);
-  virtual CGUITextLayout* GetFontLayout(const std::string &font, int color, int height, int style,
-                                        const std::string &fontcache, const std::string &fontbordercache);
+  virtual CGUITextLayout* GetFontLayout(const std::string &font, int color, int bgcolor, int height,
+                                        int style, const std::string &fontcache,
+                                        const std::string &fontbordercache);
 
   CGUITextLayout* m_layout;
   std::string m_text;
