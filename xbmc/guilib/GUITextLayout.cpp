@@ -39,7 +39,7 @@ std::string CGUIString::GetAsString() const
   return text;
 }
 
-CGUITextLayout::CGUITextLayout(CGUIFont *font, bool wrap, float fHeight, CGUIFont *borderFont)
+CGUITextLayout::CGUITextLayout(CGUIFont *font, bool wrap, float fHeight, CGUIFont *borderFont, UTILS::Color bgcolor)
 {
   m_varFont = m_font = font;
   m_borderFont = borderFont;
@@ -49,6 +49,7 @@ CGUITextLayout::CGUITextLayout(CGUIFont *font, bool wrap, float fHeight, CGUIFon
   m_textWidth = 0;
   m_textHeight = 0;
   m_lastUpdateW = false;
+  m_bgcolor = bgcolor;
 }
 
 void CGUITextLayout::SetWrap(bool bWrap)
@@ -77,6 +78,7 @@ void CGUITextLayout::Render(float x, float y, float angle, UTILS::Color color, U
     y -= m_font->GetTextHeight(m_lines.size()) * 0.5f;
     alignment &= ~XBFONT_CENTER_Y;
   }
+    
   m_font->Begin();
   for (std::vector<CGUIString>::iterator i = m_lines.begin(); i != m_lines.end(); ++i)
   {
