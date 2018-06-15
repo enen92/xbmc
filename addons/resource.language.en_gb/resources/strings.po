@@ -3286,7 +3286,9 @@ msgctxt "#730"
 msgid "Port"
 msgstr ""
 
-#empty string with id 731
+msgctxt "#731"
+msgid "Black"
+msgstr ""
 
 msgctxt "#732"
 msgid "Save & apply"
@@ -3351,8 +3353,17 @@ msgctxt "#744"
 msgid "Files"
 msgstr ""
 
-#empty strings from id 745 to 746
+#: system/settings/settings.xml
+msgctxt "#745"
+msgid "Background colour"
+msgstr ""
 
+msgctxt "#746"
+msgid "Transparent"
+msgstr ""
+
+#: system/library/music/files.xml
+#: xbmc/dialogs/GUIDialogMediaSource.cpp
 msgctxt "#747"
 msgid "Error loading image"
 msgstr ""
@@ -17365,43 +17376,7 @@ msgctxt "#35226"
 msgid "Advanced settings"
 msgstr ""
 
-#. Label of button in the in-game menu for changing the video rotation
-#: addons/skin.estuary/xml/Custom_1101_SettingsList.xml
-msgctxt "#35227"
-msgid "Rotation"
-msgstr ""
-
-#. Label of the thumbnail for when the video is not rotated and is displayed normally
-#: xbmc/games/dialogs/osd/DialogGameVideoRotation.cpp
-msgctxt "#35228"
-msgid "0°"
-msgstr ""
-
-#. Label of the thumbnail for when the video is rotated to the right
-#: xbmc/games/dialogs/osd/DialogGameVideoRotation.cpp
-msgctxt "#35229"
-msgid "90°"
-msgstr ""
-
-#. Label of the thumbnail for when the video is rotated upside down
-#: xbmc/games/dialogs/osd/DialogGameVideoRotation.cpp
-msgctxt "#35230"
-msgid "180°"
-msgstr ""
-
-#. Label of the thumbnail for when the video is rotated to the left
-#: xbmc/games/dialogs/osd/DialogGameVideoRotation.cpp
-msgctxt "#35231"
-msgid "270°"
-msgstr ""
-
-#. Label of thumbnail in the in-game menu for stretching the video to fullscreen
-#: xbmc/games/dialogs/osd/DialogGameViewMode.h
-msgctxt "#35232"
-msgid "Fullscreen"
-msgstr ""
-
-#empty strings from id 35233 to 35249
+#empty strings from id 35227 to 35249
 
 #: xbmc/windows/GUIMediaWindow.cpp
 msgctxt "#35250"
@@ -18475,7 +18450,11 @@ msgctxt "#36227"
 msgid "Switch to full screen display when starting playback of channels and recordings."
 msgstr ""
 
-#empty string with id 36228
+#. Description of setting with label #745 "Background Colour"
+#: system/settings/settings.xml
+msgctxt "#36228"
+msgid "Set the font colour to be used for for the subtitle background."
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#36229"
