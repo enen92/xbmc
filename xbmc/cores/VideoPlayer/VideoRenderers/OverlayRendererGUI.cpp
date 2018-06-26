@@ -24,7 +24,7 @@
 #include "filesystem/File.h"
 #include "ServiceBroker.h"
 #include "Util.h"
-#include "utils/Color.h"
+#include "utils/ColorUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/log.h"
@@ -36,24 +36,22 @@
 
 using namespace OVERLAY;
 
-static UTILS::Color colors[8] = { 0xFFFFFF00
-                                , 0xFFFFFFFF
-                                , 0xFF0099FF
-                                , 0xFF00FF00
-                                , 0xFFCCFF00
-                                , 0xFF00FFFF
-                                , 0xFFE5E5E5
-                                , 0xFFC0C0C0 };
+static UTILS::Color colors[8] = { UTILS::COLOR::YELLOW,
+                                  UTILS::COLOR::WHITE,
+                                  UTILS::COLOR::BLUE,
+                                  UTILS::COLOR::BRIGHTGREEN,
+                                  UTILS::COLOR::YELLOWGREEN,
+                                  UTILS::COLOR::CYAN,
+                                  UTILS::COLOR::LIGHTGREY,
+                                  UTILS::COLOR::GREY };
 
-static UTILS::Color bgcolors[6] = { UTILS::COLOR::TRANSPARENT
-                                  , 0xFF000000 // black
-                                  , 0xFFFFFF00 // yellow
-                                  , 0xFFFFFFFF // white
-                                  , 0xFFE5E5E5 // light grey
-                                  , 0xFFC0C0C0 }; // grey
+static UTILS::Color bgcolors[5] = { UTILS::COLOR::BLACK,
+                                    UTILS::COLOR::YELLOW,
+                                    UTILS::COLOR::WHITE,
+                                    UTILS::COLOR::LIGHTGREY,
+                                    UTILS::COLOR::GREY };
 
-CGUITextLayout* COverlayText::GetFontLayout(const std::string &font, int color, int bgcolor,
-                                            int height, int style,const std::string &fontcache,
+CGUITextLayout* COverlayText::GetFontLayout(const std::string &font, int color, int height, int style, const std::string &fontcache,
                                             const std::string &fontbordercache)
 {
   if (CUtil::IsUsingTTFSubtitles())
@@ -82,7 +80,7 @@ CGUITextLayout* COverlayText::GetFontLayout(const std::string &font, int color, 
     if (!subtitle_font || !border_font)
       CLog::Log(LOGERROR, "COverlayText::GetFontLayout - Unable to load subtitle font");
     else
-      return new CGUITextLayout(subtitle_font, true, 0, border_font, bgcolors[bgcolor]);
+      return new CGUITextLayout(subtitle_font, true, 0, border_font);
   }
 
   return NULL;
@@ -157,6 +155,22 @@ COverlayText::COverlayText(CDVDOverlayText * src)
   m_type = TYPE_GUITEXT;
 
   m_layout = nullptr;
+    
+  // Obtain the background color for the overlay
+  UTILS::Color bgcolor = bgcolors[CServiceBroker::GetSettings().GetInt(CSettings::SETTING_SUBTITLES_BGCOLOR)];
+  int bgopacity = CServiceBroker::GetSettings().GetInt(CSettings::SETTING_SUBTITLES_BGOPACITY);
+  if (bgopacity > 0 && bgopacity < 100)
+  {
+    m_bgcolor = ColorUtils::ChangeOpacity(bgcolor, bgopacity / 100.0f);
+  }
+  else if (bgopacity == 100)
+  {
+    m_bgcolor = bgcolor;
+  }
+  else
+  {
+    // Keep the default value (UTILS::COLOR::NONE)
+  }
 }
 
 COverlayText::~COverlayText()
@@ -164,11 +178,11 @@ COverlayText::~COverlayText()
   delete m_layout;
 }
 
-void COverlayText::PrepareRender(const std::string &font, int color, int bgcolor, int height, int style,
+void COverlayText::PrepareRender(const std::string &font, int color, int height, int style,
                                  const std::string &fontcache, const std::string &fontbordercache)
 {
   if (!m_layout)
-    m_layout = GetFontLayout(font, color, bgcolor, height, style, fontcache, fontbordercache);
+    m_layout = GetFontLayout(font, color, height, style, fontcache, fontbordercache);
 
   if (m_layout == NULL)
   {
@@ -218,11 +232,10 @@ void COverlayText::Render(OVERLAY::SRenderState &state)
   y = std::min(y, res.Overscan.bottom - m_height);
   
   // draw background box if not transparent
-  UTILS::Color bgcolor = m_layout->GetBgColour();
-  if (bgcolor != UTILS::COLOR::TRANSPARENT)
+  if (m_bgcolor != UTILS::COLOR::NONE)
   {
-    CRect backgroundbox(x - (m_layout->GetTextWidth())* 0.55f, y, x + m_layout->GetTextWidth()* 0.55f, y + m_layout->GetTextHeight());
-    CGUITexture::DrawQuad(backgroundbox, bgcolor);
+    CRect backgroundbox(x - m_layout->GetTextWidth()* 0.52f, y, x + m_layout->GetTextWidth() * 0.52f, y + m_layout->GetTextHeight());
+    CGUITexture::DrawQuad(backgroundbox, m_bgcolor);
   }
 
   m_layout->RenderOutline(x, y, 0, 0xFF000000, XBFONT_CENTER_X, width_max);

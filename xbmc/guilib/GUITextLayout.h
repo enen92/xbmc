@@ -64,7 +64,7 @@ public:
 class CGUITextLayout
 {
 public:
-  CGUITextLayout(CGUIFont *font, bool wrap, float fHeight=0.0f, CGUIFont *borderFont = NULL, UTILS::Color bgcolor = UTILS::COLOR::TRANSPARENT);  // this may need changing - we may just use this class to replace CLabelInfo completely
+  CGUITextLayout(CGUIFont *font, bool wrap, float fHeight=0.0f, CGUIFont *borderFont = NULL);  // this may need changing - we may just use this class to replace CLabelInfo completely
 
   bool UpdateScrollinfo(CScrollInfo &scrollInfo);
 
@@ -92,11 +92,6 @@ public:
    \return height of text
   */
   float GetTextHeight() const { return m_textHeight; };
- 
-  /*! \brief Returns the background colour of the text layout.
-   \return background color of text
-  */
-  UTILS::Color GetBgColour() const { return m_bgcolor; };
 
   bool Update(const std::string &text, float maxWidth = 0, bool forceUpdate = false, bool forceLTRReadingOrder = false);
   bool UpdateW(const std::wstring &text, float maxWidth = 0, bool forceUpdate = false, bool forceLTRReadingOrder = false);
@@ -152,10 +147,7 @@ protected:
   CGUIFont* m_varFont;    //!< Varible-space font to use
   bool  m_wrap;            // wrapping (true if justify is enabled!)
   float m_maxHeight;
-
-  // Colour information
   UTILS::Color m_textColor; // the default color (may differ from the font objects defaults)
-  UTILS::Color m_bgcolor; // background colour to use below the font
 
 
   std::string m_lastUtf8Text;

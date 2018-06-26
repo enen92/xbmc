@@ -39,7 +39,7 @@ std::string CGUIString::GetAsString() const
   return text;
 }
 
-CGUITextLayout::CGUITextLayout(CGUIFont *font, bool wrap, float fHeight, CGUIFont *borderFont, UTILS::Color bgcolor)
+CGUITextLayout::CGUITextLayout(CGUIFont *font, bool wrap, float fHeight, CGUIFont *borderFont)
 {
   m_varFont = m_font = font;
   m_borderFont = borderFont;
@@ -49,7 +49,6 @@ CGUITextLayout::CGUITextLayout(CGUIFont *font, bool wrap, float fHeight, CGUIFon
   m_textWidth = 0;
   m_textHeight = 0;
   m_lastUpdateW = false;
-  m_bgcolor = bgcolor;
 }
 
 void CGUITextLayout::SetWrap(bool bWrap)
