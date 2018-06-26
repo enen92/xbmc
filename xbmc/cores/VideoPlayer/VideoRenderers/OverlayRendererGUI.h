@@ -21,6 +21,7 @@
 #pragma once
 
 #include "OverlayRenderer.h"
+#include "utils/Color.h"
 #include <string>
 
 enum SubtitleAlign
@@ -53,6 +54,7 @@ public:
   CGUITextLayout* m_layout;
   std::string m_text;
   int m_subalign;
+  UTILS::Color m_bgcolor = UTILS::COLOR::NONE;
 };
 
 }

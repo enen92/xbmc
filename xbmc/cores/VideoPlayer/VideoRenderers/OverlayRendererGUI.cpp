@@ -24,13 +24,14 @@
 #include "filesystem/File.h"
 #include "ServiceBroker.h"
 #include "Util.h"
-#include "utils/Color.h"
+#include "utils/ColorUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/log.h"
-#include "guilib/GUITextLayout.h"
 #include "guilib/GUIFontManager.h"
 #include "guilib/GUIFont.h"
+#include "guilib/GUITextLayout.h"
+#include "guilib/GUITexture.h"
 #include "cores/VideoPlayer/DVDCodecs/Overlay/DVDOverlayText.h"
 
 using namespace OVERLAY;
@@ -154,6 +155,22 @@ COverlayText::COverlayText(CDVDOverlayText * src)
   m_type = TYPE_GUITEXT;
 
   m_layout = nullptr;
+  
+  // Compute the color to be used for the overlay background (depending on the opacity)
+  UTILS::Color bgcolor = bgcolors[CServiceBroker::GetSettings().GetInt(CSettings::SETTING_SUBTITLES_BGCOLOR)];
+  int bgopacity = CServiceBroker::GetSettings().GetInt(CSettings::SETTING_SUBTITLES_BGOPACITY);
+  if (bgopacity > 0 && bgopacity < 100)
+  {
+    m_bgcolor = ColorUtils::ChangeOpacity(bgcolor, bgopacity / 100.0f);
+  }
+  else if (bgopacity == 100)
+  {
+    m_bgcolor = bgcolor;
+  }
+  else
+  {
+    // Keep the default value (UTILS::COLOR::NONE)
+  }
 }
 
 COverlayText::~COverlayText()
@@ -213,6 +230,13 @@ void COverlayText::Render(OVERLAY::SRenderState &state)
   // clamp inside screen
   y = std::max(y, (float) res.Overscan.top);
   y = std::min(y, res.Overscan.bottom - m_height);
+  
+  // draw the overlay background
+  if (m_bgcolor != UTILS::COLOR::NONE)
+  {
+    CRect backgroundbox(x - m_layout->GetTextWidth() * 0.52f, y, x + m_layout->GetTextWidth() * 0.52f, y + m_layout->GetTextHeight());
+    CGUITexture::DrawQuad(backgroundbox, m_bgcolor);
+  }
 
   m_layout->RenderOutline(x, y, 0, 0xFF000000, XBFONT_CENTER_X, width_max);
   CServiceBroker::GetWinSystem()->GetGfxContext().RemoveTransform();
