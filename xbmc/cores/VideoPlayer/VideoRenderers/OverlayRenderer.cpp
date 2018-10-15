@@ -432,7 +432,11 @@ COverlay* CRenderer::Convert(CDVDOverlay* o, double pts)
 #endif
 
   if(!r && o->IsOverlayType(DVDOVERLAY_TYPE_TEXT))
-    r = new COverlayText(static_cast<CDVDOverlayText*>(o));
+  {
+    int targetWidth = MathUtils::round_int(m_rv.Width());
+    int targetHeight = MathUtils::round_int(m_rv.Height());
+    r = new COverlayText(static_cast<CDVDOverlayText*>(o), targetWidth, targetHeight);
+  }
 
   m_textureCache[m_textureid] = r;
   o->m_textureid = m_textureid;

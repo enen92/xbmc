@@ -30,7 +30,7 @@ class COverlayText : public COverlay
 {
 public:
   COverlayText() = default;
-  explicit COverlayText(CDVDOverlayText* src);
+  explicit COverlayText(CDVDOverlayText* src, int targetWidth, int targetHeight);
   ~COverlayText() override;
   void Render(SRenderState& state) override;
   using COverlay::PrepareRender;
@@ -43,6 +43,9 @@ public:
   std::string m_text;
   int m_subalign;
   UTILS::Color m_bgcolor = UTILS::COLOR::NONE;
+protected:
+  int m_targetWidth;
+  int m_targetHeight;
 };
 
 }
