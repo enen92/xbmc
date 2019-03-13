@@ -788,11 +788,11 @@ bool CVideoPlayer::OpenInputStream()
   CLog::Log(LOGNOTICE, "Creating InputStream");
 
   // correct the filename if needed
-  std::string filename(m_item.GetPath());
+  std::string filename(m_item.GetDynPath());
   if (URIUtils::IsProtocol(filename, "dvd") ||
       StringUtils::EqualsNoCase(filename, "iso9660://video_ts/video_ts.ifo"))
   {
-    m_item.SetPath(g_mediaManager.TranslateDevicePath(""));
+    m_item.SetDynPath(g_mediaManager.TranslateDevicePath(""));
   }
 
   m_pInputStream = CDVDFactoryInputStream::CreateInputStream(this, m_item, true);

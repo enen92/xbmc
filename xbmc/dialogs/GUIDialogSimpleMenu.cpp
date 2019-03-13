@@ -119,8 +119,7 @@ bool CGUIDialogSimpleMenu::ShowPlaySelection(CFileItem& item, const std::string&
     if (!item_new->m_bIsFolder)
     {
       std::string original_path = item.GetDynPath();
-      item.Reset();
-      item = *item_new;
+      item.SetDynPath(item_new->GetPath());
       item.SetProperty("original_listitem_url", original_path);
       return true;
     }

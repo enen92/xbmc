@@ -134,7 +134,7 @@ bool CDVDInputStreamBluray::Open()
   if(m_player == nullptr)
     return false;
 
-  std::string strPath(m_item.GetPath());
+  std::string strPath(m_item.GetDynPath());
   std::string filename;
   std::string root;
 
@@ -150,7 +150,7 @@ bool CDVDInputStreamBluray::Open()
     // check for a menu call for an image file
     if (StringUtils::EqualsNoCase(filename, "menu"))
     {
-      //get rid of the udf:// protocol
+      // get rid of the udf:// protocol
       CURL url2(root);
       std::string root2 = url2.GetHostName();
       CURL url(root2);

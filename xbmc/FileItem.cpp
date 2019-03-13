@@ -1169,7 +1169,7 @@ bool CFileItem::IsMultiPath() const
 
 bool CFileItem::IsBluray() const
 {
-  if (URIUtils::IsBluray(m_strPath))
+  if (URIUtils::IsBluray(m_strDynPath) || URIUtils::IsBluray(m_strPath))
     return true;
   
   CFileItem item = CFileItem(GetOpticalMediaPath(), false);
