@@ -10,12 +10,20 @@
 
 #include <atomic>
 #include <string>
+#include <vector>
+
 #include "threads/CriticalSection.h"
+
+namespace EDL
+{
+  struct Cut;
+}
 
 class CDataCacheCore
 {
 public:
   CDataCacheCore();
+  virtual ~CDataCacheCore();
   static CDataCacheCore& GetInstance();
   void Reset();
   bool HasAVInfoChanges();
@@ -70,6 +78,10 @@ public:
   bool GetVideoRender();
   void SetPlayTimes(time_t start, int64_t current, int64_t min, int64_t max);
   void GetPlayTimes(time_t &start, int64_t &current, int64_t &min, int64_t &max);
+  void SetCutList(const std::vector<EDL::Cut>& cutList);
+  std::vector<EDL::Cut> GetCutList() const;
+  void SetChapters(const std::vector<std::pair<std::string, int64_t>>& chapters);
+  std::vector<std::pair<std::string, int64_t>> GetChapters() const;
 
   /*!
    * \brief Get the start time
@@ -144,7 +156,7 @@ protected:
     bool m_isClockSync;
   } m_renderInfo;
 
-  CCriticalSection m_stateSection;
+  mutable CCriticalSection m_stateSection;
   bool m_playerStateChanged = false;
   struct SStateInfo
   {
@@ -163,4 +175,7 @@ protected:
     int64_t m_timeMax;
     int64_t m_timeMin;
   } m_timeInfo = {};
+
+  std::vector<EDL::Cut> m_cutList;
+  std::vector<std::pair<std::string, int64_t>> m_chapters; // name and position for chapters
 };
