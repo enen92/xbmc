@@ -18,6 +18,9 @@ public:
   bool OnMessage(CGUIMessage& message) override;
   void FrameMove() override;
 private:
+  void InitEDL();
+  void DeinitEDL();
+
   int GetProgress() const;
   int GetEpgEventProgress() const;
   int GetTimeshiftProgress() const;

@@ -17,6 +17,11 @@
 #include <map>
 #include <string>
 
+namespace EDL
+{
+  struct Cut;
+}
+
 class CProcessInfo;
 class CDataCacheCore;
 
@@ -27,7 +32,7 @@ class CProcessInfo
 public:
   static CProcessInfo* CreateInstance();
   static void RegisterProcessControl(std::string id, CreateProcessControl createFunc);
-  virtual ~CProcessInfo() = default;
+  virtual ~CProcessInfo();
   void SetDataCache(CDataCacheCore *cache);
 
   // player video
@@ -105,6 +110,12 @@ public:
   void SetPlayTimes(time_t start, int64_t current, int64_t min, int64_t max);
   int64_t GetMaxTime();
 
+  std::vector<EDL::Cut> GetCutList();
+  void SetCutList(const std::vector<EDL::Cut>& cutList);
+
+  std::vector<std::pair<std::string, int64_t>> GetChapters();
+  void SetChapters(const std::vector<std::pair<std::string, int64_t>>& chapters);
+
   // settings
   CVideoSettings GetVideoSettings();
   void SetVideoSettings(CVideoSettings &settings);
@@ -163,6 +174,8 @@ protected:
   int64_t m_timeMax;
   int64_t m_timeMin;
   bool m_realTimeStream;
+  std::vector<EDL::Cut> m_cutList;
+  std::vector<std::pair<std::string, int64_t>> m_chapters; // name and position for chapters
 
   // settings
   CCriticalSection m_settingsSection;

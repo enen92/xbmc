@@ -223,6 +223,17 @@
 					<visible>Player.SeekEnabled</visible>
 				</control>
 			</control>
+			<control type="ranges" id="404">
+				<left>0</left>
+				<top>70</top>
+				<width>100%</width>
+				<height>8</height>
+				<texturebg border="3" colordiffuse="00FFFFFF">colors/white50.png</texturebg>
+				<midtexture colordiffuse="FFFF0000">colors/white.png</midtexture>
+				<lefttexture>colors/white.png</lefttexture>
+				<righttexture>colors/white.png</righttexture>
+				<overlaytexture></overlaytexture>
+			</control>
 		</control>
 		<control type="group">
 			<visible>!Window.IsVisible(playerprocessinfo)</visible>

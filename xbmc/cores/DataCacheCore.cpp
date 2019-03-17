@@ -6,7 +6,9 @@
  *  See LICENSES/README.md for more information.
  */
 
-#include "cores/DataCacheCore.h"
+#include "DataCacheCore.h"
+
+#include "cores/Cut.h"
 #include "threads/SingleLock.h"
 #include "ServiceBroker.h"
 
@@ -18,6 +20,8 @@ CDataCacheCore::CDataCacheCore() :
 {
   m_hasAVInfoChanges = false;
 }
+
+CDataCacheCore::~CDataCacheCore() = default;
 
 CDataCacheCore& CDataCacheCore::GetInstance()
 {
@@ -352,6 +356,30 @@ void CDataCacheCore::GetPlayTimes(time_t &start, int64_t &current, int64_t &min,
   current = m_timeInfo.m_time;
   min = m_timeInfo.m_timeMin;
   max = m_timeInfo.m_timeMax;
+}
+
+void CDataCacheCore::SetCutList(const std::vector<EDL::Cut>& cutList)
+{
+  CSingleLock lock(m_stateSection);
+  m_cutList = cutList;
+}
+
+std::vector<EDL::Cut> CDataCacheCore::GetCutList()
+{
+  CSingleLock lock(m_stateSection);
+  return m_cutList;
+}
+
+void CDataCacheCore::SetChapters(const std::vector<std::pair<std::string, int64_t>>& chapters)
+{
+  CSingleLock lock(m_stateSection);
+  m_chapters = chapters;
+}
+
+std::vector<std::pair<std::string, int64_t>> CDataCacheCore::GetChapters()
+{
+  CSingleLock lock(m_stateSection);
+  return m_chapters;
 }
 
 time_t CDataCacheCore::GetStartTime()

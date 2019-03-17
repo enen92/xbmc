@@ -8,6 +8,7 @@
 
 #include "ProcessInfo.h"
 #include "ServiceBroker.h"
+#include "cores/Cut.h"
 #include "cores/DataCacheCore.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
@@ -15,6 +16,8 @@
 
 CCriticalSection createSection;
 std::map<std::string, CreateProcessControl> CProcessInfo::m_processControls;
+
+CProcessInfo::~CProcessInfo() = default;
 
 void CProcessInfo::RegisterProcessControl(std::string id, CreateProcessControl createFunc)
 {
@@ -653,6 +656,40 @@ int64_t CProcessInfo::GetMaxTime()
 {
   CSingleLock lock(m_stateSection);
   return m_timeMax;
+}
+
+std::vector<EDL::Cut> CProcessInfo::GetCutList()
+{
+  CSingleLock lock(m_stateSection);
+  return m_cutList;
+}
+
+void CProcessInfo::SetCutList(const std::vector<EDL::Cut>& cutList)
+{
+  CSingleLock lock(m_stateSection);
+  m_cutList = cutList;
+
+  if (m_dataCache)
+  {
+    m_dataCache->SetCutList(cutList);
+  }
+}
+
+std::vector<std::pair<std::string, int64_t>> CProcessInfo::GetChapters()
+{
+  CSingleLock lock(m_stateSection);
+  return m_chapters;
+}
+
+void CProcessInfo::SetChapters(const std::vector<std::pair<std::string, int64_t>>& chapters)
+{
+  CSingleLock lock(m_stateSection);
+  m_chapters = chapters;
+
+  if (m_dataCache)
+  {
+    m_dataCache->SetChapters(chapters);
+  }
 }
 
 //******************************************************************************

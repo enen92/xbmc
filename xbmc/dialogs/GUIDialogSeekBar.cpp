@@ -6,18 +6,24 @@
  *  See LICENSES/README.md for more information.
  */
 
+#include "GUIDialogSeekBar.h"
+
 #include <math.h>
 
-#include "GUIDialogSeekBar.h"
 #include "Application.h"
 #include "GUIInfoManager.h"
-#include "guilib/GUIComponent.h"
 #include "SeekHandler.h"
+#include "ServiceBroker.h"
+#include "cores/Cut.h"
+#include "cores/DataCacheCore.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIRangesControl.h"
 #include "guilib/guiinfo/GUIInfoLabels.h"
 
 #define POPUP_SEEK_PROGRESS           401
 #define POPUP_SEEK_EPG_EVENT_PROGRESS 402
 #define POPUP_SEEK_TIMESHIFT_PROGRESS 403
+#define POPUP_VIEW_EDL_RANGES         404
 
 CGUIDialogSeekBar::CGUIDialogSeekBar(void)
   : CGUIDialog(WINDOW_DIALOG_SEEK_BAR, "DialogSeekBar.xml", DialogModalityType::MODELESS)
@@ -32,7 +38,10 @@ bool CGUIDialogSeekBar::OnMessage(CGUIMessage& message)
   switch ( message.GetMessage() )
   {
   case GUI_MSG_WINDOW_INIT:
+    InitEDL();
+    return CGUIDialog::OnMessage(message);
   case GUI_MSG_WINDOW_DEINIT:
+    DeinitEDL();
     return CGUIDialog::OnMessage(message);
   case GUI_MSG_ITEM_SELECT:
     if (message.GetSenderId() == GetID() &&
@@ -134,4 +143,58 @@ int CGUIDialogSeekBar::GetTimeshiftProgress() const
   }
 
   return progress;
+}
+
+void CGUIDialogSeekBar::InitEDL()
+{
+  CGUIRangesControl* rangesControl = dynamic_cast<CGUIRangesControl*>(GetControl(POPUP_VIEW_EDL_RANGES));
+  if (!rangesControl)
+    return;
+
+  CDataCacheCore& data = CServiceBroker::GetDataCacheCore();
+  std::vector<std::pair<float, float>> ranges;
+
+  time_t start;
+  int64_t current;
+  int64_t min;
+  int64_t max;
+  data.GetPlayTimes(start, current, min, max);
+
+  time_t duration = max - start * 1000;
+  if (duration > 0)
+  {
+    // cut list
+    const std::vector<EDL::Cut> cuts = data.GetCutList();
+    for (const auto& cut : cuts)
+    {
+      if (cut.action != EDL::Action::CUT &&
+          cut.action != EDL::Action::COMM_BREAK)
+        continue;
+
+      float cutStart = cut.start * 100.0f / duration;
+      float cutEnd = cut.end * 100.0f / duration;
+      ranges.emplace_back(std::make_pair(cutStart, cutEnd));
+    }
+
+    // chapter markers
+    const std::vector<std::pair<std::string, int64_t>> chapters = data.GetChapters();
+    for (const auto& chapter : chapters)
+    {
+      float marker = chapter.second * 1000 * 100.0f / duration;
+      if (marker == 0.0f || marker == 100.0f)
+        continue;
+
+      ranges.emplace_back(std::make_pair(marker, marker));
+    }
+  }
+  rangesControl->SetRanges(ranges);
+}
+
+void CGUIDialogSeekBar::DeinitEDL()
+{
+  CGUIRangesControl* rangesControl = dynamic_cast<CGUIRangesControl*>(GetControl(POPUP_VIEW_EDL_RANGES));
+  if (!rangesControl)
+    return;
+
+  rangesControl->ClearRanges();
 }
