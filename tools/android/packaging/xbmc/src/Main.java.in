@@ -290,9 +290,14 @@ public class Main extends NativeActivity implements Choreographer.FrameCallback
   @Override
   public void onDestroy()
   {
-    // unregister the InputDeviceListener implementation
-    InputManager manager = (InputManager) getSystemService(INPUT_SERVICE);
-    manager.unregisterInputDeviceListener(mInputDeviceListener);
+    if (getPackageManager().hasSystemFeature("android.software.leanback"))
+    {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        TvUtil.cancelAllJobs(this);
+    }
+
+    if (mExitCode == XBMC_EXITCODE_QUIT)
+      stopService(new Intent(this, Service.class));
 
     getApplicationContext().getContentResolver().unregisterContentObserver(mSettingsContentObserver);
     super.onDestroy();
