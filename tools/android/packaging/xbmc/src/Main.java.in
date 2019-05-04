@@ -137,15 +137,8 @@ public class Main extends NativeActivity implements Choreographer.FrameCallback
 
     if (getPackageManager().hasSystemFeature("android.software.leanback"))
     {
-      if (Build.VERSION.SDK_INT >= VERSION_CODES.O)
-        TvUtil.scheduleSyncingChannel(this);
-      else
-      {
-        // Leanback
-        mJsonRPC = new XBMCJsonRPC();
-        handler.removeCallbacks(leanbackUpdateRunnable);
-        handler.postDelayed(leanbackUpdateRunnable, 30 * 1000);
-      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        TvUtil.scheduleSyncingChannel(this, true);
     }
 
     // register the InputDeviceListener implementation
@@ -273,8 +266,20 @@ public class Main extends NativeActivity implements Choreographer.FrameCallback
   {
     super.onPause();
 
-    if (getPackageManager().hasSystemFeature("android.software.leanback") && Build.VERSION.SDK_INT >= VERSION_CODES.O)
-      TvUtil.scheduleSyncingChannel(this);
+    if (getPackageManager().hasSystemFeature("android.software.leanback"))
+    {
+      // Leanback
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+      {
+        TvUtil.scheduleSyncingChannel(this, false);
+        updateWatchnext();
+      }
+      else
+      {
+        handler.removeCallbacks(leanbackUpdateRunnable);
+        handler.postDelayed(leanbackUpdateRunnable, 1000);
+      }
+    }
 
     mPaused = true;
   }
