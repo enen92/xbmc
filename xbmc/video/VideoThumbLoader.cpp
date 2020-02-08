@@ -347,7 +347,7 @@ bool CVideoThumbLoader::LoadItemCached(CFileItem* pItem)
       if (!art.empty())
         artwork.insert(std::make_pair(type, art));
     }
-    pItem->AppendArt(artwork);
+    pItem->SetArt(artwork);
   }
 
   // hide thumb if episode is unwatched 
@@ -426,7 +426,7 @@ bool CVideoThumbLoader::LoadItemLookup(CFileItem* pItem)
       }
     }
   }
-  pItem->AppendArt(artwork);
+  pItem->SetArt(artwork);
 
   // We can only extract flags/thumbs for file-like items
   if (!pItem->m_bIsFolder && pItem->IsVideo())
