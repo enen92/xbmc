@@ -372,6 +372,17 @@ protected:
   bool OnEvent(XBMC_Event& newEvent);
 
   /*!
+  \brief Resolves a given plugin item. If GUI is available, the busydialog drives the action to
+  allow users to cancel the operation otherwise, the result is obtained synchronously. \param
+  resultItem[in,out] the item that will be resolved \param resume[in] if the item should be resumed
+   \param iMaxAttempts[in] the maximum number of attempts to resolve the plugin path before giving
+  up
+   @todo move somewhere else if the app thread and render thread are splitted in the future
+   \return if the operation had success
+  */
+  bool ResolvePluginItem(CFileItem& resultItem, bool resume, unsigned int iMaxAttempts);
+
+  /*!
    \brief Delegates the action to all registered action handlers.
    \param action The action
    \return true, if the action was taken by one of the action listener.

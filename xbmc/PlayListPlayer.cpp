@@ -899,13 +899,19 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
         if (list->Size() == 1 && !(*list)[0]->IsPlayList())
         {
           CFileItemPtr item = (*list)[0];
+
           // if the item is a plugin we need to resolve the URL to ensure the infotags are filled.
-          // resolve only for a maximum of 5 times to avoid deadlocks (plugin:// paths can resolve to plugin:// paths)
-          for (int i = 0; URIUtils::IsPlugin(item->GetDynPath()) && i < 5; ++i)
+          // this is always called from the main thread, so we route the request to application
+          // so that the busydialog drives the plugin resolution request to avoid gui freezes
+          if (URIUtils::IsPlugin(item->GetDynPath()))
           {
-            if (!XFILE::CPluginDirectory::GetPluginResult(item->GetDynPath(), *item, true))
-              return;
+            // try to resolve the plugin:// item for a maximimum of 5 times to avoid dealocks
+            // plugin:// paths can resolve to other plugin:// paths!
+            if (CApplicationMessenger::GetInstance().SendMsg(TMSG_PLUGIN_RESOLUTION, true, 5,
+                                                             static_cast<void*>(&item)) <= 0)
+              break;
           }
+
           if (item->IsAudio() || item->IsVideo())
             Play(item, pMsg->strParam);
           else

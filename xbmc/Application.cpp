@@ -2200,6 +2200,15 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     CBuiltins::GetInstance().Execute(pMsg->strParam.c_str());
     break;
 
+  case TMSG_PLUGIN_RESOLUTION:
+    if (pMsg->lpVoid)
+    {
+      CFileItem* item = static_cast<CFileItem*>(pMsg->lpVoid);
+      pMsg->SetResult(ResolvePluginItem(*item, pMsg->param1, pMsg->param2));
+    }
+
+    break;
+
   case TMSG_PICTURE_SHOW:
   {
     CGUIWindowSlideShow *pSlideShow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowSlideShow>(WINDOW_SLIDESHOW);
@@ -2675,20 +2684,47 @@ void CApplication::Stop(int exitCode)
   KODI::TIME::Sleep(200);
 }
 
-bool CApplication::PlayMedia(CFileItem& item, const std::string &player, int iPlaylist)
+bool CApplication::ResolvePluginItem(CFileItem& item, bool resume, unsigned int iMaxAttempts)
+{
+  CGUIComponent* gui = CServiceBroker::GetGUI();
+
+  if (resume)
+    resume = item.m_lStartOffset == STARTOFFSET_RESUME;
+
+  for (unsigned int i = 0; URIUtils::IsPlugin(item.GetDynPath()) && i < iMaxAttempts; ++i)
+  {
+    auto pluginResultAction =
+        new XFILE::AsyncGetPluginResultAction(item.GetDynPath(), item, resume);
+    if (gui)
+    {
+      auto dialog = gui->GetWindowManager().GetWindow<CGUIDialogBusy>(WINDOW_DIALOG_BUSY);
+      if (dialog && !dialog->IsDialogRunning())
+      {
+        if (!dialog->Wait(pluginResultAction, 200, true))
+          return false;
+      }
+
+      if (!pluginResultAction->ExecutionHadSuccess())
+        return false;
+    }
+    else
+    {
+      // Kodi running headless - no render loop, we don't need the busydialog to drive the action
+      if (!pluginResultAction->ExecuteSynchronously())
+        return false;
+    }
+  }
+
+  // After iMaxAttempts if the item is still a plugin:// we were not able to resolve the path
+  return !URIUtils::IsPlugin(item.GetDynPath());
+}
+
+bool CApplication::PlayMedia(CFileItem& item, const std::string& player, int iPlaylist)
 {
   // If item is a plugin, expand out
-  for (int i=0; URIUtils::IsPlugin(item.GetDynPath()) && i<5; ++i)
-  {
-    bool resume = item.m_lStartOffset == STARTOFFSET_RESUME;
-
-    if (!XFILE::CPluginDirectory::GetPluginResult(item.GetDynPath(), item, resume) ||
-        item.GetDynPath() == item.GetPath()) // GetPluginResult resolved to an empty path
-      return false;
-  }
-  // if after the 5 resolution attempts the item is still a plugin just return, it isn't playable
   if (URIUtils::IsPlugin(item.GetDynPath()))
-    return false;
+    if (!ResolvePluginItem(item, true, 5))
+      return false;
 
   if (item.IsSmartPlayList())
   {
@@ -2813,17 +2849,9 @@ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRes
   if (item.IsPlayList())
     return false;
 
-  for (int i=0; URIUtils::IsPlugin(item.GetDynPath()) && i<5; ++i)
-  { // we modify the item so that it becomes a real URL
-    bool resume = item.m_lStartOffset == STARTOFFSET_RESUME;
-
-    if (!XFILE::CPluginDirectory::GetPluginResult(item.GetDynPath(), item, resume) ||
-        item.GetDynPath() == item.GetPath()) // GetPluginResult resolved to an empty path
-      return false;
-  }
-  // if after the 5 resolution attempts the item is still a plugin just return, it isn't playable
   if (URIUtils::IsPlugin(item.GetDynPath()))
-    return false;
+    if (!ResolvePluginItem(item, true, 5))
+      return false;
 
 #ifdef HAS_UPNP
   if (URIUtils::IsUPnP(item.GetPath()))
@@ -3889,7 +3917,8 @@ bool CApplication::OnMessage(CGUIMessage& message)
       // handle plugin://
       CURL url(file.GetDynPath());
       if (url.IsProtocol("plugin"))
-        XFILE::CPluginDirectory::GetPluginResult(url.Get(), file, false);
+        if (!ResolvePluginItem(file, false, 1))
+          return false;
 
       // Don't queue if next media type is different from current one
       bool bNothingToQueue = false;
