@@ -61,8 +61,6 @@
 
 #define GUI_MSG_SCAN_FINISHED           GUI_MSG_USER + 13
 
-//  Player has requested the next item for caching purposes (PAPlayer)
-#define GUI_MSG_QUEUE_NEXT_ITEM         GUI_MSG_USER + 16
 
 // Visualisation messages when loading/unloading
 #define GUI_MSG_VISUALISATION_UNLOADING GUI_MSG_USER + 117 // sent by vis
