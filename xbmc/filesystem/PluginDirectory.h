@@ -13,6 +13,7 @@
 #include "addons/IAddon.h"
 #include "threads/CriticalSection.h"
 #include "threads/Event.h"
+#include "threads/IRunnable.h"
 #include "threads/Thread.h"
 
 #include <atomic>
@@ -39,7 +40,6 @@ public:
   float GetProgress() const override;
   void CancelDirectory() override;
   static bool RunScriptWithParams(const std::string& strPath, bool resume);
-  static bool GetPluginResult(const std::string& strPath, CFileItem &resultItem, bool resume);
 
   /*! \brief Check whether a plugin supports media library scanning.
   \param content content type - movies, tvshows, musicvideos.
@@ -67,15 +67,61 @@ public:
   static void SetProperty(int handle, const std::string &strProperty, const std::string &strValue);
   static void SetResolvedUrl(int handle, bool success, const CFileItem* resultItem);
   static void SetLabel2(int handle, const std::string& ident);
+  
+  /**
+  * A structure holding data of a script execution, returned from TriggerScriptExecution
+  */
+  struct SCRIPT_EXECUTION_INFO {
+    int Id = -1; /**the script id */
+    int Handle = -1; /**the script handle */
+  };
 
 private:
   ADDON::AddonPtr m_addon;
-  bool StartScript(const std::string& strPath, bool retrievingDir, bool resume);
-  bool WaitOnScriptResult(const std::string &scriptPath, int scriptId, const std::string &scriptName, bool retrievingDir);
+  
+  /*!
+  \brief Executes a given script asynchronously and returns the script id
+  \param strPath full plugin url.
+  \param resume if resume should be passed to the script as an argument
+  \return a stuct containing the id and handle of the script execution
+  */
+  SCRIPT_EXECUTION_INFO TriggerScriptExecution(const std::string& strPath, bool resume);
+  
+  /*!
+  \brief Executes a given script and waits for execution to complete, returning the
+   success of the operation
+  \param strPath full plugin url.
+  \param resume  if resume should be passed to the script as an argument
+  \return true if the execution had success
+  */
+  bool ExecuteScriptAndWaitOnResult(const std::string& strPath, bool resume);
+  
+  /*!
+  \brief Wait mSecs for the script to finish. If mSecs is surpassed forceStop will force stop the script execution
+  \param scriptExecutionInfo The struct containing the script execution info (id and handle)
+  \param mSecs The time to wait for the script to finish
+  \param forceStop If script should be stopped after mSecs have passed and the script is still running
+  \return true if the script returned a success result
+  */
+  void WaitForScriptToFinish(SCRIPT_EXECUTION_INFO scriptExecutionInfo, int mSecs,
+                             bool bForceStop);
+
+  /*!
+  \brief Force stop a running script
+  \param scriptExecutionInfo The struct containing the script execution info (id and handle)
+  */
+  void ForceStopRunningScript(SCRIPT_EXECUTION_INFO scriptExecutionInfo);
 
   static std::map<int,CPluginDirectory*> globalHandles;
   static int getNewHandle(CPluginDirectory *cp);
   static void reuseHandle(int handle, CPluginDirectory* cp);
+  
+  /*!
+  \brief Updates an item (finalItem) with the properties and resolved path obtained from the script execution (resultItem)
+  \param finalItem The item destination
+  \param resultItem The CPluginDirectory item that resulted from the script execution
+  */
+  static void UpdateResultItem(CFileItem& finalItem, CFileItem* resultItem);
 
   static void removeHandle(int handle);
   static CPluginDirectory *dirFromHandle(int handle);
@@ -90,6 +136,8 @@ private:
   bool          m_success = false;      // set by script in EndOfDirectory
   int    m_totalItems = 0;   // set by script in AddDirectoryItem
 
+  friend class AsyncGetPluginResultAction;
+
   class CScriptObserver : public CThread
   {
   public:
@@ -101,4 +149,35 @@ private:
     CEvent &m_event;
   };
 };
+
+class AsyncGetPluginResultAction : public IRunnable
+{
+public:
+  AsyncGetPluginResultAction() = delete;
+  AsyncGetPluginResultAction(const std::string& strPath, CFileItem& resultItem, bool resume);
+
+  bool ExecutionHadSuccess() const;
+  bool ExecuteSynchronously();
+  void Cancel() override;
+
+private:
+  // IRunnable implementation
+  void Run() override;
+  
+  void Finish();  
+
+  // propagated for script execution
+  std::string m_path;
+  CFileItem* m_item;
+  bool m_resume = false;
+
+  // part of future/async
+  CEvent m_event;
+  std::atomic<bool> m_bSuccess;
+  std::atomic<bool> m_bCancelled;
+  
+  // handler for CPluginDirectory static function calls
+  XFILE::CPluginDirectory m_pluginDirHandler;
+};
+
 }

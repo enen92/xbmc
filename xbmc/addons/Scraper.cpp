@@ -516,7 +516,7 @@ CScraperUrl CScraper::ResolveIDToUrl(const std::string &externalID)
 
     CFileItem item("resolve me", false);
 
-    if (XFILE::CPluginDirectory::GetPluginResult(str.str(), item, false))
+    if (XFILE::AsyncGetPluginResultAction(str.str(), item, false).ExecuteSynchronously())
       scurlRet.ParseString(item.GetDynPath());
 
     return scurlRet;
@@ -829,7 +829,7 @@ static bool PythonDetails(const std::string &ID,
 
   CFileItem item(url, false);
 
-  if (!XFILE::CPluginDirectory::GetPluginResult(str.str(), item, false))
+  if (!XFILE::AsyncGetPluginResultAction(str.str(), item, false).ExecuteSynchronously())
     return false;
 
   DetailsFromFileItem(item, result);
