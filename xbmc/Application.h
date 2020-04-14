@@ -371,6 +371,13 @@ protected:
   bool OnEvent(XBMC_Event& newEvent);
 
   /*!
+  \brief Brings up the BusyDialog and gets the plugin result async
+   @todo remove when dropping gui from the main thread
+   \return if the async operation had success
+  */
+  bool GetPluginResult(CFileItem& resultItem, bool resume);
+
+  /*!
    \brief Delegates the action to all registered action handlers.
    \param action The action
    \return true, if the action was taken by one of the action listener.

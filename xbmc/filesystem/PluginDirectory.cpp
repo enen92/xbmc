@@ -8,7 +8,6 @@
 
 #include "PluginDirectory.h"
 
-#include "Application.h"
 #include "FileItem.h"
 #include "ServiceBroker.h"
 #include "URL.h"
@@ -16,10 +15,6 @@
 #include "addons/AddonManager.h"
 #include "addons/IAddon.h"
 #include "addons/PluginSource.h"
-#include "dialogs/GUIDialogBusy.h"
-#include "dialogs/GUIDialogProgress.h"
-#include "guilib/GUIComponent.h"
-#include "guilib/GUIWindowManager.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "messaging/ApplicationMessenger.h"
 #include "settings/Settings.h"
@@ -38,6 +33,59 @@ using namespace KODI::MESSAGING;
 std::map<int, CPluginDirectory *> CPluginDirectory::globalHandles;
 int CPluginDirectory::handleCounter = 0;
 CCriticalSection CPluginDirectory::m_handleLock;
+
+AsyncGetPluginResultAction::AsyncGetPluginResultAction(const std::string& strPath,
+                                                       CFileItem& resultItem, bool resume) : m_path(strPath), m_item(&resultItem), m_resume(resume)
+{
+  m_event.Reset();
+  m_bCancelled = false;
+}
+
+bool AsyncGetPluginResultAction::ExecutionHadSuccess() const
+{
+  return m_bSuccess;
+}
+
+void AsyncGetPluginResultAction::Cancel()
+{
+  m_bCancelled = true;
+}
+
+bool AsyncGetPluginResultAction::Execute()
+{
+  CPluginDirectory newDir;
+  bool success = newDir.ExecuteScriptAndWaitOnResult(m_path, m_resume);
+  if (success)
+  {
+    newDir.UpdateResultItem(*m_item, newDir);
+  }
+  return success;
+}
+
+void AsyncGetPluginResultAction::Run()
+{
+  CPluginDirectory pluginDir;
+  auto scriptExecutionInfo = pluginDir.TriggerScriptExecution(m_path, m_resume);
+
+  CPluginDirectory::CScriptObserver scriptObs(scriptExecutionInfo.Id, m_event);
+
+  while (!m_bCancelled
+         && !m_event.Signaled()
+         && !m_event.WaitMSec(20));
+
+  // Force stop the running script
+  pluginDir.ForceStopRunningScript(scriptExecutionInfo);
+
+  // set sucess
+  m_bSuccess = pluginDir.m_success && !m_bCancelled;
+
+  if (m_bSuccess)
+    pluginDir.UpdateResultItem(*m_item, pluginDir);
+  
+  m_event.Set();
+
+  scriptObs.Abort();
+}
 
 CPluginDirectory::CScriptObserver::CScriptObserver(int scriptId, CEvent &event) :
   CThread("scriptobs"), m_scriptId(scriptId), m_event(event)
@@ -187,26 +235,17 @@ bool CPluginDirectory::ExecuteScriptAndWaitOnResult(const std::string& strPath, 
     return false;
   }
   
-  // wait on result
-  success = WaitOnScriptResult(scriptExecutionInfo);
+  // Wait for directory fetch to complete, end, or be cancelled
+  while (!m_cancelled
+      && CScriptInvocationManager::GetInstance().IsRunning(scriptExecutionInfo.Id)
+      && !m_fetchComplete.WaitMSec(20));
+
+  // wait for 30 secs for script to finish and force stop it if has been canceled
+  WaitForScriptToFinish(scriptExecutionInfo, 30000, m_cancelled);
+  success = !m_cancelled && m_success;
       
-  // free our handle
+  // free our handle and return the success of the operation
   removeHandle(scriptExecutionInfo.Handle);
-  return success;
-}
-
-
-bool CPluginDirectory::GetPluginResult(const std::string& strPath, CFileItem& resultItem, bool resume)
-{
-  CURL url(strPath);
-  CPluginDirectory newDir;
-
-  bool success = newDir.ExecuteScriptAndWaitOnResult(strPath, resume);
-  if (success)
-  {
-    UpdateResultItem(resultItem, newDir);
-  }
-
   return success;
 }
 
@@ -513,57 +552,28 @@ bool CPluginDirectory::RunScriptWithParams(const std::string& strPath, bool resu
   return false;
 }
 
-bool CPluginDirectory::WaitOnScriptResult(SCRIPT_EXECUTION_INFO scriptExecutionInfo)
+void CPluginDirectory::WaitForScriptToFinish(SCRIPT_EXECUTION_INFO scriptExecutionInfo, int mSecs, bool bForceStop)
 {
-  // CPluginDirectory::GetDirectory can be called from the main and other threads.
-  // If called form the main thread, we need to bring up the BusyDialog in order to
-  // keep the render loop alive
-  if (g_application.IsCurrentThread())
-  {
-    if (!m_fetchComplete.WaitMSec(20))
-    {
-      CScriptObserver scriptObs(scriptExecutionInfo.Id, m_fetchComplete);
-
-      CGUIDialogProgress* progress = nullptr;
-      CGUIWindowManager& wm = CServiceBroker::GetGUI()->GetWindowManager();
-      if (wm.IsModalDialogTopmost(WINDOW_DIALOG_PROGRESS))
-        progress = wm.GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
-
-      if (progress != nullptr)
-      {
-        if (!progress->WaitOnEvent(m_fetchComplete))
-          m_cancelled = true;
-      }
-      else if (!CGUIDialogBusy::WaitOnEvent(m_fetchComplete, 200))
-        m_cancelled = true;
-
-      scriptObs.Abort();
-    }
-  }
-  else
-  {
-    // Wait for directory fetch to complete, end, or be cancelled
-    while (!m_cancelled
+  // Give the script mSecs miliseconds to exit before we attempt to stop it
+  XbmcThreads::EndTime timer(mSecs);
+  while (!timer.IsTimePast()
         && CScriptInvocationManager::GetInstance().IsRunning(scriptExecutionInfo.Id)
         && !m_fetchComplete.WaitMSec(20));
 
-    // Give the script 30 seconds to exit before we attempt to stop it
-    XbmcThreads::EndTime timer(30000);
-    while (!timer.IsTimePast()
-          && CScriptInvocationManager::GetInstance().IsRunning(scriptExecutionInfo.Id)
-          && !m_fetchComplete.WaitMSec(20));
+  if (bForceStop)
+  {
+    // cancel our script
+    ForceStopRunningScript(scriptExecutionInfo);
   }
+}
 
-  if (m_cancelled)
-  { // cancel our script
-    if (scriptExecutionInfo.Id != -1 && CScriptInvocationManager::GetInstance().IsRunning(scriptExecutionInfo.Id))
-    {
-      CLog::Log(LOGDEBUG, "%s- cancelling plugin %s (id=%d)", __FUNCTION__, m_addon->Name().c_str(), scriptExecutionInfo.Id);
-      CScriptInvocationManager::GetInstance().Stop(scriptExecutionInfo.Id);
-    }
+void CPluginDirectory::ForceStopRunningScript(SCRIPT_EXECUTION_INFO scriptExecutionInfo)
+{
+  if (scriptExecutionInfo.Id != -1 && CScriptInvocationManager::GetInstance().IsRunning(scriptExecutionInfo.Id))
+  {
+    CLog::Log(LOGDEBUG, "%s- cancelling plugin %s (id=%d)", __FUNCTION__, m_addon->Name().c_str(), scriptExecutionInfo.Id);
+    CScriptInvocationManager::GetInstance().Stop(scriptExecutionInfo.Id);
   }
-
-  return !m_cancelled && m_success;
 }
 
 void CPluginDirectory::SetResolvedUrl(int handle, bool success, const CFileItem *resultItem)
@@ -671,5 +681,5 @@ bool CPluginDirectory::CheckExists(const std::string& content, const std::string
   CURL url(strPath);
   url.SetOption("kodi_action", "check_exists");
   CFileItem item;
-  return CPluginDirectory::GetPluginResult(url.Get(), item, false);
+  return AsyncGetPluginResultAction(url.Get(), item, false).Execute();
 }

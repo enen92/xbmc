@@ -9,10 +9,12 @@
 #pragma once
 
 #include "IDirectory.h"
+#include "FileItem.h"
 #include "SortFileItem.h"
 #include "addons/IAddon.h"
 #include "threads/CriticalSection.h"
 #include "threads/Event.h"
+#include "threads/IRunnable.h"
 #include "threads/Thread.h"
 
 #include <atomic>
@@ -22,11 +24,35 @@
 #include "PlatformDefs.h"
 
 class CURL;
-class CFileItem;
-class CFileItemList;
 
 namespace XFILE
 {
+
+class AsyncGetPluginResultAction : public IRunnable
+{
+public:
+  AsyncGetPluginResultAction() = delete;
+  AsyncGetPluginResultAction(const std::string& strPath, CFileItem& resultItem, bool resume);
+
+  bool ExecutionHadSuccess() const;
+  bool Execute();
+  void Cancel() override;
+
+private:
+  // IRunnable implementation
+  void Run() override;
+
+  // propagated for script execution
+  std::string m_path;
+  CFileItem* m_item;
+  bool m_resume = false;
+
+  // part of future/async
+  CEvent m_event;
+  std::atomic<bool> m_bSuccess;
+  std::atomic<bool> m_bCancelled;
+};
+
 
 class CPluginDirectory : public IDirectory
 {
@@ -39,7 +65,6 @@ public:
   float GetProgress() const override;
   void CancelDirectory() override;
   static bool RunScriptWithParams(const std::string& strPath, bool resume);
-  static bool GetPluginResult(const std::string& strPath, CFileItem &resultItem, bool resume);
 
   /*!
   \brief Check whether a plugin supports media library scanning.
@@ -99,11 +124,20 @@ private:
   bool ExecuteScriptAndWaitOnResult(const std::string& strPath, bool resume);
   
   /*!
-  \brief Waits on the execution of the given script to finish
-  \param info The struct containing the script execution info info (id and handle)
+  \brief Wait mSecs for the script to finish. If mSecs is surpassed forceStop will force stop the script execution
+  \param scriptExecutionInfo The struct containing the script execution info (id and handle)
+  \param mSecs The time to wait for the script to finish
+  \param forceStop If script should be stopped after mSecs have passed and the script is still running
   \return true if the script returned a success result
   */
-  bool WaitOnScriptResult(SCRIPT_EXECUTION_INFO scriptExecutionInfo);
+  void WaitForScriptToFinish(SCRIPT_EXECUTION_INFO scriptExecutionInfo, int mSecs,
+                             bool bForceStop);
+
+  /*!
+  \brief Force stop a running script
+  \param scriptExecutionInfo The struct containing the script execution info (id and handle)
+  */
+  void ForceStopRunningScript(SCRIPT_EXECUTION_INFO scriptExecutionInfo);
 
   static std::map<int,CPluginDirectory*> globalHandles;
   static int getNewHandle(CPluginDirectory *cp);
@@ -126,18 +160,20 @@ private:
   CEvent         m_fetchComplete;
 
   std::atomic<bool> m_cancelled;
-  bool          m_success = false;      // set by script in EndOfDirectory
-  int    m_totalItems = 0;   // set by script in AddDirectoryItem
+  bool              m_success = false;      // set by script in EndOfDirectory
+  int               m_totalItems = 0;   // set by script in AddDirectoryItem
+
+  friend class AsyncGetPluginResultAction;
 
   class CScriptObserver : public CThread
   {
   public:
-    CScriptObserver(int scriptId, CEvent &event);
+    CScriptObserver(int scriptId, CEvent& event);
     void Abort();
   protected:
     void Process() override;
     int m_scriptId;
-    CEvent &m_event;
+    CEvent& m_event;
   };
 };
 }

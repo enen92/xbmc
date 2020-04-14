@@ -2641,15 +2641,33 @@ void CApplication::Stop(int exitCode)
   KODI::TIME::Sleep(200);
 }
 
+bool CApplication::GetPluginResult(CFileItem& resultItem, bool resume)
+{
+  auto pluginResultAction = new XFILE::AsyncGetPluginResultAction(resultItem.GetDynPath(), resultItem, resume);
+  
+  CGUIComponent *gui = CServiceBroker::GetGUI();
+  if (gui)
+  {
+    CGUIDialogBusy* dialog = gui->GetWindowManager().GetWindow<CGUIDialogBusy>(WINDOW_DIALOG_BUSY);
+    if (dialog && !dialog->IsDialogRunning())
+    {
+      dialog->Wait(pluginResultAction, 200, true);
+      return pluginResultAction->ExecutionHadSuccess();
+    }
+  }
+  return pluginResultAction->Execute();
+}
+
 bool CApplication::PlayMedia(CFileItem& item, const std::string &player, int iPlaylist)
 {
-  //If item is a plugin, expand out
+  // If item is a plugin, expand out
   for (int i=0; URIUtils::IsPlugin(item.GetDynPath()) && i<5; ++i)
   {
     bool resume = item.m_lStartOffset == STARTOFFSET_RESUME;
 
-    if (!XFILE::CPluginDirectory::GetPluginResult(item.GetDynPath(), item, resume))
-      return false;
+    // Async get plugin results
+    if (!GetPluginResult(item, resume))
+        return false;
   }
 
   if (item.IsSmartPlayList())
@@ -2791,10 +2809,15 @@ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRes
   for (int i=0; URIUtils::IsPlugin(item.GetDynPath()) && i<5; ++i)
   { // we modify the item so that it becomes a real URL
     bool resume = item.m_lStartOffset == STARTOFFSET_RESUME;
-
-    if (!XFILE::CPluginDirectory::GetPluginResult(item.GetDynPath(), item, resume))
+    
+    // Async get plugin results
+    if (!GetPluginResult(item, resume))
       return false;
   }
+  
+  // if after 5 attempts the item still has a plugin:// path in the dynPath return early
+  if (URIUtils::IsPlugin(item.GetDynPath()))
+      return false;
 
 #ifdef HAS_UPNP
   if (URIUtils::IsUPnP(item.GetPath()))
@@ -3859,7 +3882,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
       // handle plugin://
       CURL url(file.GetDynPath());
       if (url.IsProtocol("plugin"))
-        XFILE::CPluginDirectory::GetPluginResult(url.Get(), file, false);
+        GetPluginResult(file, false);
 
       // Don't queue if next media type is different from current one
       bool bNothingToQueue = false;
