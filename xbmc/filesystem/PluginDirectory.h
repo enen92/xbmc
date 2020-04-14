@@ -41,14 +41,16 @@ public:
   static bool RunScriptWithParams(const std::string& strPath, bool resume);
   static bool GetPluginResult(const std::string& strPath, CFileItem &resultItem, bool resume);
 
-  /*! \brief Check whether a plugin supports media library scanning.
+  /*!
+  \brief Check whether a plugin supports media library scanning.
   \param content content type - movies, tvshows, musicvideos.
   \param strPath full plugin url.
   \return true if scanning at specified url is allowed, false otherwise.
   */
   static bool IsMediaLibraryScanningAllowed(const std::string& content, const std::string& strPath);
 
-  /*! \brief Check whether a plugin url exists by calling the plugin and checking result.
+  /*!
+  \brief Check whether a plugin url exists by calling the plugin and checking result.
   Applies only to plugins that support media library scanning.
   \param content content type - movies, tvshows, musicvideos.
   \param strPath full plugin url.
@@ -67,15 +69,52 @@ public:
   static void SetProperty(int handle, const std::string &strProperty, const std::string &strValue);
   static void SetResolvedUrl(int handle, bool success, const CFileItem* resultItem);
   static void SetLabel2(int handle, const std::string& ident);
+  
+  /**
+  * A structure holding data of a script execution, returned from TriggerScriptExecution
+  */
+  struct SCRIPT_EXECUTION_INFO {
+    int Id = -1; /**the script id */
+    int Handle = -1; /**the script handle */
+  };
 
 private:
   ADDON::AddonPtr m_addon;
-  bool StartScript(const std::string& strPath, bool resume);
-  bool WaitOnScriptResult(int scriptId, const std::string& scriptName);
+  
+  /*!
+  \brief Executes a given script asynchronously and returns the script id
+  \param strPath full plugin url.
+  \param resume if it should resume a prior execution
+  \return a stuct containing the id and handle of the script execution
+  */
+  SCRIPT_EXECUTION_INFO TriggerScriptExecution(const std::string& strPath, bool resume);
+  
+  /*!
+  \brief Executes a given script and waits for execution to complete, returning the
+   success of the operation
+  \param strPath full plugin url.
+  \param resume if it should resume a prior execution
+  \return true if the execution had success
+  */
+  bool ExecuteScriptAndWaitOnResult(const std::string& strPath, bool resume);
+  
+  /*!
+  \brief Waits on the execution of the given script to finish
+  \param info The struct containing the script execution info info (id and handle)
+  \return true if the script returned a success result
+  */
+  bool WaitOnScriptResult(SCRIPT_EXECUTION_INFO scriptExecutionInfo);
 
   static std::map<int,CPluginDirectory*> globalHandles;
   static int getNewHandle(CPluginDirectory *cp);
   static void reuseHandle(int handle, CPluginDirectory* cp);
+  
+  /*!
+  \brief Updates the item with the properties and resolved path obtained from the script execution
+  \param resultItem The item destination
+  \param dir The CPluginDirectory that holds the plugin result
+  */
+  static void UpdateResultItem(CFileItem& resultItem, CPluginDirectory& dir);
 
   static void removeHandle(int handle);
   static CPluginDirectory *dirFromHandle(int handle);
