@@ -157,7 +157,7 @@ public:
   AsyncGetPluginResultAction(const std::string& strPath, CFileItem& resultItem, bool resume);
 
   bool ExecutionHadSuccess() const;
-  bool Execute();
+  bool ExecuteSynchronously();
   void Cancel() override;
 
 private:

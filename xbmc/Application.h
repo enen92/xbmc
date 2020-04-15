@@ -371,11 +371,14 @@ protected:
   bool OnEvent(XBMC_Event& newEvent);
 
   /*!
-  \brief Brings up the BusyDialog and gets the plugin result async
+  \brief Brings up the BusyDialog and gets the plugin result
+   \param resultItem the item that will be resolved
+   \param resume if the item should be resumed
+   \param iMaxAttempts the maximum number of attempts to resolve the plugin path before giving up
    @todo remove when dropping gui from the main thread
    \return if the async operation had success
   */
-  bool GetPluginResult(CFileItem& resultItem, bool resume);
+  bool ResolvePluginItem(CFileItem& resultItem, bool resume, unsigned int iMaxAttempts=5);
 
   /*!
    \brief Delegates the action to all registered action handlers.

@@ -52,7 +52,7 @@ void AsyncGetPluginResultAction::Cancel()
   m_bCancelled = true;
 }
 
-bool AsyncGetPluginResultAction::Execute()
+bool AsyncGetPluginResultAction::ExecuteSynchronously()
 {
   bool success = m_pluginDirHandler.ExecuteScriptAndWaitOnResult(m_path, m_resume);
   if (success)
@@ -699,5 +699,5 @@ bool CPluginDirectory::CheckExists(const std::string& content, const std::string
   CURL url(strPath);
   url.SetOption("kodi_action", "check_exists");
   CFileItem item;
-  return AsyncGetPluginResultAction(url.Get(), item, false).Execute();
+  return AsyncGetPluginResultAction(url.Get(), item, false).ExecuteSynchronously();
 }

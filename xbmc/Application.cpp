@@ -13,6 +13,7 @@
 #include "AppParamParser.h"
 #include "AppInboundProtocol.h"
 #include "dialogs/GUIDialogBusy.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "events/EventLog.h"
 #include "events/NotificationEvent.h"
 #include "interfaces/builtins/Builtins.h"
@@ -2641,35 +2642,55 @@ void CApplication::Stop(int exitCode)
   KODI::TIME::Sleep(200);
 }
 
-bool CApplication::GetPluginResult(CFileItem& resultItem, bool resume)
+bool CApplication::ResolvePluginItem(CFileItem& item, bool resume, unsigned int iMaxAttempts /*=5*/)
 {
-  auto pluginResultAction = new XFILE::AsyncGetPluginResultAction(resultItem.GetDynPath(),
-                                                                  resultItem, resume);
+  if (resume)
+    resume = item.m_lStartOffset == STARTOFFSET_RESUME;
   
-  CGUIComponent *gui = CServiceBroker::GetGUI();
-  if (gui)
+  for (int i=0; URIUtils::IsPlugin(item.GetDynPath()) && i<iMaxAttempts; ++i)
   {
-    CGUIDialogBusy* dialog = gui->GetWindowManager().GetWindow<CGUIDialogBusy>(WINDOW_DIALOG_BUSY);
-    if (dialog && !dialog->IsDialogRunning())
+    auto pluginResultAction = new XFILE::AsyncGetPluginResultAction(item.GetDynPath(), item,
+                                                                    resume);
+
+    CGUIComponent* gui = CServiceBroker::GetGUI();
+    if (gui)
     {
-      dialog->Wait(pluginResultAction, 200, true);
-      return pluginResultAction->ExecutionHadSuccess();
+      // probably used by python scrapers?
+      CGUIDialogProgress* progress = nullptr;
+      CGUIWindowManager& wm = gui->GetWindowManager();
+      
+      if (wm.IsModalDialogTopmost(WINDOW_DIALOG_PROGRESS))
+        progress = wm.GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
+
+      if (progress != nullptr)
+      {
+        //if (!progress->WaitOnEvent())
+      
+      //}
+      }
+      else{
+        auto dialog = gui->GetWindowManager().GetWindow<CGUIDialogBusy>(WINDOW_DIALOG_BUSY);
+        if (dialog && !dialog->IsDialogRunning())
+        {
+          dialog->Wait(pluginResultAction, 200, true);
+          return pluginResultAction->ExecutionHadSuccess();
+        }
+      }
+    }
+    else
+    {
+      //! @todo if kodi runs headless in the future something has to drive the action execution
+      return false;
     }
   }
-  return pluginResultAction->Execute();
+  return !URIUtils::IsPlugin(item.GetDynPath());
 }
 
 bool CApplication::PlayMedia(CFileItem& item, const std::string &player, int iPlaylist)
 {
   // If item is a plugin, expand out
-  for (int i=0; URIUtils::IsPlugin(item.GetDynPath()) && i<5; ++i)
-  {
-    bool resume = item.m_lStartOffset == STARTOFFSET_RESUME;
-
-    // Async get plugin results
-    if (!GetPluginResult(item, resume))
-        return false;
-  }
+  if (URIUtils::IsPlugin(item.GetDynPath()))
+      ResolvePluginItem(item, true);
 
   if (item.IsSmartPlayList())
   {
@@ -2807,18 +2828,8 @@ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRes
   if (item.IsPlayList())
     return false;
 
-  for (int i=0; URIUtils::IsPlugin(item.GetDynPath()) && i<5; ++i)
-  { // we modify the item so that it becomes a real URL
-    bool resume = item.m_lStartOffset == STARTOFFSET_RESUME;
-    
-    // Async get plugin results
-    if (!GetPluginResult(item, resume))
-      return false;
-  }
-  
-  // if after 5 attempts the item still has a plugin:// path in the dynPath return early
   if (URIUtils::IsPlugin(item.GetDynPath()))
-      return false;
+    ResolvePluginItem(item, true);
 
 #ifdef HAS_UPNP
   if (URIUtils::IsUPnP(item.GetPath()))
@@ -3883,7 +3894,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
       // handle plugin://
       CURL url(file.GetDynPath());
       if (url.IsProtocol("plugin"))
-        GetPluginResult(file, false);
+        ResolvePluginItem(file, false, 1);
 
       // Don't queue if next media type is different from current one
       bool bNothingToQueue = false;
