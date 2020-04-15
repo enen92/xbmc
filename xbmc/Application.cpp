@@ -2644,6 +2644,13 @@ void CApplication::Stop(int exitCode)
 
 bool CApplication::ResolvePluginItem(CFileItem& item, bool resume, unsigned int iMaxAttempts /*=5*/)
 {
+  
+  CGUIComponent* gui = CServiceBroker::GetGUI();
+  if (!gui)
+    //! @todo if kodi runs headless in the future, something has to replace the busydialog for this to work
+    return false;
+  
+  
   if (resume)
     resume = item.m_lStartOffset == STARTOFFSET_RESUME;
   
@@ -2652,37 +2659,17 @@ bool CApplication::ResolvePluginItem(CFileItem& item, bool resume, unsigned int 
     auto pluginResultAction = new XFILE::AsyncGetPluginResultAction(item.GetDynPath(), item,
                                                                     resume);
 
-    CGUIComponent* gui = CServiceBroker::GetGUI();
-    if (gui)
+    auto dialog = gui->GetWindowManager().GetWindow<CGUIDialogBusy>(WINDOW_DIALOG_BUSY);
+    if (dialog && !dialog->IsDialogRunning())
     {
-      // probably used by python scrapers?
-      CGUIDialogProgress* progress = nullptr;
-      CGUIWindowManager& wm = gui->GetWindowManager();
-      
-      if (wm.IsModalDialogTopmost(WINDOW_DIALOG_PROGRESS))
-        progress = wm.GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
-
-      if (progress != nullptr)
-      {
-        //if (!progress->WaitOnEvent())
-      
-      //}
-      }
-      else{
-        auto dialog = gui->GetWindowManager().GetWindow<CGUIDialogBusy>(WINDOW_DIALOG_BUSY);
-        if (dialog && !dialog->IsDialogRunning())
-        {
-          dialog->Wait(pluginResultAction, 200, true);
-          return pluginResultAction->ExecutionHadSuccess();
-        }
-      }
+      if (!dialog->Wait(pluginResultAction, 200, true))
+        return false;
     }
-    else
-    {
-      //! @todo if kodi runs headless in the future something has to drive the action execution
+    
+    if (!pluginResultAction->ExecutionHadSuccess())
       return false;
-    }
   }
+
   return !URIUtils::IsPlugin(item.GetDynPath());
 }
 
