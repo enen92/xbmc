@@ -231,7 +231,8 @@ bool CPluginDirectory::ExecuteScriptAndWaitOnResult(const std::string& strPath, 
   // verify a valid id was assigned to the script execution
   if (scriptExecutionInfo.Id < 0)
   {
-    CLog::Log(LOGERROR, "Unable to run plugin %s", m_addon->Name().c_str());
+    if (m_addon)
+      CLog::Log(LOGERROR, "Unable to run plugin %s", m_addon->Name().c_str());
     return false;
   }
   
