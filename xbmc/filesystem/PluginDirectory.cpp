@@ -35,7 +35,8 @@ int CPluginDirectory::handleCounter = 0;
 CCriticalSection CPluginDirectory::m_handleLock;
 
 AsyncGetPluginResultAction::AsyncGetPluginResultAction(const std::string& strPath,
-                                                       CFileItem& resultItem, bool resume) : m_path(strPath), m_item(&resultItem), m_resume(resume)
+                                                       CFileItem& resultItem, bool resume)
+  : m_path(strPath), m_item(&resultItem), m_resume(resume)
 {
   m_event.Reset();
   m_bCancelled = false;
@@ -53,39 +54,52 @@ void AsyncGetPluginResultAction::Cancel()
 
 bool AsyncGetPluginResultAction::Execute()
 {
-  CPluginDirectory newDir;
-  bool success = newDir.ExecuteScriptAndWaitOnResult(m_path, m_resume);
+  bool success = m_pluginDirHandler.ExecuteScriptAndWaitOnResult(m_path, m_resume);
   if (success)
   {
-    newDir.UpdateResultItem(*m_item, newDir);
+    m_pluginDirHandler.UpdateResultItem(*m_item, m_pluginDirHandler.m_fileResult);
   }
   return success;
 }
 
 void AsyncGetPluginResultAction::Run()
 {
+
   CPluginDirectory pluginDir;
-  auto scriptExecutionInfo = pluginDir.TriggerScriptExecution(m_path, m_resume);
-
-  CPluginDirectory::CScriptObserver scriptObs(scriptExecutionInfo.Id, m_event);
-
-  while (!m_bCancelled
-         && !pluginDir.m_fetchComplete.Signaled()
-         && !pluginDir.m_fetchComplete.WaitMSec(20));
-
-  // Force stop the running script
-  pluginDir.ForceStopRunningScript(scriptExecutionInfo);
-
-  // set sucess
-  m_bSuccess = pluginDir.m_success && !m_bCancelled;
-
-  if (m_bSuccess)
-    pluginDir.UpdateResultItem(*m_item, pluginDir);
+  auto scriptExecutionInfo = m_pluginDirHandler.TriggerScriptExecution(m_path, m_resume);
   
-  m_event.Set();
+  // if the script executes quick enough there's no need to launch the observer
+  if (!m_pluginDirHandler.m_fetchComplete.WaitMSec(20))
+  {
+    CPluginDirectory::CScriptObserver scriptObs(scriptExecutionInfo.Id, m_event);
 
-  scriptObs.Abort();
+    while (!m_bCancelled
+           && !m_pluginDirHandler.m_fetchComplete.Signaled()
+           && !m_pluginDirHandler.m_fetchComplete.WaitMSec(20));
+
+    // Force stop the running script
+    m_pluginDirHandler.ForceStopRunningScript(scriptExecutionInfo);
+    
+    // Flag the result (
+    Finish();
+    scriptObs.Abort();
+  }
+  Finish();
 }
+
+void AsyncGetPluginResultAction::Finish()
+{
+  // set the action sucess
+  m_bSuccess = m_pluginDirHandler.m_success && !m_bCancelled;
+  
+  // update result item
+  if (m_bSuccess)
+    m_pluginDirHandler.UpdateResultItem(*m_item, m_pluginDirHandler.m_fileResult);
+  
+  // flag the action event
+  m_event.Set();
+}
+
 
 CPluginDirectory::CScriptObserver::CScriptObserver(int scriptId, CEvent &event) :
   CThread("scriptobs"), m_scriptId(scriptId), m_event(event)
@@ -250,19 +264,19 @@ bool CPluginDirectory::ExecuteScriptAndWaitOnResult(const std::string& strPath, 
   return success;
 }
 
-void CPluginDirectory::UpdateResultItem(CFileItem& resultItem, CPluginDirectory& dir)
+void CPluginDirectory::UpdateResultItem(CFileItem& finalItem, CFileItem* resultItem)
 {
   // update the play path and metadata, saving the old one as needed
-  if (!resultItem.HasProperty("original_listitem_url"))
-    resultItem.SetProperty("original_listitem_url", resultItem.GetPath());
+  if (!finalItem.HasProperty("original_listitem_url"))
+    finalItem.SetProperty("original_listitem_url", finalItem.GetPath());
   
-  resultItem.SetDynPath(dir.m_fileResult->GetPath());
-  resultItem.SetMimeType(dir.m_fileResult->GetMimeType());
-  resultItem.SetContentLookup(dir.m_fileResult->ContentLookup());
-  resultItem.UpdateInfo(*dir.m_fileResult);
+  finalItem.SetDynPath(resultItem->GetPath());
+  finalItem.SetMimeType(resultItem->GetMimeType());
+  finalItem.SetContentLookup(resultItem->ContentLookup());
+  finalItem.UpdateInfo(*resultItem);
   
-  if (dir.m_fileResult->HasVideoInfoTag() && dir.m_fileResult->GetVideoInfoTag()->GetResumePoint().IsSet())
-    resultItem.m_lStartOffset = STARTOFFSET_RESUME; // resume point set in the resume item, so force resume
+  if (resultItem->HasVideoInfoTag() && resultItem->GetVideoInfoTag()->GetResumePoint().IsSet())
+    finalItem.m_lStartOffset = STARTOFFSET_RESUME; // resume point set in the resume item, so force resume
 }
 
 bool CPluginDirectory::AddItem(int handle, const CFileItem *item, int totalItems)

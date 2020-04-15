@@ -27,33 +27,6 @@ class CURL;
 
 namespace XFILE
 {
-
-class AsyncGetPluginResultAction : public IRunnable
-{
-public:
-  AsyncGetPluginResultAction() = delete;
-  AsyncGetPluginResultAction(const std::string& strPath, CFileItem& resultItem, bool resume);
-
-  bool ExecutionHadSuccess() const;
-  bool Execute();
-  void Cancel() override;
-
-private:
-  // IRunnable implementation
-  void Run() override;
-
-  // propagated for script execution
-  std::string m_path;
-  CFileItem* m_item;
-  bool m_resume = false;
-
-  // part of future/async
-  CEvent m_event;
-  std::atomic<bool> m_bSuccess;
-  std::atomic<bool> m_bCancelled;
-};
-
-
 class CPluginDirectory : public IDirectory
 {
 public:
@@ -144,11 +117,11 @@ private:
   static void reuseHandle(int handle, CPluginDirectory* cp);
   
   /*!
-  \brief Updates the item with the properties and resolved path obtained from the script execution
-  \param resultItem The item destination
-  \param dir The CPluginDirectory that holds the plugin result
+  \brief Updates an item (finalItem) with the properties and resolved path obtained from the script execution (resultItem)
+  \param finalItem The item destination
+  \param resultItem The CPluginDirectory item that resulted from the script execution
   */
-  static void UpdateResultItem(CFileItem& resultItem, CPluginDirectory& dir);
+  static void UpdateResultItem(CFileItem& finalItem, CFileItem* resultItem);
 
   static void removeHandle(int handle);
   static CPluginDirectory *dirFromHandle(int handle);
@@ -176,4 +149,35 @@ private:
     CEvent& m_event;
   };
 };
+
+class AsyncGetPluginResultAction : public IRunnable
+{
+public:
+  AsyncGetPluginResultAction() = delete;
+  AsyncGetPluginResultAction(const std::string& strPath, CFileItem& resultItem, bool resume);
+
+  bool ExecutionHadSuccess() const;
+  bool Execute();
+  void Cancel() override;
+
+private:
+  // IRunnable implementation
+  void Run() override;
+  
+  void Finish();  
+
+  // propagated for script execution
+  std::string m_path;
+  CFileItem* m_item;
+  bool m_resume = false;
+
+  // part of future/async
+  CEvent m_event;
+  std::atomic<bool> m_bSuccess;
+  std::atomic<bool> m_bCancelled;
+  
+  // handler for CPluginDirectory static function calls
+  XFILE::CPluginDirectory m_pluginDirHandler;
+};
+
 }
