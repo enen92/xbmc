@@ -75,7 +75,7 @@ void AsyncGetPluginResultAction::Run()
 
     // let the script run until cancel is flagged or the execution ends
     while (!m_bCancelled
-           && !m_pluginDirHandler.m_fetchComplete.Signaled()
+           && !m_event.Signaled()
            && !m_pluginDirHandler.m_fetchComplete.WaitMSec(20));
 
     // Force stop the running script in case it was manually cancelled
