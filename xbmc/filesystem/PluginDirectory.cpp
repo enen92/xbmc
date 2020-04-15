@@ -70,8 +70,8 @@ void AsyncGetPluginResultAction::Run()
   CPluginDirectory::CScriptObserver scriptObs(scriptExecutionInfo.Id, m_event);
 
   while (!m_bCancelled
-         && !m_event.Signaled()
-         && !m_event.WaitMSec(20));
+         && !pluginDir.m_fetchComplete.Signaled()
+         && !pluginDir.m_fetchComplete.WaitMSec(20));
 
   // Force stop the running script
   pluginDir.ForceStopRunningScript(scriptExecutionInfo);
