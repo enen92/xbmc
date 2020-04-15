@@ -65,22 +65,24 @@ bool AsyncGetPluginResultAction::Execute()
 void AsyncGetPluginResultAction::Run()
 {
 
-  CPluginDirectory pluginDir;
   auto scriptExecutionInfo = m_pluginDirHandler.TriggerScriptExecution(m_path, m_resume);
-  
+
   // if the script executes quick enough there's no need to launch the observer
   if (!m_pluginDirHandler.m_fetchComplete.WaitMSec(20))
   {
+    // launch an observer for the running script
     CPluginDirectory::CScriptObserver scriptObs(scriptExecutionInfo.Id, m_event);
 
+    // let the script run until cancel is flagged or the execution ends
     while (!m_bCancelled
            && !m_pluginDirHandler.m_fetchComplete.Signaled()
            && !m_pluginDirHandler.m_fetchComplete.WaitMSec(20));
 
-    // Force stop the running script
-    m_pluginDirHandler.ForceStopRunningScript(scriptExecutionInfo);
+    // Force stop the running script in case it was manually cancelled
+    if (m_bCancelled)
+      m_pluginDirHandler.ForceStopRunningScript(scriptExecutionInfo);
     
-    // Flag the result (
+    // Finish and abort the observer
     Finish();
     scriptObs.Abort();
   }
@@ -584,7 +586,8 @@ void CPluginDirectory::WaitForScriptToFinish(SCRIPT_EXECUTION_INFO scriptExecuti
 
 void CPluginDirectory::ForceStopRunningScript(SCRIPT_EXECUTION_INFO scriptExecutionInfo)
 {
-  if (scriptExecutionInfo.Id != -1 && CScriptInvocationManager::GetInstance().IsRunning(scriptExecutionInfo.Id))
+  if (scriptExecutionInfo.Id != -1 &&
+      CScriptInvocationManager::GetInstance().IsRunning(scriptExecutionInfo.Id))
   {
     CLog::Log(LOGDEBUG, "%s- cancelling plugin %s (id=%d)", __FUNCTION__, m_addon->Name().c_str(), scriptExecutionInfo.Id);
     CScriptInvocationManager::GetInstance().Stop(scriptExecutionInfo.Id);

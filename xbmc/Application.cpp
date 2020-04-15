@@ -2643,7 +2643,8 @@ void CApplication::Stop(int exitCode)
 
 bool CApplication::GetPluginResult(CFileItem& resultItem, bool resume)
 {
-  auto pluginResultAction = new XFILE::AsyncGetPluginResultAction(resultItem.GetDynPath(), resultItem, resume);
+  auto pluginResultAction = new XFILE::AsyncGetPluginResultAction(resultItem.GetDynPath(),
+                                                                  resultItem, resume);
   
   CGUIComponent *gui = CServiceBroker::GetGUI();
   if (gui)
