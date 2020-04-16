@@ -2641,16 +2641,41 @@ void CApplication::Stop(int exitCode)
   KODI::TIME::Sleep(200);
 }
 
-bool CApplication::PlayMedia(CFileItem& item, const std::string &player, int iPlaylist)
+bool CApplication::ResolvePluginItem(CFileItem& item, bool resume, unsigned int iMaxAttempts)
 {
-  //If item is a plugin, expand out
-  for (int i=0; URIUtils::IsPlugin(item.GetDynPath()) && i<5; ++i)
-  {
-    bool resume = item.m_lStartOffset == STARTOFFSET_RESUME;
 
-    if (!XFILE::CPluginDirectory::GetPluginResult(item.GetDynPath(), item, resume))
+  CGUIComponent* gui = CServiceBroker::GetGUI();
+  if (!gui)
+    //! @todo if kodi runs headless in the future, something has to replace the busydialog for this to work
+    return false;
+
+  if (resume)
+    resume = item.m_lStartOffset == STARTOFFSET_RESUME;
+
+  for (int i = 0; URIUtils::IsPlugin(item.GetDynPath()) && i < iMaxAttempts; ++i)
+  {
+    auto pluginResultAction =
+        new XFILE::AsyncGetPluginResultAction(item.GetDynPath(), item, resume);
+
+    auto dialog = gui->GetWindowManager().GetWindow<CGUIDialogBusy>(WINDOW_DIALOG_BUSY);
+    if (dialog && !dialog->IsDialogRunning())
+    {
+      if (!dialog->Wait(pluginResultAction, 200, true))
+        return false;
+    }
+
+    if (!pluginResultAction->ExecutionHadSuccess())
       return false;
   }
+
+  return !URIUtils::IsPlugin(item.GetDynPath());
+}
+
+bool CApplication::PlayMedia(CFileItem& item, const std::string& player, int iPlaylist)
+{
+  // If item is a plugin, expand out
+  if (URIUtils::IsPlugin(item.GetDynPath()))
+    ResolvePluginItem(item, true, 5);
 
   if (item.IsSmartPlayList())
   {
@@ -2788,13 +2813,8 @@ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRes
   if (item.IsPlayList())
     return false;
 
-  for (int i=0; URIUtils::IsPlugin(item.GetDynPath()) && i<5; ++i)
-  { // we modify the item so that it becomes a real URL
-    bool resume = item.m_lStartOffset == STARTOFFSET_RESUME;
-
-    if (!XFILE::CPluginDirectory::GetPluginResult(item.GetDynPath(), item, resume))
-      return false;
-  }
+  if (URIUtils::IsPlugin(item.GetDynPath()))
+    ResolvePluginItem(item, true, 5);
 
 #ifdef HAS_UPNP
   if (URIUtils::IsUPnP(item.GetPath()))
@@ -3859,7 +3879,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
       // handle plugin://
       CURL url(file.GetDynPath());
       if (url.IsProtocol("plugin"))
-        XFILE::CPluginDirectory::GetPluginResult(url.Get(), file, false);
+        ResolvePluginItem(file, false, 1);
 
       // Don't queue if next media type is different from current one
       bool bNothingToQueue = false;
