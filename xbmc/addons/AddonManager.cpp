@@ -358,7 +358,7 @@ bool CAddonMgr::GetAddonsInternal(const TYPE& type, VECADDONS& addons, bool enab
     if (addonInfo.second->MainType() == ADDON_UNKNOWN)
       continue;
 
-    AddonPtr addon = CAddonBuilder::Generate(addonInfo.second, type);
+    AddonPtr addon = CAddonBuilder::Generate(addonInfo.second, type, false);
     if (addon)
     {
       // if the addon has a running instance, grab that
@@ -495,7 +495,7 @@ bool CAddonMgr::GetAddon(const std::string& str,
   AddonInfoPtr addonInfo = GetAddonInfo(str, type);
   if (addonInfo)
   {
-    addon = CAddonBuilder::Generate(addonInfo, type);
+    addon = CAddonBuilder::Generate(addonInfo, type, false);
     if (addon)
     {
       if (enabledOnly && IsAddonDisabled(addonInfo->ID()))
@@ -799,7 +799,7 @@ bool CAddonMgr::LoadAddonDescription(const std::string &directory, AddonPtr &add
 {
   auto addonInfo = CAddonInfoBuilder::Generate(directory);
   if (addonInfo)
-    addon = CAddonBuilder::Generate(addonInfo, ADDON_UNKNOWN);
+    addon = CAddonBuilder::Generate(addonInfo, ADDON_UNKNOWN, false);
 
   return addon != nullptr;
 }
@@ -824,7 +824,7 @@ bool CAddonMgr::AddonsFromRepoXML(const CRepository::DirInfo& repo, const std::s
   while (element)
   {
     auto addonInfo = CAddonInfoBuilder::Generate(element, repo);
-    auto addon = CAddonBuilder::Generate(addonInfo, ADDON_UNKNOWN);
+    auto addon = CAddonBuilder::Generate(addonInfo, ADDON_UNKNOWN, false);
     if (addon)
       addons.push_back(std::move(addon));
 

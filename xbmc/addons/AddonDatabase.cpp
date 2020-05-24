@@ -401,7 +401,7 @@ bool CAddonDatabase::FindByAddonId(const std::string& addonId, ADDON::VECADDONS&
       builder.SetChangelog(m_pDS->fv(5).get_asString());
       builder.SetOrigin(m_pDS->fv(6).get_asString());
 
-      auto addon = CAddonBuilder::Generate(builder.get(), ADDON_UNKNOWN);
+      auto addon = CAddonBuilder::Generate(builder.get(), ADDON_UNKNOWN, true);
       if (addon)
         addons.push_back(std::move(addon));
       else
@@ -546,7 +546,7 @@ bool CAddonDatabase::GetAddon(int id, AddonPtr &addon)
     builder.SetDescription(m_pDS2->fv("description").get_asString());
     DeserializeMetadata(m_pDS2->fv("metadata").get_asString(), builder);
 
-    addon = CAddonBuilder::Generate(builder.get(), ADDON_UNKNOWN);
+    addon = CAddonBuilder::Generate(builder.get(), ADDON_UNKNOWN, true);
     return addon != nullptr;
 
   }
@@ -635,7 +635,7 @@ bool CAddonDatabase::GetRepositoryContent(const std::string& id, VECADDONS& addo
       builder.SetDescription(m_pDS->fv("description").get_asString());
       DeserializeMetadata(m_pDS->fv("metadata").get_asString(), builder);
 
-      auto addon = CAddonBuilder::Generate(builder.get(), ADDON_UNKNOWN);
+      auto addon = CAddonBuilder::Generate(builder.get(), ADDON_UNKNOWN, true);
       if (addon)
       {
         if (!result.empty() && result.back()->ID() == addonId)

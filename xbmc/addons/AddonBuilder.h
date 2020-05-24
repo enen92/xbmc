@@ -17,7 +17,7 @@ namespace ADDON
 class CAddonBuilder
 {
 public:
-  static AddonPtr Generate(const AddonInfoPtr& info, TYPE type);
+  static AddonPtr Generate(const AddonInfoPtr& info, TYPE type, bool inheritMainType);
 };
 
 };

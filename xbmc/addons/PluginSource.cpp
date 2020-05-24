@@ -18,10 +18,10 @@
 namespace ADDON
 {
 
-CPluginSource::CPluginSource(const AddonInfoPtr& addonInfo, TYPE addonType) : CAddon(addonInfo, addonType)
+CPluginSource::CPluginSource(const AddonInfoPtr& addonInfo, TYPE addonType, bool ihneritMainType) : CAddon(addonInfo, addonType)
 {
   std::string provides = addonInfo->Type(addonType)->GetValue("provides").asString();
-  if (provides.empty())
+  if (provides.empty() && ihneritMainType)
   {
     /*
      * If "provides" was empty, check about them in addon extra info. This become

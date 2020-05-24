@@ -31,7 +31,7 @@ using namespace KODI;
 namespace ADDON
 {
 
-AddonPtr CAddonBuilder::Generate(const AddonInfoPtr& info, TYPE type)
+AddonPtr CAddonBuilder::Generate(const AddonInfoPtr& info, TYPE type, bool inheritMainType)
 {
   if (!info || info->ID().empty())
     return AddonPtr();
@@ -75,7 +75,7 @@ AddonPtr CAddonBuilder::Generate(const AddonInfoPtr& info, TYPE type)
     return std::make_shared<GAME::CGameClient>(info);
   case ADDON_PLUGIN:
   case ADDON_SCRIPT:
-    return std::make_shared<CPluginSource>(info, type);
+    return std::make_shared<CPluginSource>(info, type, inheritMainType);
   case ADDON_SCRIPT_LIBRARY:
   case ADDON_SCRIPT_LYRICS:
   case ADDON_SCRIPT_MODULE:

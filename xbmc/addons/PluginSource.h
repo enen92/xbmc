@@ -21,7 +21,7 @@ public:
 
   enum Content { UNKNOWN, AUDIO, IMAGE, EXECUTABLE, VIDEO, GAME };
 
-  explicit CPluginSource(const AddonInfoPtr& addonInfo, TYPE addonType);
+  explicit CPluginSource(const AddonInfoPtr& addonInfo, TYPE addonType, bool inheritMainType);
 
   bool HasType(TYPE type) const override;
   bool Provides(const Content& content) const
