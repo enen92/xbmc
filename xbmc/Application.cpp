@@ -2675,7 +2675,8 @@ bool CApplication::PlayMedia(CFileItem& item, const std::string &player, int iPl
 {
   // If item is a plugin, expand out
   if (URIUtils::IsPlugin(item.GetDynPath()))
-      ResolvePluginItem(item, true, 5);
+      if (!ResolvePluginItem(item, true, 5))
+        return false;
 
   if (item.IsSmartPlayList())
   {
@@ -2814,7 +2815,8 @@ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRes
     return false;
 
   if (URIUtils::IsPlugin(item.GetDynPath()))
-    ResolvePluginItem(item, true, 5);
+    if (!ResolvePluginItem(item, true, 5))
+      return false;
 
 #ifdef HAS_UPNP
   if (URIUtils::IsUPnP(item.GetPath()))
@@ -3879,7 +3881,8 @@ bool CApplication::OnMessage(CGUIMessage& message)
       // handle plugin://
       CURL url(file.GetDynPath());
       if (url.IsProtocol("plugin"))
-        ResolvePluginItem(file, false, 1);
+        if (!ResolvePluginItem(file, false, 1))
+          return false;
 
       // Don't queue if next media type is different from current one
       bool bNothingToQueue = false;
