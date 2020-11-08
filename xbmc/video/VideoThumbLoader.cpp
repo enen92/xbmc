@@ -605,7 +605,7 @@ bool CVideoThumbLoader::FillLibraryArt(CFileItem &item)
         }
       }
 
-      if (tag.m_type == MediaTypeEpisode && !item.HasArt("season.poster") && tag.m_iSeason > -1)
+      if (tag.m_type == MediaTypeEpisode && !item.HasArt("season.poster") && tag.m_iSeason >= -1)
       {
         const ArtMap& artmap = GetArtFromCache(MediaTypeSeason, tag.m_iIdSeason);
         if (!artmap.empty())
