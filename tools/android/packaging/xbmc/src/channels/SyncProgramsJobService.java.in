@@ -196,7 +196,7 @@ public class SyncProgramsJobService extends JobService
         }
         else
         {
-          Log.d("channels no cursor");
+          Log.d("channels", "channels no cursor");
         }
         XBMCDatabase.saveMedias(getApplicationContext(), channelId, medias);
       } catch (Exception e)
