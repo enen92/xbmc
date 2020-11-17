@@ -319,7 +319,7 @@ public class XBMCJsonRPC
 
   public Cursor getSuggestions(String query, int limit)
   {
-    //Log.d(TAG, "query: " + query);
+    Log.d(TAG, "query: " + query);
 
     int totCount = 0;
     String[] menuCols = new String[]
@@ -1184,6 +1184,8 @@ public class XBMCJsonRPC
   {
     List<Media> medias = new ArrayList<Media>();
 
+    Log.d("channels querying getsuggestions");
+
     JsonObject rep = request_object(RECOMMENDATION_MOVIES_JSON);
     if (rep != null && rep.has("result"))
     {
@@ -1288,6 +1290,8 @@ public class XBMCJsonRPC
         e.printStackTrace();
       }
     }
+
+    Log.d("channels medias size", medias.size());
 
     return medias;
   }

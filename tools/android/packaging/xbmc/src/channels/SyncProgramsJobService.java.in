@@ -157,6 +157,7 @@ public class SyncProgramsJobService extends JobService
     private void syncPrograms(long channelId, String uri, List<Media> initialMedias)
     {
       Log.d(TAG, "Sync programs for channel: " + channelId);
+      Log.d(TAG, uri);
       List<Media> medias = new ArrayList<>(initialMedias);
 
       try (Cursor cursor =
@@ -194,6 +195,10 @@ public class SyncProgramsJobService extends JobService
           jsonrpc = null;
         }
         XBMCDatabase.saveMedias(getApplicationContext(), channelId, medias);
+      }
+      else
+      {
+        Log.d("channels no cursor");
       }
     }
 
