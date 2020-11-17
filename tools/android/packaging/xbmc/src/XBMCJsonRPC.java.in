@@ -1184,7 +1184,7 @@ public class XBMCJsonRPC
   {
     List<Media> medias = new ArrayList<Media>();
 
-    Log.d("channels querying getsuggestions");
+    Log.d("channels", "channels querying getsuggestions");
 
     JsonObject rep = request_object(RECOMMENDATION_MOVIES_JSON);
     if (rep != null && rep.has("result"))
@@ -1291,7 +1291,7 @@ public class XBMCJsonRPC
       }
     }
 
-    Log.d("channels medias size", medias.size());
+    Log.d("channels medias size", String.valueOf(medias.size()));
 
     return medias;
   }
