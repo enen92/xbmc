@@ -41,6 +41,16 @@ static UTILS::Color bgcolors[5] = { UTILS::COLOR::BLACK,
   UTILS::COLOR::LIGHTGREY,
   UTILS::COLOR::GREY };
 
+static UTILS::Color colors[9] = { UTILS::COLOR::YELLOW,
+                                  UTILS::COLOR::WHITE,
+                                  UTILS::COLOR::BLUE,
+                                  UTILS::COLOR::BRIGHTGREEN,
+                                  UTILS::COLOR::YELLOWGREEN,
+                                  UTILS::COLOR::CYAN,
+                                  UTILS::COLOR::LIGHTGREY,
+                                  UTILS::COLOR::GREY,
+                                  UTILS::COLOR::DARKGREY };
+
 COverlay::COverlay()
 {
   m_x      = 0.0f;
@@ -339,6 +349,40 @@ void CRenderer::SetStereoMode(const std::string &stereomode)
   m_stereomode = stereomode;
 }
 
+void CRenderer::EnforceStyle(CDVDOverlaySSA* o)
+{
+  auto settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+  
+  KODI::SUBTITLE::STYLE subtitleStyle;
+  subtitleStyle.font = settings->GetString(CSettings::SETTING_SUBTITLES_FONT);
+  subtitleStyle.fontSize = settings->GetInt(CSettings::SETTING_SUBTITLES_HEIGHT);
+  
+  auto style = settings->GetInt(CSettings::SETTING_SUBTITLES_STYLE);
+  
+  // font color
+  UTILS::Color fontColor = colors[settings->GetInt(CSettings::SETTING_SUBTITLES_COLOR)];
+  int fontOpacity = settings->GetInt(OVERLAY::SETTING_SUBTITLES_OPACITY);
+  subtitleStyle.fontStyle = static_cast<KODI::SUBTITLE::FontStyle>(style);
+  subtitleStyle.fontColor = ColorUtils::ChangeOpacity(fontColor, static_cast<float>(fontOpacity) / 100.0f);
+  
+  // border; todo - make border style configurable
+  int bgopacity = settings->GetInt(CSettings::SETTING_SUBTITLES_BGOPACITY);
+  if (bgopacity == 0) {
+    subtitleStyle.borderStyle = KODI::SUBTITLE::OUTLINE;
+    subtitleStyle.borderColor = UTILS::COLOR::BLACK;
+    subtitleStyle.borderSize = 3;
+  }
+  else
+  {
+    subtitleStyle.borderStyle = KODI::SUBTITLE::BOX;
+    UTILS::Color bgcolor = bgcolors[settings->GetInt(CSettings::SETTING_SUBTITLES_BGCOLOR)];
+    subtitleStyle.borderColor = ColorUtils::ChangeOpacity(bgcolor, static_cast<float>(bgopacity) / 100.0f);
+    subtitleStyle.borderSize = 3;
+  }
+
+  o->getLibassHandler()->EnforceStyle(subtitleStyle, 0);
+}
+
 COverlay* CRenderer::Convert(CDVDOverlaySSA* o, double pts)
 {
   // libass render in a target area which named as frame. the frame size may bigger than video size,
@@ -386,7 +430,7 @@ COverlay* CRenderer::Convert(CDVDOverlaySSA* o, double pts)
   else
     position = 0.0;
   int changes = 0;
-  ASS_Image* images = o->m_libass->RenderImage(targetWidth, targetHeight, videoWidth, videoHeight, sourceWidth, sourceHeight,
+  ASS_Image* images = o->getLibassHandler()->RenderImage(targetWidth, targetHeight, videoWidth, videoHeight, sourceWidth, sourceHeight,
                                                pts, useMargin, position, &changes);
 
   if(o->m_textureid)
@@ -424,8 +468,19 @@ COverlay* CRenderer::Convert(CDVDOverlay* o, double pts)
 {
   COverlay* r = NULL;
 
-  if(o->IsOverlayType(DVDOVERLAY_TYPE_SSA))
-    r = Convert(static_cast<CDVDOverlaySSA*>(o), pts);
+  if (o->IsOverlayType(DVDOVERLAY_TYPE_SSA))
+  {
+    auto assOverlay = static_cast<CDVDOverlaySSA*>(o);
+    switch (assOverlay->getSubType())
+    {
+      case CDVDOverlaySSA::ASSSubType::ADAPTED:
+        EnforceStyle(assOverlay);
+        break;
+      default:
+        break;
+    }
+    r = Convert(assOverlay, pts);
+  }
   else if(o->m_textureid)
   {
     std::map<unsigned int, COverlay*>::iterator it = m_textureCache.find(o->m_textureid);

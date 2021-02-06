@@ -19,6 +19,7 @@ class CDVDOverlay;
 class CDVDOverlayImage;
 class CDVDOverlaySpu;
 class CDVDOverlaySSA;
+class OverlayTextASSAdapted;
 
 namespace OVERLAY {
 
@@ -92,6 +93,8 @@ namespace OVERLAY {
 
     void Render(COverlay* o, float adjust_height);
     COverlay* Convert(CDVDOverlay* o, double pts);
+
+    void EnforceStyle(CDVDOverlaySSA* o);
     COverlay* Convert(CDVDOverlaySSA* o, double pts);
 
     void Release(std::vector<SElement>& list);

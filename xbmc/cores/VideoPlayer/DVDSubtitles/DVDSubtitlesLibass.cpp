@@ -15,6 +15,7 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "threads/SingleLock.h"
+#include "utils/ColorUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
@@ -37,6 +38,13 @@ std::string GetDefaultFontPath(std::string& font)
   CLog::Log(LOGERROR, "CDVDSubtitlesLibass: Could not find font {} in font sources", font);
   return "";
 }
+
+std::unordered_map<KODI::SUBTITLE::BorderStyle, int> ASSBorderStyleMapping = {
+        { KODI::SUBTITLE::BorderStyle::NONE, 0 },
+        { KODI::SUBTITLE::BorderStyle::OUTLINE, 1 },
+        { KODI::SUBTITLE::BorderStyle::BOX, 3 },
+};
+
 } // namespace
 
 static void libass_log(int level, const char *fmt, va_list args, void *data)
@@ -112,6 +120,181 @@ bool CDVDSubtitlesLibass::DecodeHeader(char* data, int size)
   }
 
   ass_process_codec_private(m_track, data, size);
+  return true;
+}
+
+bool CDVDSubtitlesLibass::CreateEmptyTrack()
+{
+  CSingleLock lock(m_section);
+  if (!m_library)
+  {
+    CLog::Log(LOGERROR, "CDVDSubtitlesLibass: {} - No ASS library struct", __FUNCTION__);
+    return false;
+  }
+  m_track = ass_new_track(m_library);
+
+  if (m_track == nullptr)
+    return false;
+
+  
+  return true;
+}
+
+int CDVDSubtitlesLibass::CreateDefaultStyle()
+{
+  CSingleLock lock(m_section);
+
+  if (m_track == nullptr)
+    return ASS_INVALID_STYLE;
+
+  int sid = ass_alloc_style(m_track);
+  return sid;
+}
+
+void CDVDSubtitlesLibass::EnforceStyle(KODI::SUBTITLE::STYLE subtitleStyle, int styleIndex)
+{
+  CSingleLock lock(m_section);
+
+  if (m_library == nullptr || m_track == nullptr || m_renderer == nullptr)
+  {
+    CLog::Log(LOGERROR, "CDVDSubtitlesLibass: {} - No ASS library struct, ASS track or ASS renderer",
+              __FUNCTION__);
+    return;
+  }
+
+  // check if style is valid
+  if (m_track->n_styles < 1 || styleIndex >= m_track->n_styles)
+  {
+    CLog::Log(LOGERROR, "CDVDSubtitlesLibass: {} - Invalid style index {}",
+              __FUNCTION__, styleIndex);
+    return;
+  }
+  
+  // enforce fontface
+  auto fontPath = GetDefaultFontPath(subtitleStyle.font);
+  if (fontPath.empty())
+  {
+    CLog::Log(LOGERROR, "CDVDSubtitlesLibass: {} - Could not init font {}",
+              __FUNCTION__, fontPath);
+    return;
+  }
+  ass_set_fonts(m_renderer, fontPath.c_str(), "Arial", 0, nullptr, 1);
+  
+  // get style and enforce the user defined options
+  ASS_Style* style = &m_track->styles[styleIndex];
+  // font face
+  style->Name = strdup("Default");
+  URIUtils::RemoveExtension(subtitleStyle.font);
+  style->FontName = strdup(subtitleStyle.font.c_str());
+  style->FontSize = subtitleStyle.fontSize;
+  style->PrimaryColour = ColorUtils::ARGBToRGBAlphaInverted(subtitleStyle.fontColor);
+  
+  // border
+  style->BorderStyle = ASSBorderStyleMapping[subtitleStyle.borderStyle];
+  style->OutlineColour = ColorUtils::ARGBToRGBAlphaInverted(subtitleStyle.borderColor);
+  style->Outline = 0.1;//subtitleStyle.borderSize;
+  ass_set_line_spacing(m_renderer, 3);
+  
+  // shadow (todo)
+  style->BackColour = 0;
+  style->Shadow = 0;
+  
+  // kerning (possibly configurable later)
+  style->Spacing = 0;
+  
+  // style variables
+  if (subtitleStyle.fontStyle == KODI::SUBTITLE::FontStyle::BOLD)
+  {
+    style->Bold = 1;
+    style->Italic = 0;
+  }
+  else if (subtitleStyle.fontStyle == KODI::SUBTITLE::FontStyle::ITALICS)
+  {
+    style->Bold = 0;
+    style->Italic = 1;
+  }
+  else if (subtitleStyle.fontStyle == KODI::SUBTITLE::FontStyle::BOLD_ITALICS)
+  {
+    style->Bold = 1;
+    style->Italic = 1;
+  }
+  else
+  {
+    style->Bold = 0;
+    style->Italic = 0;
+  }
+  
+  // fixed/not configurable
+  style->Underline = 0;
+  style->StrikeOut = 0;
+  style->ScaleX = 1;
+  style->ScaleY = 1;
+  style->Angle = 0;
+  
+  // ass specifics
+  style->Encoding = -1; // let libass handle the encoding automatically TODO
+  style->treat_fontname_as_pattern = 0;
+  style->Blur = 0;
+  style->Justify = 0;
+  style->Alignment = 2;
+  //style->MarginL = 20;
+  //style->MarginR = 20;
+  //style->MarginV = 20;
+}
+
+bool CDVDSubtitlesLibass::CreateEvent(const double start, const double end, const char* text,
+                                      const int style)
+{
+  CSingleLock lock(m_section);
+
+  if (m_library == nullptr || m_track == nullptr)
+  {
+    CLog::Log(LOGERROR, "CDVDSubtitlesLibass: {} - No ASS library struct or ASS track",
+              __FUNCTION__);
+    return false;
+  }
+
+  int n = ass_alloc_event(m_track);
+  ASS_Event* event = m_track->events + n;
+  
+  if (event == nullptr)
+  {
+    CLog::Log(LOGERROR, "CDVDSubtitlesLibass: {} - Failed to allocate event",
+              __FUNCTION__);
+    return false;
+  }
+  
+  event->Start = DVD_TIME_TO_MSEC(start);
+  event->Duration = DVD_TIME_TO_MSEC(end) - DVD_TIME_TO_MSEC(start);
+  event->ReadOrder = n;
+  event->Text = strdup(text);
+  event->Style = style;
+  return true;
+}
+
+bool CDVDSubtitlesLibass::AppendTextToLastEvent(const std::string& text)
+{
+  CSingleLock lock(m_section);
+
+  if (m_library == nullptr || m_track == nullptr)
+  {
+    CLog::Log(LOGERROR, "CDVDSubtitlesLibass: {} - No ASS library struct or ASS track",
+              __FUNCTION__);
+    return false;
+  }
+
+  // get last event
+  ASS_Event* event = m_track->events + (m_track->n_events - 1);
+  if (event == nullptr)
+  {
+    CLog::Log(LOGERROR, "CDVDSubtitlesLibass: {} - Event with the given id was not found",
+              __FUNCTION__);
+    return false;
+  }
+
+  std::string tmp = std::string(event->Text) + "\n" + text;
+  free(event->Text);
+  event->Text = strdup(tmp.c_str());
   return true;
 }
 

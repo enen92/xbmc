@@ -9,9 +9,12 @@
 #pragma once
 
 #include "DVDResource.h"
+#include "SubtitleStyle.h"
 #include "threads/CriticalSection.h"
 
 #include <ass/ass.h>
+
+constexpr int ASS_INVALID_STYLE = -1;
 
 /** Wrapper for Libass **/
 
@@ -30,6 +33,11 @@ public:
   bool DecodeHeader(char* data, int size);
   bool DecodeDemuxPkt(const char* data, int size, double start, double duration);
   bool CreateTrack(char* buf, size_t size);
+  bool CreateEmptyTrack();
+  int CreateDefaultStyle();
+  bool CreateEvent(const double start, const double end, const char* text, const int style);
+  bool AppendTextToLastEvent(const std::string& text);
+  void EnforceStyle(KODI::SUBTITLE::STYLE subtitleStyle, int styleIndex);
 
 private:
   ASS_Library* m_library = nullptr;

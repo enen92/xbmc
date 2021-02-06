@@ -16,4 +16,11 @@ UTILS::Color ColorUtils::ChangeOpacity(const UTILS::Color color, const float opa
 {
   int newAlpha = ceil( ((color >> 24) & 0xff) * opacity);
   return (color & 0x00FFFFFF) | (newAlpha << 24);
-};
+}
+
+UTILS::Color ColorUtils::ARGBToRGBAlphaInverted(const UTILS::Color argb)
+{
+  int alpha = (argb >> 24);
+  //return ~alpha | (argb << 8);
+  return (~alpha & 0xff) | (argb << 8);
+}

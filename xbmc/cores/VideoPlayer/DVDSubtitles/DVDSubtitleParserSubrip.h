@@ -9,10 +9,11 @@
 #pragma once
 
 #include "DVDSubtitleParser.h"
+#include "TextToASSAdapter.h"
 
 #include <memory>
 
-class CDVDSubtitleParserSubrip : public CDVDSubtitleParserText
+class CDVDSubtitleParserSubrip : public CDVDSubtitleParserText, public TextToASSAdapter
 {
 public:
   CDVDSubtitleParserSubrip(std::unique_ptr<CDVDSubtitleStream> && pStream, const std::string& strFile);
