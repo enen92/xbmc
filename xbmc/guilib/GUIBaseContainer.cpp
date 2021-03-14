@@ -755,7 +755,7 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
     ValidateOffset();
     CGUIBaseContainer::SetCursor(absCursor - CorrectOffset(GetOffset(), 0));
     // Notify Application if Inertial scrolling reaches lists end
-    if (m_waitForScrollEnd)
+    /*if (m_waitForScrollEnd)
     {
       if (fabs(m_scroller.GetValue() - m_lastScrollValue) < 0.001f)
       {
@@ -764,7 +764,7 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
       }
       else
         m_lastScrollValue = m_scroller.GetValue();
-    }
+    }*/
     return EVENT_RESULT_HANDLED;
   }
   else if (event.m_id == ACTION_GESTURE_END || event.m_id == ACTION_GESTURE_ABORT)
