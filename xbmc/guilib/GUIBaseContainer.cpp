@@ -782,7 +782,7 @@ EVENT_RESULT CGUIBaseContainer::OnMouseEvent(const CPoint &point, const CMouseEv
       SetOffset(toOffset-1);
     ScrollToOffset(toOffset);
     ValidateOffset();
-    SetCursor(GetCursor());
+    //SetCursor(GetCursor());
     SetFocus(true);
     m_waitForScrollEnd = false;
     m_gestureActive = false;
@@ -1166,7 +1166,7 @@ void CGUIBaseContainer::UpdateScrollOffset(unsigned int currentTime)
   {
     m_scrollTimer.Stop();
     m_lastScrollStartTimer.Stop();
-    SetCursor(GetCursor());
+    //SetCursor(GetCursor());
   }
 }
 
