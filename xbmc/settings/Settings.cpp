@@ -169,7 +169,7 @@ constexpr const char* CSettings::SETTING_SUBTITLES_COLOR;
 constexpr const char* CSettings::SETTING_SUBTITLES_BGCOLOR;
 constexpr const char* CSettings::SETTING_SUBTITLES_BGOPACITY;
 constexpr const char* CSettings::SETTING_SUBTITLES_CHARSET;
-constexpr const char* CSettings::SETTING_SUBTITLES_OVERRIDEASSFONTS;
+constexpr const char* CSettings::SETTING_SUBTITLES_OVERRIDEASSSTYLES;
 constexpr const char* CSettings::SETTING_SUBTITLES_LANGUAGES;
 constexpr const char* CSettings::SETTING_SUBTITLES_STORAGEMODE;
 constexpr const char* CSettings::SETTING_SUBTITLES_CUSTOMPATH;

@@ -22,6 +22,13 @@
 
 namespace
 {
+enum ASSStyleOverrideMode {
+  ASS_STYLE_OVERRIDE_NONE = 0,
+  ASS_STYLE_OVERRIDE_FONTS,
+  ASS_STYLE_OVERRIDE_SELECTIVE,
+  ASS_STYLE_USER_DEFINED
+};
+
 std::string GetDefaultFontPath(std::string& font)
 {
   std::string fontSources[]{"special://home/media/Fonts/", "special://xbmc/media/Fonts/"};
@@ -64,8 +71,8 @@ CDVDSubtitlesLibass::CDVDSubtitlesLibass()
   CLog::Log(LOGINFO, "CDVDSubtitlesLibass: Initializing ASS library font settings");
 
   const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
-  bool overrideFont = settings->GetBool(CSettings::SETTING_SUBTITLES_OVERRIDEASSFONTS);
-  if (!overrideFont)
+  auto overrideASSStyleOption = settings->GetInt(CSettings::SETTING_SUBTITLES_OVERRIDEASSSTYLES);
+  if (overrideASSStyleOption == ASS_STYLE_OVERRIDE_NONE)
   {
     // libass uses fontconfig (system lib) which is not wrapped
     // so translate the path before calling into libass
@@ -88,7 +95,8 @@ CDVDSubtitlesLibass::CDVDSubtitlesLibass()
   // libass uses fontconfig (system lib) which is not wrapped
   // so translate the path before calling into libass
   std::string forcedFont = settings->GetString(CSettings::SETTING_SUBTITLES_FONT);
-  ass_set_fonts(m_renderer, GetDefaultFontPath(forcedFont).c_str(), "Arial", overrideFont ? 0 : 1,
+  ass_set_fonts(m_renderer, GetDefaultFontPath(forcedFont).c_str(), "Arial",
+                overrideASSStyleOption != ASS_STYLE_OVERRIDE_NONE ? 0 : 1,
                 nullptr, 1);
 }
 

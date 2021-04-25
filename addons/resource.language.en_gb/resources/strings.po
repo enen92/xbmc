@@ -13801,7 +13801,7 @@ msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#21368"
-msgid "Override ASS / SSA subtitles fonts"
+msgid "ASS/SSA subtitles style overrides"
 msgstr ""
 
 #: system/settings/settings.xml
@@ -18927,10 +18927,10 @@ msgctxt "#36189"
 msgid "Set the font character set to be used for subtitles."
 msgstr ""
 
-#. Description of setting with label #21368 "Override ASS/SSA subtitles fonts"
+#. Description of setting with label #21368 "ASS/SSA subtitles style overrides"
 #: system/settings/settings.xml
 msgctxt "#36190"
-msgid "Override ASS / SSA subtitles fonts."
+msgid "Apply style overrides to ASS/SSA subtitles. This setting can be used to globally replace the native ASS fonts, to force the style of ASS subtitles to be identical to the one configured (best-effort) or to enforce user defined ASS styles based on an external ASS file"
 msgstr ""
 
 #. Description of setting with label #21366 "Custom subtitle folder"
@@ -22507,4 +22507,19 @@ msgstr ""
 #: xbmc/windows/GUIWindowSystemInfo.cpp
 msgctxt "#39153"
 msgid "Windowing system:"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#39154"
+msgid "Override all fonts to the configured subtitle font"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#39155"
+msgid "Override style to the configured subtitle style (best-effort)"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#39156"
+msgid "Override style with custom styles from a user's .ass file"
 msgstr ""

@@ -604,10 +604,18 @@
           </dependencies>
           <control type="slider" format="percentage" range="0,100" />
         </setting>
-        <setting id="subtitles.overrideassfonts" type="boolean" label="21368" help="36190">
+        <setting id="subtitles.overrideassstyles" type="integer" label="21368" help="36190">
           <level>3</level>
-          <default>false</default>
-          <control type="toggle" />
+          <default>0</default> <!-- Black -->
+          <constraints>
+            <options>
+              <option label="36623">0</option> <!-- None -->
+              <option label="39154">1</option> <!-- Override ASS fonts -->
+              <option label="39155">2</option> <!-- Apply Kodi subtitle style (selective ASS style overrides) -->
+              <option label="39156">3</option> <!-- User defined ASS styles (from .ass file)-->
+            </options>
+          </constraints>
+          <control type="list" format="string" />
         </setting>
       </group>
       <group id="3" label="14235">
