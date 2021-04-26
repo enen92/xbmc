@@ -12,9 +12,11 @@
 #include "cores/VideoPlayer/Interface/TimingConstants.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
+#include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "threads/SingleLock.h"
+#include "utils/ColorUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
@@ -69,7 +71,6 @@ CDVDSubtitlesLibass::CDVDSubtitlesLibass()
     // so translate the path before calling into libass
     ass_set_fonts_dir(m_library, CSpecialProtocol::TranslatePath(strPath).c_str());
     ass_set_extract_fonts(m_library, 1);
-    ass_set_style_overrides(m_library, nullptr);
   }
 
   CLog::Log(LOGINFO, "CDVDSubtitlesLibass: Initializing ASS Renderer");
@@ -88,6 +89,9 @@ CDVDSubtitlesLibass::CDVDSubtitlesLibass()
   std::string forcedFont = settings->GetString(CSettings::SETTING_SUBTITLES_FONT);
   ass_set_fonts(m_renderer, GetDefaultFontPath(forcedFont).c_str(), "Arial", overrideFont ? 0 : 1,
                 nullptr, 1);
+  
+  // enforce style overrides (if enabled)
+  SetASSStyleOverrides();
 }
 
 CDVDSubtitlesLibass::~CDVDSubtitlesLibass()
@@ -165,7 +169,7 @@ ASS_Image* CDVDSubtitlesLibass::RenderImage(int frameWidth, int frameHeight, int
   ass_set_margins(m_renderer, topmargin, topmargin, leftmargin, leftmargin);
   ass_set_use_margins(m_renderer, useMargin);
   ass_set_line_position(m_renderer, position);
-  ass_set_aspect_ratio(m_renderer, dar, sar);
+  ass_set_pixel_aspect(m_renderer, sar / dar);
   return ass_render_frame(m_renderer, m_track, DVD_TIME_TO_MSEC(pts), changes);
 }
 
@@ -186,4 +190,65 @@ int CDVDSubtitlesLibass::GetNrOfEvents()
   if(!m_track)
     return 0;
   return m_track->n_events;
+}
+
+void CDVDSubtitlesLibass::SetASSStyleOverrides()
+{
+  const auto settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+  const bool overrideAssStyleSetting = settings->GetBool(CSettings::SETTING_SUBTITLES_OVERRIDEASSSTYLE);
+  
+  const std::vector<std::string>& forcedAssStyleOverrides = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_forcedAssStyleOverrides;
+
+  if (forcedAssStyleOverrides.empty() && !overrideAssStyleSetting)
+  {
+    // do not apply any style overrides
+    ass_set_style_overrides(m_library, nullptr);
+    return;
+  }
+
+  CLog::Log(LOGDEBUG, "{}: Processing ASS style overrides", __FUNCTION__);
+
+  if (overrideAssStyleSetting)
+  {
+    int selectiveASSforcedStyleFlags = ASS_OVERRIDE_BIT_STYLE | ASS_OVERRIDE_BIT_SELECTIVE_FONT_SCALE;
+    ass_set_selective_style_override_enabled(m_renderer, selectiveASSforcedStyleFlags);
+    
+    CLog::Log(LOGDEBUG, "{}: Oeerreeeeeedd", __FUNCTION__);
+
+    // Create an ass style identical to the one configured in kodi
+    ASS_Style style = {};
+    style.FontName = "Arial";
+    style.Bold = 1;
+    style.ScaleX = 1.;
+    style.ScaleY = 1.;
+    style.Spacing = 0;
+    style.MarginL = 0;
+    style.MarginR = 0;
+    style.MarginV = 0;
+    //style.FontName = strdup(settings->GetString(CSettings::SETTING_SUBTITLES_FONT).c_str());
+    style.FontSize = settings->GetInt(CSettings::SETTING_SUBTITLES_HEIGHT);
+    
+    UTILS::Color fontColor = UTILS::COLOR::ColorList[settings->GetInt(CSettings::SETTING_SUBTITLES_COLOR)];
+    //int fontOpacity = settings->GetInt(CSettings::SETTING_SUBTITLES_OPACITY);
+    
+    style.PrimaryColour = ColorUtils::ARGBToRGBAlphaInverted(ColorUtils::ChangeOpacity(fontColor, static_cast<float>(50.0f) / 100.0f));
+    
+    ass_set_selective_style_override(m_renderer, &style);
+    
+  }
+  
+  // Apply any style overrides that might be defined in advanced settings
+  // These overrides are seen as forced (i.e. override any other overrides)
+  /*if (!forcedAssStyleOverrides.empty())
+  {
+    std::vector<char*> overrides;
+    overrides.reserve(forcedAssStyleOverrides.size());
+    for(size_t i = 0; i < forcedAssStyleOverrides.size(); ++i)
+    {
+      CLog::Log(LOGDEBUG, "{}: Applying forced style override ({}) from advanced settings", __FUNCTION__, forcedAssStyleOverrides[i]);
+      overrides.push_back(const_cast<char*>(forcedAssStyleOverrides[i].c_str()));
+    }
+    overrides.push_back(nullptr);
+    ass_set_style_overrides(m_library, &overrides[0]);
+  }*/
 }

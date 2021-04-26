@@ -22485,3 +22485,13 @@ msgstr ""
 msgctxt "#39153"
 msgid "Windowing system:"
 msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#39154"
+msgid "Override ASS / SSA subtitles style."
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#39155"
+msgid "Attempts to override the ASS script's styling of normal subtitles (with the configured subtitle style) without affecting explicitly positioned text."
+msgstr ""

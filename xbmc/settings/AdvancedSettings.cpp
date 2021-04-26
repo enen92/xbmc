@@ -39,6 +39,19 @@
 using namespace ADDON;
 using namespace XFILE;
 
+namespace
+{
+  void GetAllSiblingValuesByElementName(const TiXmlElement* rootElement, const std::string elementName, std::vector<std::string>& settings)
+  {
+    auto element = rootElement->FirstChild(elementName);
+    while (element)
+    {
+      settings.push_back(element->FirstChild()->Value());
+      element = element->NextSibling(elementName);
+    }
+  }
+}
+
 CAdvancedSettings::CAdvancedSettings()
 {
   m_initialized = false;
@@ -592,6 +605,13 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
     XMLUtils::GetInt(pElement, "percentseekbackward", m_videoPercentSeekBackward, -100, 0);
     XMLUtils::GetInt(pElement, "percentseekforwardbig", m_videoPercentSeekForwardBig, 0, 100);
     XMLUtils::GetInt(pElement, "percentseekbackwardbig", m_videoPercentSeekBackwardBig, -100, 0);
+
+    // ass subtitle forced style overrides
+    TiXmlElement* assOverrides = pElement->FirstChildElement("assforcedstyleoverrides");
+    if (assOverrides)
+    {
+      GetAllSiblingValuesByElementName(assOverrides, "assoverride", m_forcedAssStyleOverrides);
+    }
 
     TiXmlElement* pVideoExcludes = pElement->FirstChildElement("excludefromlisting");
     if (pVideoExcludes)

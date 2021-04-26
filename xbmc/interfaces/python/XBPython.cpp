@@ -419,6 +419,7 @@ void XBPython::OnNotification(const std::string& sender,
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList, it))
       it->OnNotification(sender, method, data);
   }
+  //tmp.clear();
 }
 
 void XBPython::Uninitialize()

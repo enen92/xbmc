@@ -25,16 +25,6 @@
 
 using namespace OVERLAY;
 
-static UTILS::Color colors[9] = { UTILS::COLOR::YELLOW,
-                                  UTILS::COLOR::WHITE,
-                                  UTILS::COLOR::BLUE,
-                                  UTILS::COLOR::BRIGHTGREEN,
-                                  UTILS::COLOR::YELLOWGREEN,
-                                  UTILS::COLOR::CYAN,
-                                  UTILS::COLOR::LIGHTGREY,
-                                  UTILS::COLOR::GREY,
-                                  UTILS::COLOR::DARKGREY };
-
 CGUITextLayout* COverlayText::GetFontLayout(const std::string &font, int color, int opacity, int height, int style,
                                             const std::string &fontcache, const std::string &fontbordercache)
 {
@@ -46,7 +36,7 @@ CGUITextLayout* COverlayText::GetFontLayout(const std::string &font, int color, 
       font_path = URIUtils::AddFileToFolder("special://xbmc/media/Fonts/", font_file);
 
     // Apply opacity to the color
-    UTILS::Color fgcolor = colors[color];
+    UTILS::Color fgcolor = UTILS::COLOR::ColorList[color];
     UTILS::Color bordercolor = UTILS::COLOR::BLACK;
     if (opacity > 0 && opacity < 100)
     {

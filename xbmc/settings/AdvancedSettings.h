@@ -371,6 +371,14 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     False to show at the bottom of video (default) */
     bool m_videoAssFixedWorks;
 
+    /*!< @brief list of style overrides to apply to ASS based subtitles. The overrides should have
+     the form [Style.]Param=Value, e.g.
+       Default.Font=Arial
+       ScaledBorderAndShadow=yes
+     @note if the [Style.] is not provided, the override is applied to all styles
+     */
+    std::vector<std::string> m_forcedAssStyleOverrides;
+
     bool m_openGlDebugging;
 
     std::string m_userAgent;

@@ -609,6 +609,14 @@
           <default>false</default>
           <control type="toggle" />
         </setting>
+        <setting id="subtitles.overrideassstyle" type="boolean" label="39154" help="39155">
+          <level>3</level>
+          <default>false</default>
+          <control type="toggle" />
+          <dependencies>
+            <dependency type="enable" setting="subtitles.overrideassfonts" operator="is">true</dependency>
+          </dependencies>
+        </setting>
       </group>
       <group id="3" label="14235">
         <setting id="subtitles.languages" type="list[string]" label="24111" help="24112">

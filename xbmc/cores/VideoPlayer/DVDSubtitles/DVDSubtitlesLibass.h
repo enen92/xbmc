@@ -32,6 +32,14 @@ public:
   bool CreateTrack(char* buf, size_t size);
 
 private:
+
+  /*! \brief Configures the style overrides for libass
+   This will try to override subtitle dialog styles with the style
+   globally configured in kodi (best effort) or apply the styles
+   defined in advanced settings.
+   */
+  void SetASSStyleOverrides();
+  
   ASS_Library* m_library = nullptr;
   ASS_Track* m_track = nullptr;
   ASS_Renderer* m_renderer = nullptr;
