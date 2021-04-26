@@ -20,4 +20,10 @@ class ColorUtils
      \return the original color with the changed opacity/alpha value
      */
     static UTILS::Color ChangeOpacity(const UTILS::Color color, const float opacity);
+
+    /*! \brief Change an ARGB color to RGBAlphaInverted
+   \param color The original color
+   \return the original color as RGBAlphaInverted
+   */
+   static UTILS::Color ARGBToRGBAlphaInverted(const UTILS::Color argb);
 };

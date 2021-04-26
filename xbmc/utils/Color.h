@@ -28,5 +28,15 @@ namespace COLOR
   static const Color YELLOWGREEN = 0xFFCCFF00;
   static const Color CYAN = 0xFF00FFFF;
   static const Color DARKGREY = 0xFF808080;
+
+  static const Color OverlayColors[9] = { YELLOW,
+                                          WHITE,
+                                          BLUE,
+                                          BRIGHTGREEN,
+                                          YELLOWGREEN,
+                                          CYAN,
+                                          LIGHTGREY,
+                                          GREY,
+                                          DARKGREY };
 } // namespace COLOR
 } // namespace UTILS
