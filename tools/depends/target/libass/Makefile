@@ -3,9 +3,11 @@ DEPS= ../../Makefile.include Makefile
 
 # lib name, version
 LIBNAME=libass
-VERSION=0.14.0
-SOURCE=$(LIBNAME)-$(VERSION)
-ARCHIVE=$(SOURCE).tar.gz
+VERSION=0.15.1
+#SOURCE=$(LIBNAME)-$(VERSION)
+#ARCHIVE=$(SOURCE).tar.gz
+BASE_URL=https://github.com/libass/libass/releases/download/0.15.1/
+ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
 
 # configuration settings
 CONFIGURE=cp -f $(CONFIG_SUB) $(CONFIG_GUESS) .; \
