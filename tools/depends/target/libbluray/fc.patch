@@ -1,0 +1,10 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -176,6 +176,7 @@
+       PKG_CHECK_MODULES([FONTCONFIG], [fontconfig],
+         [with_fontconfig=yes; AC_DEFINE([HAVE_FONTCONFIG], 1, [Define this if you have fontconfig library])])
+       PACKAGES="$PACKAGES fontconfig"
++      EXTRA_LIBS="$EXTRA_LIBS -lfontconfig"
+     ])
+   ],[
+     EXTRA_LIBS="$EXTRA_LIBS -lgdi32"
