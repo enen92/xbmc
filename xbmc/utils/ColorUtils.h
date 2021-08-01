@@ -20,4 +20,11 @@ class ColorUtils
      \return the original color with the changed opacity/alpha value
      */
     static UTILS::Color ChangeOpacity(const UTILS::Color color, const float opacity);
+
+    /*! \brief Convert given ARGB color to RGBA color value
+
+     \param color The original color
+     \return the original color converted to RGBA value
+     */
+    static UTILS::Color ConvertToRGBA(const UTILS::Color argb);
 };

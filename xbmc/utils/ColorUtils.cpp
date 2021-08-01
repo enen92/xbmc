@@ -17,3 +17,11 @@ UTILS::Color ColorUtils::ChangeOpacity(const UTILS::Color color, const float opa
   int newAlpha = ceil( ((color >> 24) & 0xff) * opacity);
   return (color & 0x00FFFFFF) | (newAlpha << 24);
 };
+
+UTILS::Color ColorUtils::ConvertToRGBA(const UTILS::Color argb)
+{
+  return ((argb & 0x00FF0000) << 8) | //RR______
+         ((argb & 0x0000FF00) << 8) | //__GG____
+         ((argb & 0x000000FF) << 8) | //____BB__
+         ((argb & 0xFF000000) >> 24); //______AA
+}
