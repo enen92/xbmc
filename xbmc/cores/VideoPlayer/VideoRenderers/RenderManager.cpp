@@ -338,6 +338,8 @@ void CRenderManager::FrameMove()
         ++it;
     }
 
+    m_debugRenderer.Flush();
+
     m_playerPort->UpdateRenderBuffers(m_queued.size(), m_discard.size(), m_free.size());
     m_bRenderGUI = true;
   }
@@ -725,6 +727,8 @@ void CRenderManager::Render(bool clear, DWORD flags, DWORD alpha, bool gui)
 
     if (m_renderDebug)
     {
+      m_debugRenderer.Configure();
+
       if (m_renderDebugVideo)
       {
         DEBUG_INFO_VIDEO video = m_pRenderer->GetDebugInfo(m_presentsource);
