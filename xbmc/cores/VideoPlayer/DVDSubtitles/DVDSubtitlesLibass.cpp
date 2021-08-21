@@ -311,6 +311,8 @@ void CDVDSubtitlesLibass::ApplyStyle(subtitlesStyle subStyle)
     }
 
     // It is mandatory set the FontName, the text is case sensitive
+    // FIXME: The font name is not relevant at the moment, because we have 
+    // always a fixed font set, this could change in future Libass versions
     style->FontName = strdup("Arial"); //strdup(subStyle.fontName.c_str());
 
     if (m_subtitleType != NATIVE ||
@@ -425,7 +427,7 @@ void CDVDSubtitlesLibass::ConfigureFont(bool overrideFont, std::string fontName)
 {
   ass_set_extract_fonts(m_library, overrideFont ? 0 : 1);
   ass_set_fonts(m_renderer, GetDefaultFontPath(fontName).c_str(), "Arial",
-                overrideFont ? ASS_FONTPROVIDER_NONE : ASS_FONTPROVIDER_AUTODETECT, nullptr, 0);
+                overrideFont ? ASS_FONTPROVIDER_NONE : ASS_FONTPROVIDER_AUTODETECT, nullptr, 1);
 }
 
 ASS_Event* CDVDSubtitlesLibass::GetEvents()
