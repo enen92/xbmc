@@ -10,6 +10,7 @@
 
 #include <assert.h>
 #include <atomic>
+#include <memory>
 #include <vector>
 
 enum DVDOverlayType
