@@ -11,6 +11,7 @@
 #include "DVDCodecs/DVDCodecs.h"
 #include "DVDOverlayText.h"
 #include "DVDStreamInfo.h"
+#include "DVDSubtitles/SubtitlesStyle.h"
 #include "ServiceBroker.h"
 #include "cores/VideoPlayer/Interface/DemuxPacket.h"
 #include "settings/Settings.h"
@@ -26,7 +27,7 @@
 
 // 3GPP/TX3G (aka MPEG-4 Timed Text) Subtitle support
 // 3GPP -> 3rd Generation Partnership Program
-// adapted from https://trac.handbrake.fr/browser/trunk/libhb/dectx3gsub.c;
+// adapted from https://github.com/HandBrake/HandBrake/blob/master/libhb/dectx3gsub.c;
 
 #define LEN_CHECK(x) \
   do \
@@ -75,11 +76,9 @@ typedef struct
 CDVDOverlayCodecTX3G::CDVDOverlayCodecTX3G() : CDVDOverlayCodec("TX3G Subtitle Decoder")
 {
   m_pOverlay = nullptr;
-  // stupid, this comes from a static global in GUIWindowFullScreen.cpp
-  uint32_t colormap[9] = {0xFFFFFF00, 0xFFFFFFFF, 0xFF0099FF, 0xFF00FF00, 0xFFCCFF00,
-                          0xFF00FFFF, 0xFFE5E5E5, 0xFFC0C0C0, 0xFF808080};
-  m_textColor = colormap[CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(
-      CSettings::SETTING_SUBTITLES_COLOR)];
+  m_textColor =
+      KODI::SUBTITLES::colors[CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(
+          CSettings::SETTING_SUBTITLES_COLOR)];
 }
 
 CDVDOverlayCodecTX3G::~CDVDOverlayCodecTX3G()
