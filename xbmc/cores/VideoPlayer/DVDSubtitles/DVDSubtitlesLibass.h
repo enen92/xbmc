@@ -38,7 +38,7 @@ public:
   void Configure();
 
   ASS_Image* RenderImage(double pts,
-                         KODI::SUBTITLES::LibassRenderOpts opts,
+                         KODI::SUBTITLES::subtitleRenderOpts opts,
                          bool updateStyle,
                          KODI::SUBTITLES::subtitlesStyle subStyle,
                          int* changes = NULL);

@@ -323,30 +323,30 @@ COverlay* CRenderer::ConvertLibass(CDVDOverlayLibass* o,
                                    bool updateStyle,
                                    KODI::SUBTITLES::subtitlesStyle subStyle)
 {
-  KODI::SUBTITLES::LibassRenderOpts renderOps;
+  KODI::SUBTITLES::subtitleRenderOpts rOpts;
 
   // libass render in a target area which named as frame. the frame size may bigger than video size,
   // and including margins between video to frame edge. libass allow to render subtitles into the margins.
   // this has been used to show subtitles in the top or bottom "black bar" between video to frame border.
-  renderOps.sourceWidth = m_rs.Width();
-  renderOps.sourceHeight = m_rs.Height();
-  renderOps.videoWidth = m_rd.Width();
-  renderOps.videoHeight = m_rd.Height();
-  renderOps.frameWidth = m_rv.Width();
-  renderOps.frameHeight = m_rv.Height();
+  rOpts.sourceWidth = m_rs.Width();
+  rOpts.sourceHeight = m_rs.Height();
+  rOpts.videoWidth = m_rd.Width();
+  rOpts.videoHeight = m_rd.Height();
+  rOpts.frameWidth = m_rv.Width();
+  rOpts.frameHeight = m_rv.Height();
 
   // Render subtitle of half-sbs and half-ou video in full screen, not in half screen
   if (m_stereomode == "left_right" || m_stereomode == "right_left")
   {
     // only half-sbs video, sbs video don't need to change source size
-    if (static_cast<double>(renderOps.sourceWidth) / renderOps.sourceHeight < 1.2)
-      renderOps.sourceWidth = m_rs.Width() * 2;
+    if ((double)rOpts.sourceWidth / rOpts.sourceHeight < 1.2)
+      rOpts.sourceWidth = m_rs.Width() * 2;
   }
   else if (m_stereomode == "top_bottom" || m_stereomode == "bottom_top")
   {
     // only half-ou video, ou video don't need to change source size
-    if (static_cast<double>(renderOps.sourceWidth) / renderOps.sourceHeight > 2.5)
-      renderOps.sourceHeight = m_rs.Height() * 2;
+    if ((double)rOpts.sourceWidth / rOpts.sourceHeight > 2.5)
+      rOpts.sourceHeight = m_rs.Height() * 2;
   }
 
   int subAlign = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(
@@ -358,13 +358,13 @@ COverlay* CRenderer::ConvertLibass(CDVDOverlayLibass* o,
     RESOLUTION_INFO res;
     res = CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo(
         CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution());
-    renderOps.position = 100.0 - (res.iSubtitles - res.Overscan.top) * 100 / res.iHeight;
+    rOpts.position = 100.0 - (res.iSubtitles - res.Overscan.top) * 100 / res.iHeight;
   }
 
   // changes: Detect changes from previously rendered images, if > 0 they are changed
   int changes = 0;
   ASS_Image* images =
-      o->GetLibassHandler()->RenderImage(pts, renderOps, updateStyle, subStyle, &changes);
+      o->GetLibassHandler()->RenderImage(pts, rOpts, updateStyle, subStyle, &changes);
 
   // If no images not execute the renderer
   if (!images)
@@ -380,21 +380,20 @@ COverlay* CRenderer::ConvertLibass(CDVDOverlayLibass* o,
     }
   }
 
-  COverlay *overlay = NULL;
+  COverlay* overlay = NULL;
 #if defined(HAS_GL) || defined(HAS_GLES)
-  overlay = new COverlayGlyphGL(images, renderOps.frameWidth, renderOps.frameHeight);
+  overlay = new COverlayGlyphGL(images, rOpts.frameWidth, rOpts.frameHeight);
 #elif defined(HAS_DX)
-  overlay = new COverlayQuadsDX(images, renderOps.frameWidth, renderOps.frameHeight);
+  overlay = new COverlayQuadsDX(images, rOpts.frameWidth, rOpts.frameHeight);
 #endif
 
   // scale to video dimensions
   if (overlay)
   {
-    overlay->m_width = (float)renderOps.frameWidth / renderOps.videoWidth;
-    overlay->m_height = (float)renderOps.frameHeight / renderOps.videoHeight;
-    overlay->m_x = ((float)renderOps.videoWidth - renderOps.frameWidth) / 2 / renderOps.videoWidth;
-    overlay->m_y =
-        ((float)renderOps.videoHeight - renderOps.frameHeight) / 2 / renderOps.videoHeight;
+    overlay->m_width = (float)rOpts.frameWidth / rOpts.videoWidth;
+    overlay->m_height = (float)rOpts.frameHeight / rOpts.videoHeight;
+    overlay->m_x = ((float)rOpts.videoWidth - rOpts.frameWidth) / 2 / rOpts.videoWidth;
+    overlay->m_y = ((float)rOpts.videoHeight - rOpts.frameHeight) / 2 / rOpts.videoHeight;
   }
   m_textureCache[m_textureid] = overlay;
   o->m_textureid = m_textureid;

@@ -31,7 +31,7 @@ void CDVDOverlayCodec::GetAbsoluteTimes(double& starttime, double& stoptime, Dem
     pts = pkt->dts;
 
   starttime = pts;
-  if (duration)
+  if (duration > 0)
     stoptime = pts + duration;
   else
     stoptime = 0;
@@ -60,7 +60,7 @@ void CDVDOverlayCodec::GetAbsoluteTimes(
     pts = pkt->dts;
 
   starttime = pts + offset;
-  if (duration)
+  if (duration > 0)
   {
     stoptime = pts + duration + offset;
   }

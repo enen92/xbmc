@@ -77,7 +77,7 @@ const UTILS::Color colors[9] = {
 const UTILS::Color bgColors[5] = {UTILS::COLOR::BLACK, UTILS::COLOR::YELLOW, UTILS::COLOR::WHITE,
                                    UTILS::COLOR::LIGHTGREY, UTILS::COLOR::GREY};
 
-struct LibassRenderOpts
+struct subtitleRenderOpts
 {
   int frameWidth;
   int frameHeight;

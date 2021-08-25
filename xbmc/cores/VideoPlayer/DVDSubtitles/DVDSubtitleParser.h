@@ -26,7 +26,7 @@ public:
   virtual void Dispose() = 0;
   virtual void Reset() = 0;
   virtual CDVDOverlay* Parse(double iPts) = 0;
-  virtual std::string GetName() = 0;
+  virtual const std::string& GetName() = 0;
 };
 
 class CDVDSubtitleParserCollection
@@ -66,7 +66,7 @@ public:
   /*
    * \brief Returns parser name
    */
-  std::string GetName() override { return parserName; };
+  const std::string& GetName() override { return parserName; };
 
 protected:
   using CDVDSubtitleParserCollection::Open;

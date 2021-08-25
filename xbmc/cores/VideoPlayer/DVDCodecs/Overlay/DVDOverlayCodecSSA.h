@@ -20,13 +20,13 @@ public:
   CDVDOverlayCodecSSA();
   ~CDVDOverlayCodecSSA() override;
   bool Open(CDVDStreamInfo& hints, CDVDCodecOptions& options) override;
-  void Dispose() override;
   int Decode(DemuxPacket* pPacket) override;
   void Reset() override;
   void Flush() override;
   CDVDOverlay* GetOverlay() override;
 
 private:
+  void Dispose() override;
   std::shared_ptr<CDVDSubtitlesLibass> m_libass;
   CDVDOverlaySSA* m_pOverlay;
   int m_order;

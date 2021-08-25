@@ -25,13 +25,13 @@ public:
   CDVDOverlayCodecText();
   ~CDVDOverlayCodecText() override;
   bool Open(CDVDStreamInfo& hints, CDVDCodecOptions& options) override;
-  void Dispose() override;
   int Decode(DemuxPacket* pPacket) override;
   void Reset() override;
   void Flush() override;
   CDVDOverlay* GetOverlay() override;
 
 private:
+  void Dispose() override;
   CDVDOverlay* m_pOverlay;
   CDVDStreamInfo m_hints;
   AVCodecID m_codecId;

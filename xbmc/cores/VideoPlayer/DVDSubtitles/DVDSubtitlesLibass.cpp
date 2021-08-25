@@ -215,7 +215,7 @@ bool CDVDSubtitlesLibass::CreateTrack(char* buf, size_t size)
 }
 
 ASS_Image* CDVDSubtitlesLibass::RenderImage(double pts,
-                                            LibassRenderOpts opts,
+                                            subtitleRenderOpts opts,
                                             bool updateStyle,
                                             KODI::SUBTITLES::subtitlesStyle subStyle,
                                             int* changes)
