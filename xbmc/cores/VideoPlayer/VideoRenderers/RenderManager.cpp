@@ -338,8 +338,6 @@ void CRenderManager::FrameMove()
         ++it;
     }
 
-    m_debugRenderer.Flush();
-
     m_playerPort->UpdateRenderBuffers(m_queued.size(), m_discard.size(), m_free.size());
     m_bRenderGUI = true;
   }
@@ -399,7 +397,7 @@ void CRenderManager::UnInit()
   CSingleLock lock(m_statelock);
 
   m_overlays.Flush();
-  m_debugRenderer.Flush();
+  m_debugRenderer.Dispose();
 
   DeleteRenderer();
 
@@ -727,8 +725,6 @@ void CRenderManager::Render(bool clear, DWORD flags, DWORD alpha, bool gui)
 
     if (m_renderDebug)
     {
-      m_debugRenderer.Configure();
-
       if (m_renderDebugVideo)
       {
         DEBUG_INFO_VIDEO video = m_pRenderer->GetDebugInfo(m_presentsource);
@@ -913,14 +909,26 @@ void CRenderManager::TriggerUpdateResolution(float fps, int width, int height, s
 
 void CRenderManager::ToggleDebug()
 {
-  m_renderDebug = !m_renderDebug;
+  bool isEnabled = !m_renderDebug;
+  if (isEnabled)
+    m_debugRenderer.Initialize();
+  else
+    m_debugRenderer.Dispose();
+
+  m_renderDebug = isEnabled;
   m_debugTimer.SetExpired();
   m_renderDebugVideo = false;
 }
 
 void CRenderManager::ToggleDebugVideo()
 {
-  m_renderDebug = !m_renderDebug;
+  bool isEnabled = !m_renderDebug;
+  if (isEnabled)
+    m_debugRenderer.Initialize();
+  else
+    m_debugRenderer.Dispose();
+
+  m_renderDebug = isEnabled;
   m_debugTimer.SetExpired();
   m_renderDebugVideo = true;
 }

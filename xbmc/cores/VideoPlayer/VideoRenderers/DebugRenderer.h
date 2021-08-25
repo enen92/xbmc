@@ -19,7 +19,8 @@ class CDebugRenderer
 public:
   CDebugRenderer();
   virtual ~CDebugRenderer();
-  void Configure();
+  void Initialize();
+  void Dispose();
   void SetInfo(DEBUG_INFO_PLAYER& info);
   void SetInfo(DEBUG_INFO_VIDEO& video, DEBUG_INFO_RENDER& render);
   void Render(CRect& src, CRect& dst, CRect& view);
@@ -38,6 +39,6 @@ protected:
   CRenderer m_overlayRenderer;
 
 private:
-  CSubtitlesAdapter* m_adapter;
-  bool m_isConfigured = false;
+  CSubtitlesAdapter* m_adapter{nullptr};
+  bool m_isInitialized{false};
 };

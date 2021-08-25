@@ -21,17 +21,12 @@ CDebugRenderer::CDebugRenderer()
 
 CDebugRenderer::~CDebugRenderer()
 {
-  if (!m_isConfigured)
-    return;
-
-  m_adapter->FlushSubtitles();
-
-  delete m_adapter;
+  Dispose();
 }
 
-void CDebugRenderer::Configure()
+void CDebugRenderer::Initialize()
 {
-  if (m_isConfigured)
+  if (m_isInitialized)
     return;
 
   m_adapter = new CSubtitlesAdapter();
@@ -41,14 +36,28 @@ void CDebugRenderer::Configure()
     m_strDebug[i] = " ";
   }
 
-  m_isConfigured = m_adapter->Initialize();
-  if (!m_isConfigured)
+  m_isInitialized = m_adapter->Initialize();
+  if (!m_isInitialized)
     CLog::Log(LOGERROR, "{} - Failed to configure OSD info debug renderer", __FUNCTION__);
+
+  // We create only a single overlay with a fixed PTS for each rendered frame
+  m_overlayRenderer.AddOverlay(m_adapter->CreateOverlay(), 1000000., 0);
+}
+
+void CDebugRenderer::Dispose()
+{
+  m_isInitialized = false;
+  m_overlayRenderer.Flush();
+  if (m_adapter)
+  {
+    delete m_adapter;
+    m_adapter = nullptr;
+  }
 }
 
 void CDebugRenderer::SetInfo(DEBUG_INFO_PLAYER& info)
 {
-  if (!m_isConfigured)
+  if (!m_isInitialized)
     return;
 
   // FIXME: We currently force ASS_Event's and the current PTS
@@ -56,8 +65,6 @@ void CDebugRenderer::SetInfo(DEBUG_INFO_PLAYER& info)
   // display of on-screen text. It would be appropriate for Libass
   // provide a way to allow fixed on-screen text display
   // without use all these fixed values.
-
-  m_overlayRenderer.Release(0);
 
   if (info.audio != m_strDebug[0])
   {
@@ -79,14 +86,11 @@ void CDebugRenderer::SetInfo(DEBUG_INFO_PLAYER& info)
     m_strDebug[3] = info.vsync;
     m_adapter->AddSubtitle(m_strDebug[3].c_str(), 0., 5000000.);
   }
-
-  auto overlay = m_adapter->CreateOverlay();
-  m_overlayRenderer.AddOverlay(overlay, 1000000., 0);
 }
 
 void CDebugRenderer::SetInfo(DEBUG_INFO_VIDEO& video, DEBUG_INFO_RENDER& render)
 {
-  if (!m_isConfigured)
+  if (!m_isInitialized)
     return;
 
   // FIXME: We currently force ASS_Event's and the current PTS
@@ -94,8 +98,6 @@ void CDebugRenderer::SetInfo(DEBUG_INFO_VIDEO& video, DEBUG_INFO_RENDER& render)
   // display of on-screen text. It would be appropriate for Libass
   // provide a way to allow fixed on-screen text display
   // without use all these fixed values.
-
-  m_overlayRenderer.Release(0);
 
   if (video.videoSource != m_strDebug[0])
   {
@@ -127,14 +129,11 @@ void CDebugRenderer::SetInfo(DEBUG_INFO_VIDEO& video, DEBUG_INFO_RENDER& render)
     m_strDebug[5] = render.videoOutput;
     m_adapter->AddSubtitle(m_strDebug[5].c_str(), 0., 5000000.);
   }
-
-  auto overlay = m_adapter->CreateOverlay();
-  m_overlayRenderer.AddOverlay(overlay, 1000000., 0);
 }
 
 void CDebugRenderer::Render(CRect& src, CRect& dst, CRect& view)
 {
-  if (!m_isConfigured)
+  if (!m_isInitialized)
     return;
 
   m_overlayRenderer.SetVideoRect(src, dst, view);
@@ -143,10 +142,15 @@ void CDebugRenderer::Render(CRect& src, CRect& dst, CRect& view)
 
 void CDebugRenderer::Flush()
 {
-  if (!m_isConfigured)
+  if (!m_isInitialized)
     return;
 
-  m_overlayRenderer.Flush();
+  m_adapter->FlushSubtitles();
+
+  for (int i = 0; i < 6; i++)
+  {
+    m_strDebug[i] = " ";
+  }
 }
 
 CDebugRenderer::CRenderer::CRenderer() : OVERLAY::CRenderer()
@@ -179,14 +183,12 @@ void CDebugRenderer::CRenderer::Render(int idx)
 
     OVERLAY::CRenderer::Render(o);
   }
-
-  ReleaseUnused();
 }
 
 KODI::SUBTITLES::subtitlesStyle CDebugRenderer::CRenderer::CreateSubtitlesStyle()
 {
   KODI::SUBTITLES::subtitlesStyle subStyle;
-  subStyle.fontName = "Arial";
+  subStyle.fontName = "arial.ttf";
   subStyle.fontSize = 16.0;
   return subStyle;
 }
