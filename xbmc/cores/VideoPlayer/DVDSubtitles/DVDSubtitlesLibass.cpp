@@ -472,7 +472,7 @@ int CDVDSubtitlesLibass::AddEvent(const char* text, double startTime, double sto
     ASS_Event* event = m_track->events + eventId;
     event->Start = DVD_TIME_TO_MSEC(startTime);
     event->Duration = DVD_TIME_TO_MSEC(stopTime - startTime);
-    event->Style = m_track->default_style;
+    event->Style = 1; // We set the style ID that will be created later
     event->ReadOrder = eventId;
     event->Text = strdup(text);
     return eventId;
