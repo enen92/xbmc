@@ -188,8 +188,8 @@ bool CDVDSubtitlesLibass::CreateTrack()
   m_track->track_type = m_track->TRACK_TYPE_ASS;
   m_track->Timer = 100.;
   // Set fixed values to PlayRes to allow the use of style override code for positioning
-  m_track->PlayResX = 1280;
-  m_track->PlayResY = 720;
+  m_track->PlayResX = SUBTITLE_VIEWPORT_WIDTH;
+  m_track->PlayResY = SUBTITLE_VIEWPORT_HEIGHT;
   m_track->Kerning = true; // Font kerning improves the letterspacing
   m_track->WrapStyle = 1; // The line feed \n doesn't break but wraps (instead \N breaks)
 
@@ -229,20 +229,23 @@ ASS_Image* CDVDSubtitlesLibass::RenderImage(double pts,
   }
 
   if (updateStyle)
-    ApplyStyle(subStyle);
+  {
+    ApplyStyle(subStyle, opts);
+    m_drawWithinBlackBars = subStyle.drawWithinBlackBars;
+  }
 
   double sar = (double)opts.sourceWidth / opts.sourceHeight;
   double dar = (double)opts.videoWidth / opts.videoHeight;
 
   ass_set_frame_size(m_renderer, opts.frameWidth, opts.frameHeight);
 
-  if (subStyle.drawWithinBlackBars)
+  if (m_drawWithinBlackBars)
   {
     int marginTop = (opts.frameHeight - opts.videoHeight) / 2;
     int marginLeft = (opts.frameWidth - opts.videoWidth) / 2;
     ass_set_margins(m_renderer, marginTop, marginTop, marginLeft, marginLeft);
   }
-  ass_set_use_margins(m_renderer, subStyle.drawWithinBlackBars);
+  ass_set_use_margins(m_renderer, m_drawWithinBlackBars);
 
   // Vertical text position in percent (if 0 do nothing)
   ass_set_line_position(m_renderer, opts.position);
@@ -256,11 +259,11 @@ ASS_Image* CDVDSubtitlesLibass::RenderImage(double pts,
   return ass_render_frame(m_renderer, m_track, DVD_TIME_TO_MSEC(pts), changes);
 }
 
-void CDVDSubtitlesLibass::ApplyStyle(subtitlesStyle subStyle)
+void CDVDSubtitlesLibass::ApplyStyle(subtitlesStyle subStyle, subtitleRenderOpts opts)
 {
   CLog::Log(LOGDEBUG, "{} - Start setting up the LibAss style", __FUNCTION__);
 
-  ConfigureFont(subStyle.assOverrideFont, subStyle.fontName);
+  ConfigureFont((m_subtitleType == NATIVE && subStyle.assOverrideFont), subStyle.fontName);
 
   ASS_Style* style = nullptr;
 
@@ -269,8 +272,8 @@ void CDVDSubtitlesLibass::ApplyStyle(subtitlesStyle subStyle)
   {
     if (m_subtitleType == NATIVE)
     {
-      // The style for override mode need to be initialized with {0}
-      ASS_Style assStyle = {0};
+      // ASS_Style is a POD struct need to be initialized with {}
+      ASS_Style assStyle{};
       style = &assStyle;
     }
     else
@@ -366,7 +369,12 @@ void CDVDSubtitlesLibass::ApplyStyle(subtitlesStyle subStyle)
       // Set the margins (in pixel)
       style->MarginL = 20 * scale;
       style->MarginR = style->MarginL;
-      style->MarginV = 20 * scale; // Vertical (direction depends on alignment)
+      // Vertical margin (direction depends on alignment)
+      // to be set only when the video calibration position setting is not used
+      if (opts.usePosition)
+        style->MarginV = 0;
+      else
+        style->MarginV = 20 * scale;
     }
 
     // Set the alignment

@@ -24,7 +24,6 @@ CSubtitlesAdapter::~CSubtitlesAdapter()
 {
 }
 
-//bool CSubtitlesAdapter::CreateSubtitlesTrack()
 bool CSubtitlesAdapter::Initialize()
 {
   m_libass->SetSubtitleType(ADAPTED);

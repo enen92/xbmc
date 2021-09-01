@@ -51,7 +51,8 @@ public:
   /*!
   * \brief Translate and apply Kodi subtitles style to LibAss style
   */
-  void ApplyStyle(KODI::SUBTITLES::subtitlesStyle subStyle);
+  void ApplyStyle(KODI::SUBTITLES::subtitlesStyle subStyle,
+                  KODI::SUBTITLES::subtitleRenderOpts opts);
 
   /*!
   * \brief Specify whether the subtitles are
@@ -138,4 +139,5 @@ private:
   ASSSubType m_subtitleType;
   bool m_isStyleInitialized;
   int m_currentStyleId;
+  bool m_drawWithinBlackBars;
 };

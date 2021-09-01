@@ -17,6 +17,9 @@ namespace KODI
 namespace SUBTITLES
 {
 
+constexpr int SUBTITLE_VIEWPORT_HEIGHT = 720;
+constexpr int SUBTITLE_VIEWPORT_WIDTH = 1280;
+
 enum class FontAlignment
 {
   TOP_LEFT = 0,
@@ -85,6 +88,7 @@ struct subtitleRenderOpts
   int videoHeight;
   int sourceWidth;
   int sourceHeight;
+  bool usePosition = false;
   // position: vertical line position of subtitles in percent. 0 = no change (bottom), 100 = on top.
   double position = 0;
 };

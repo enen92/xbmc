@@ -65,27 +65,11 @@ void CDebugRenderer::SetInfo(DEBUG_INFO_PLAYER& info)
   // display of on-screen text. It would be appropriate for Libass
   // provide a way to allow fixed on-screen text display
   // without use all these fixed values.
-
-  if (info.audio != m_strDebug[0])
-  {
-    m_strDebug[0] = info.audio;
-    m_adapter->AddSubtitle(m_strDebug[0].c_str(), 0., 5000000.);
-  }
-  if (info.video != m_strDebug[1])
-  {
-    m_strDebug[1] = info.video;
-    m_adapter->AddSubtitle(m_strDebug[1].c_str(), 0., 5000000.);
-  }
-  if (info.player != m_strDebug[2])
-  {
-    m_strDebug[2] = info.player;
-    m_adapter->AddSubtitle(m_strDebug[2].c_str(), 0., 5000000.);
-  }
-  if (info.vsync != m_strDebug[3])
-  {
-    m_strDebug[3] = info.vsync;
-    m_adapter->AddSubtitle(m_strDebug[3].c_str(), 0., 5000000.);
-  }
+  m_adapter->FlushSubtitles();
+  m_adapter->AddSubtitle(info.audio.c_str(), 0., 5000000.);
+  m_adapter->AddSubtitle(info.video.c_str(), 0., 5000000.);
+  m_adapter->AddSubtitle(info.player.c_str(), 0., 5000000.);
+  m_adapter->AddSubtitle(info.vsync.c_str(), 0., 5000000.);
 }
 
 void CDebugRenderer::SetInfo(DEBUG_INFO_VIDEO& video, DEBUG_INFO_RENDER& render)

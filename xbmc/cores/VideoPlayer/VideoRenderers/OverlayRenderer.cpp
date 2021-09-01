@@ -355,10 +355,11 @@ COverlay* CRenderer::ConvertLibass(CDVDOverlayLibass* o,
   // Set position of subtitles based on video calibration settings
   if (subAlign == SUBTITLE_ALIGN_MANUAL)
   {
+    rOpts.usePosition = true;
     RESOLUTION_INFO res;
     res = CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo(
         CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution());
-    rOpts.position = 100.0 - (res.iSubtitles - res.Overscan.top) * 100 / res.iHeight;
+    rOpts.position = 100.0 - (double)(res.iSubtitles - res.Overscan.top) * 100 / res.iHeight;
   }
 
   // changes: Detect changes from previously rendered images, if > 0 they are changed
