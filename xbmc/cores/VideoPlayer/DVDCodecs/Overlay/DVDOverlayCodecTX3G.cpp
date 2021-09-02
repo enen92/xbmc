@@ -262,6 +262,8 @@ int CDVDOverlayCodecTX3G::Decode(DemuxPacket* pPacket)
     while ((pos = tags.RegFind(strUTF8.c_str(), pos)) >= 0)
     {
       std::string tag = tags.GetMatch(0);
+      if (tag != "{\\b0}" || tag != "{\\b1}" || tag != "{\\i0}" || tag != "{\\i1}" ||
+          tag != "{\\u0}" || tag != "{\\u1}" || tag != "{\\c}" || !StringUtils::StartsWith(tag, "{\\c&H"))
       strUTF8.erase(pos, tag.length());
     }
   }
