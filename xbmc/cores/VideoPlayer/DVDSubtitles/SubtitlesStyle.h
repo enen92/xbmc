@@ -17,8 +17,8 @@ namespace KODI
 namespace SUBTITLES
 {
 
-constexpr int SUBTITLE_VIEWPORT_HEIGHT = 720;
-constexpr int SUBTITLE_VIEWPORT_WIDTH = 1280;
+constexpr double SUBTITLE_VIEWPORT_HEIGHT = 1080.0;
+constexpr double SUBTITLE_VIEWPORT_WIDTH = 1920.0;
 
 enum class FontAlignment
 {

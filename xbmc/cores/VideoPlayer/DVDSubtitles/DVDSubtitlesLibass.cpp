@@ -22,8 +22,6 @@ using namespace KODI::SUBTITLES;
 
 namespace
 {
-// We use fixed screen size, the subtitles will be scaled by OverlayRenderer
-constexpr double SCREEN_SIZE_HEIGHT = 1080.0;
 constexpr int BORDER_STYLE_OUTLINE = 1; // ASS_Style->BorderStyle: Outline + drop shadow
 constexpr int BORDER_STYLE_OUTLINE_BOX = 4; // ASS_Style->BorderStyle: Outline + box
 
@@ -46,22 +44,6 @@ std::string GetDefaultFontPath(std::string& font)
   }
   CLog::Log(LOGERROR, "CDVDSubtitlesLibass: Could not find font {} in font sources", font);
   return "";
-}
-
-// Sanitize PlayResY value when the value is missing,
-// the calculation need to simulate the Libass internal behaviour.
-int SanitizePlayResY(int playResX, int playResY)
-{
-  if (playResY > 0)
-    return playResY;
-  if (playResX <= 0 && playResY <= 0)
-    return 288;
-  if (playResY <= 0 && playResX == 1280)
-    return 1024;
-  int ret = playResX * 3LL / 4;
-  if (ret > 0)
-    return ret;
-  return 288;
 }
 
 // Convert RGB/ARGB to RGBA by appling also the opacity value
@@ -188,8 +170,8 @@ bool CDVDSubtitlesLibass::CreateTrack()
   m_track->track_type = m_track->TRACK_TYPE_ASS;
   m_track->Timer = 100.;
   // Set fixed values to PlayRes to allow the use of style override code for positioning
-  m_track->PlayResX = SUBTITLE_VIEWPORT_WIDTH;
-  m_track->PlayResY = SUBTITLE_VIEWPORT_HEIGHT;
+  m_track->PlayResX = (int)SUBTITLE_VIEWPORT_WIDTH;
+  m_track->PlayResY = (int)SUBTITLE_VIEWPORT_HEIGHT;
   m_track->Kerning = true; // Font kerning improves the letterspacing
   m_track->WrapStyle = 1; // The line feed \n doesn't break but wraps (instead \N breaks)
 
@@ -292,25 +274,19 @@ void CDVDSubtitlesLibass::ApplyStyle(subtitlesStyle subStyle, subtitleRenderOpts
     style->Name = strdup("KodiDefault");
 
     // Calculate the scale (influence ASS style properties)
-    // We need to sanitize the PlayResY value because Libass do this internally
-    int playResY = SanitizePlayResY(m_track->PlayResX, m_track->PlayResY);
-    double scale = 1.;
-
+    double scale = 1.0;
+    int playResY;
     if (m_subtitleType == NATIVE &&
         (subStyle.assOverrideStyles == AssOverrideStyles::STYLES ||
          subStyle.assOverrideStyles == AssOverrideStyles::STYLES_POSITIONS))
     {
-      // This scale calculation could be wrong but for some reason when we
-      // override embedded styles we need to calculate the scale in different
-      // way and also seem LibAss recalculate the scale by 288
-      double scaleA = SCREEN_SIZE_HEIGHT / playResY;
-      double scaleB = SCREEN_SIZE_HEIGHT / 720;
-      double diff = scaleA / (720. / 288);
-      scale = diff * (scaleB / scaleA);
+      // With styles overrided the PlayResY will be changed to 288
+      playResY = 288;
+      scale = 288. / 720;
     }
     else
     {
-      scale = SCREEN_SIZE_HEIGHT / playResY;
+      playResY = m_track->PlayResY;
     }
 
     // It is mandatory set the FontName, the text is case sensitive
@@ -322,7 +298,8 @@ void CDVDSubtitlesLibass::ApplyStyle(subtitlesStyle subStyle, subtitleRenderOpts
         (m_subtitleType == NATIVE && subStyle.assOverrideStyles != AssOverrideStyles::POSITIONS))
     {
       // Configure the font properties
-      style->FontSize = subStyle.fontSize * scale;
+      // FIXME: The font size need to be scaled to be shown in right PT size
+      style->FontSize = (subStyle.fontSize / 720) * playResY;
       // Modifies the width/height of the font (1 = 100%)
       style->ScaleX = 1.0;
       style->ScaleY = 1.0;
