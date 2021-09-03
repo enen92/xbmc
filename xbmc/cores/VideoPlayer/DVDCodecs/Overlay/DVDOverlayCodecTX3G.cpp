@@ -232,7 +232,10 @@ int CDVDOverlayCodecTX3G::Decode(DemuxPacket* pPacket)
 
     // invert the order from above so we bracket the text correctly.
     if (bgnColorIndex == charIndex && textColorRGBA != m_textColor)
-      strUTF8 += "{\\c&H" + StringUtils::Format("{:8x}", textColorRGBA) + "&}";
+    {
+      uint32_t color = ColorUtils::ConvertToBGR(ColorUtils::ConvertToARGB(textColorRGBA));
+      strUTF8 += "{\\c&H" + StringUtils::Format("{:6x}", color) + "&}";
+    }
 
     if (bgnStyles & UNDERLINE)
       strUTF8.append("{\\u1}");
@@ -262,8 +265,13 @@ int CDVDOverlayCodecTX3G::Decode(DemuxPacket* pPacket)
     while ((pos = tags.RegFind(strUTF8.c_str(), pos)) >= 0)
     {
       std::string tag = tags.GetMatch(0);
-      if (tag != "{\\b0}" || tag != "{\\b1}" || tag != "{\\i0}" || tag != "{\\i1}" ||
-          tag != "{\\u0}" || tag != "{\\u1}" || tag != "{\\c}" || !StringUtils::StartsWith(tag, "{\\c&H"))
+      if (tag == "{\\b0}" || tag == "{\\b1}" || tag == "{\\i0}" || tag == "{\\i1}" ||
+          tag == "{\\u0}" || tag == "{\\u1}" || tag == "{\\c}" ||
+          StringUtils::StartsWith(tag, "{\\c&H"))
+      {
+        pos += tag.length();
+        continue;
+      }
       strUTF8.erase(pos, tag.length());
     }
   }
