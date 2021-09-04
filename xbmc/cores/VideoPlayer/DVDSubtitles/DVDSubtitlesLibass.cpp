@@ -102,7 +102,6 @@ void CDVDSubtitlesLibass::Configure()
     return;
   }
 
-  m_isStyleInitialized = false;
   m_subtitleType = NATIVE;
   ass_set_margins(m_renderer, 0, 0, 0, 0);
   ass_set_use_margins(m_renderer, 0);
@@ -112,20 +111,6 @@ void CDVDSubtitlesLibass::Configure()
   ass_set_fonts_dir(m_library, CSpecialProtocol::TranslatePath(userFontPath).c_str());
   ass_set_font_scale(m_renderer, 1);
 
-  // Safety check, if not done Libass could works without problems
-  // but under some circumstances will cause unexpected crashes
-  // not easy to identify with debugger
-  m_isConfigured = true;
-}
-
-bool CDVDSubtitlesLibass::IsStyleInitialized()
-{
-  // isStyleInitialized Instructs the OverlayRenderer when have to initialise
-  // the ASS Style for the first time, this is essential also when changing
-  // subtitles streams due to async overlay management chain
-  bool ret = m_isStyleInitialized;
-  m_isStyleInitialized = true;
-  return ret;
 }
 
 bool CDVDSubtitlesLibass::DecodeHeader(char* data, int size)
@@ -199,21 +184,21 @@ bool CDVDSubtitlesLibass::CreateTrack(char* buf, size_t size)
 ASS_Image* CDVDSubtitlesLibass::RenderImage(double pts,
                                             subtitleRenderOpts opts,
                                             bool updateStyle,
-                                            KODI::SUBTITLES::subtitlesStyle subStyle,
+                                            std::shared_ptr<struct KODI::SUBTITLES::subtitlesStyle> subStyle,
                                             int* changes)
 {
   CSingleLock lock(m_section);
-  if (!m_renderer || !m_track || !m_isConfigured)
+  if (!m_renderer || !m_track)
   {
     CLog::Log(LOGERROR, "{} - ASS renderer/ASS track not initialized or Libass not configured.",
               __FUNCTION__);
     return NULL;
   }
 
-  if (updateStyle)
+  if (updateStyle || m_currentStyleId == ASS_NO_ID)
   {
-    ApplyStyle(subStyle, opts);
-    m_drawWithinBlackBars = subStyle.drawWithinBlackBars;
+    ApplyStyle(*subStyle.get(), opts);
+    m_drawWithinBlackBars = subStyle->drawWithinBlackBars;
   }
 
   double sar = (double)opts.sourceWidth / opts.sourceHeight;
@@ -290,7 +275,7 @@ void CDVDSubtitlesLibass::ApplyStyle(subtitlesStyle subStyle, subtitleRenderOpts
     }
 
     // It is mandatory set the FontName, the text is case sensitive
-    // FIXME: The font name is not relevant at the moment, because we have 
+    // FIXME: The font name is not relevant at the moment, because we have
     // always a fixed font set, this could change in future Libass versions
     style->FontName = strdup("Arial"); //strdup(subStyle.fontName.c_str());
 
@@ -375,8 +360,10 @@ void CDVDSubtitlesLibass::ApplyStyle(subtitlesStyle subStyle, subtitleRenderOpts
       style->Alignment = VALIGN_SUB | HALIGN_RIGHT;
   }
 
-  if (m_subtitleType == NATIVE)
+  if (m_subtitleType == NATIVE) {
     ConfigureAssOverride(subStyle, style);
+    m_currentStyleId = 0;
+  }
 }
 
 void CDVDSubtitlesLibass::ConfigureAssOverride(subtitlesStyle& subStyle, ASS_Style* style)

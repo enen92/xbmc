@@ -265,63 +265,61 @@ void CRenderer::SetStereoMode(const std::string &stereomode)
   m_stereomode = stereomode;
 }
 
-KODI::SUBTITLES::subtitlesStyle CRenderer::CreateSubtitlesStyle()
+void CRenderer::CreateSubtitlesStyle()
 {
+  m_overlayStyle = std::make_shared<KODI::SUBTITLES::subtitlesStyle>();
   const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
-  KODI::SUBTITLES::subtitlesStyle subStyle;
 
-  subStyle.fontName = settings->GetString(CSettings::SETTING_SUBTITLES_FONT);
-  subStyle.fontSize = (double)settings->GetInt(CSettings::SETTING_SUBTITLES_HEIGHT);
+  m_overlayStyle->fontName = settings->GetString(CSettings::SETTING_SUBTITLES_FONT);
+  m_overlayStyle->fontSize = (double)settings->GetInt(CSettings::SETTING_SUBTITLES_HEIGHT);
 
   uint32_t fontStyleMask = settings->GetInt(CSettings::SETTING_SUBTITLES_STYLE) & FONT_STYLE_MASK;
   if ((fontStyleMask & FONT_STYLE_BOLD) && (fontStyleMask & FONT_STYLE_ITALICS))
-    subStyle.fontStyle = KODI::SUBTITLES::FontStyle::BOLD_ITALIC;
+    m_overlayStyle->fontStyle = KODI::SUBTITLES::FontStyle::BOLD_ITALIC;
   else if (fontStyleMask & FONT_STYLE_BOLD)
-    subStyle.fontStyle = KODI::SUBTITLES::FontStyle::BOLD;
+    m_overlayStyle->fontStyle = KODI::SUBTITLES::FontStyle::BOLD;
   else if (fontStyleMask & FONT_STYLE_ITALICS)
-    subStyle.fontStyle = KODI::SUBTITLES::FontStyle::ITALIC;
+    m_overlayStyle->fontStyle = KODI::SUBTITLES::FontStyle::ITALIC;
 
-  subStyle.fontColor =
+  m_overlayStyle->fontColor =
       KODI::SUBTITLES::colors[settings->GetInt(CSettings::SETTING_SUBTITLES_COLOR)];
-  subStyle.fontOpacity = settings->GetInt(CSettings::SETTING_SUBTITLES_OPACITY);
+  m_overlayStyle->fontOpacity = settings->GetInt(CSettings::SETTING_SUBTITLES_OPACITY);
 
-  subStyle.backgroundColor =
+  m_overlayStyle->backgroundColor =
       KODI::SUBTITLES::bgColors[settings->GetInt(CSettings::SETTING_SUBTITLES_BGCOLOR)];
-  subStyle.backgroundOpacity = settings->GetInt(CSettings::SETTING_SUBTITLES_BGOPACITY);
+  m_overlayStyle->backgroundOpacity = settings->GetInt(CSettings::SETTING_SUBTITLES_BGOPACITY);
 
   // We enable "Box" border style only if the background opacity is > 0
-  if (subStyle.backgroundOpacity > 0)
-    subStyle.borderStyle = KODI::SUBTITLES::BorderStyle::OUTLINE_BOX;
+  if (m_overlayStyle->backgroundOpacity > 0)
+    m_overlayStyle->borderStyle = KODI::SUBTITLES::BorderStyle::OUTLINE_BOX;
   else
-    subStyle.borderStyle = KODI::SUBTITLES::BorderStyle::OUTLINE;
+    m_overlayStyle->borderStyle = KODI::SUBTITLES::BorderStyle::OUTLINE;
 
   int subAlign = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(
       CSettings::SETTING_SUBTITLES_ALIGN);
   if (subAlign == SUBTITLE_ALIGN_TOP_INSIDE || subAlign == SUBTITLE_ALIGN_TOP_OUTSIDE)
-    subStyle.alignment = KODI::SUBTITLES::FontAlignment::TOP_CENTER;
+    m_overlayStyle->alignment = KODI::SUBTITLES::FontAlignment::TOP_CENTER;
   else
-    subStyle.alignment = KODI::SUBTITLES::FontAlignment::SUB_CENTER;
+    m_overlayStyle->alignment = KODI::SUBTITLES::FontAlignment::SUB_CENTER;
 
   if (subAlign == SUBTITLE_ALIGN_BOTTOM_OUTSIDE || subAlign == SUBTITLE_ALIGN_TOP_OUTSIDE)
-    subStyle.drawWithinBlackBars = true;
+    m_overlayStyle->drawWithinBlackBars = true;
 
-  subStyle.assOverrideFont = settings->GetBool(CSettings::SETTING_SUBTITLES_OVERRIDEASSFONTS);
+  m_overlayStyle->assOverrideFont = settings->GetBool(CSettings::SETTING_SUBTITLES_OVERRIDEASSFONTS);
 
   int overrideStyles = settings->GetInt(CSettings::SETTING_SUBTITLES_OVERRIDEASSSTYLES);
   if (overrideStyles == (int)KODI::SUBTITLES::AssOverrideStyles::POSITIONS ||
       overrideStyles == (int)KODI::SUBTITLES::AssOverrideStyles::STYLES ||
       overrideStyles == (int)KODI::SUBTITLES::AssOverrideStyles::STYLES_POSITIONS)
-    subStyle.assOverrideStyles = static_cast<KODI::SUBTITLES::AssOverrideStyles>(overrideStyles);
+    m_overlayStyle->assOverrideStyles = static_cast<KODI::SUBTITLES::AssOverrideStyles>(overrideStyles);
   else
-    subStyle.assOverrideStyles = KODI::SUBTITLES::AssOverrideStyles::DISABLED;
-
-  return subStyle;
+    m_overlayStyle->assOverrideStyles = KODI::SUBTITLES::AssOverrideStyles::DISABLED;
 }
 
 COverlay* CRenderer::ConvertLibass(CDVDOverlayLibass* o,
                                    double pts,
                                    bool updateStyle,
-                                   KODI::SUBTITLES::subtitlesStyle subStyle)
+                                   std::shared_ptr<struct KODI::SUBTITLES::subtitlesStyle> overlayStyle)
 {
   KODI::SUBTITLES::subtitleRenderOpts rOpts;
 
@@ -365,7 +363,7 @@ COverlay* CRenderer::ConvertLibass(CDVDOverlayLibass* o,
   // changes: Detect changes from previously rendered images, if > 0 they are changed
   int changes = 0;
   ASS_Image* images =
-      o->GetLibassHandler()->RenderImage(pts, rOpts, updateStyle, subStyle, &changes);
+      o->GetLibassHandler()->RenderImage(pts, rOpts, updateStyle, overlayStyle, &changes);
 
   // If no images not execute the renderer
   if (!images)
@@ -411,15 +409,15 @@ COverlay* CRenderer::Convert(CDVDOverlay* o, double pts)
     CDVDOverlayLibass* ovAss = static_cast<CDVDOverlayLibass*>(o);
     if (!ovAss || !ovAss->GetLibassHandler())
       return nullptr;
-    KODI::SUBTITLES::subtitlesStyle subStyle;
-    bool updateStyle = !ovAss->GetLibassHandler()->IsStyleInitialized() || m_forceUpdateAssStyle;
+
+    bool updateStyle = !m_overlayStyle || m_forceUpdateAssStyle;
     if (updateStyle)
     {
       m_forceUpdateAssStyle = false;
-      subStyle = CreateSubtitlesStyle();
+      CreateSubtitlesStyle();
     }
 
-    r = ConvertLibass(ovAss, pts, updateStyle, subStyle);
+    r = ConvertLibass(ovAss, pts, updateStyle, m_overlayStyle);
 
     if (!r)
       return nullptr;

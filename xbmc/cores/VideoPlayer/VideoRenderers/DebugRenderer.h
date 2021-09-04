@@ -32,7 +32,9 @@ protected:
   public:
     CRenderer();
     void Render(int idx) override;
-    KODI::SUBTITLES::subtitlesStyle CreateSubtitlesStyle();
+    void CreateSubtitlesStyle();
+  private:
+    std::shared_ptr<struct KODI::SUBTITLES::subtitlesStyle> m_debugOverlayStyle;
   };
 
   std::string m_strDebug[6];

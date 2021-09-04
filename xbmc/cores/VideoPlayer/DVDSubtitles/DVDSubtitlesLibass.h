@@ -15,6 +15,8 @@
 #include <ass/ass.h>
 #include <ass/ass_types.h>
 
+#include <memory>
+
 /** Wrapper for Libass **/
 
 static constexpr int ASS_NO_ID = -1;
@@ -40,13 +42,9 @@ public:
   ASS_Image* RenderImage(double pts,
                          KODI::SUBTITLES::subtitleRenderOpts opts,
                          bool updateStyle,
-                         KODI::SUBTITLES::subtitlesStyle subStyle,
+                         std::shared_ptr<struct KODI::SUBTITLES::subtitlesStyle> subStyle,
                          int* changes = NULL);
 
-  /*!
-  * \brief Specifies whether the style has been initialised
-  */
-  bool IsStyleInitialized();
 
   /*!
   * \brief Translate and apply Kodi subtitles style to LibAss style
@@ -135,9 +133,7 @@ private:
   ASS_Track* m_track = nullptr;
   ASS_Renderer* m_renderer = nullptr;
   mutable CCriticalSection m_section;
-  bool m_isConfigured;
   ASSSubType m_subtitleType;
-  bool m_isStyleInitialized;
   int m_currentStyleId;
   bool m_drawWithinBlackBars;
 };

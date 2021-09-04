@@ -155,11 +155,11 @@ void CDebugRenderer::CRenderer::Render(int idx)
         continue;
 
       KODI::SUBTITLES::subtitlesStyle subStyle;
-      bool updateStyle = !ovAss->GetLibassHandler()->IsStyleInitialized();
+      bool updateStyle = !m_debugOverlayStyle;
       if (updateStyle)
-        subStyle = CreateSubtitlesStyle();
+        CreateSubtitlesStyle();
 
-      o = ConvertLibass(ovAss, it->pts, updateStyle, subStyle);
+      o = ConvertLibass(ovAss, it->pts, updateStyle, m_debugOverlayStyle);
 
       if (!o)
         continue;
@@ -169,10 +169,9 @@ void CDebugRenderer::CRenderer::Render(int idx)
   }
 }
 
-KODI::SUBTITLES::subtitlesStyle CDebugRenderer::CRenderer::CreateSubtitlesStyle()
+void CDebugRenderer::CRenderer::CreateSubtitlesStyle()
 {
-  KODI::SUBTITLES::subtitlesStyle subStyle;
-  subStyle.fontName = "arial.ttf";
-  subStyle.fontSize = 16.0;
-  return subStyle;
+  m_debugOverlayStyle = std::make_shared<KODI::SUBTITLES::subtitlesStyle>();
+  m_debugOverlayStyle->fontName = "arial.ttf";
+  m_debugOverlayStyle->fontSize = 16.0;
 }
