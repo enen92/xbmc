@@ -393,8 +393,9 @@ COverlay* CRenderer::ConvertLibass(CDVDOverlayLibass* o,
   {
     overlay->m_width = (float)rOpts.frameWidth / rOpts.videoWidth;
     overlay->m_height = (float)rOpts.frameHeight / rOpts.videoHeight;
-    overlay->m_x = ((float)rOpts.videoWidth - rOpts.frameWidth) / 2 / rOpts.videoWidth;
-    overlay->m_y = ((float)rOpts.videoHeight - rOpts.frameHeight) / 2 / rOpts.videoHeight;
+    int f = int((float)rOpts.videoWidth / rOpts.frameWidth);
+    overlay->m_x = ((float)rOpts.videoWidth - rOpts.frameWidth * f) / 2 / rOpts.videoWidth;
+    overlay->m_y = ((float)rOpts.videoHeight - rOpts.frameHeight * f) / 2 / rOpts.videoHeight;
   }
   m_textureCache[m_textureid] = overlay;
   o->m_textureid = m_textureid;
