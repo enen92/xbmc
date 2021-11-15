@@ -754,7 +754,7 @@ double CEdl::RestoreCutTime(double dClock) const
   double dSeek = dClock;
   for (int i = 0; i < (int)m_vecCuts.size(); i++)
   {
-    if (m_vecCuts[i].action == Action::CUT && dSeek >= m_vecCuts[i].start)
+    if (m_vecCuts[i].action == Action::CUT && dSeek >= m_vecCuts[i].start && dSeek < m_vecCuts[i].end)
       dSeek += static_cast<double>(m_vecCuts[i].end - m_vecCuts[i].start);
   }
 

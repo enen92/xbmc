@@ -37,6 +37,7 @@ struct SPlayerState
   {
     timestamp = 0;
     time = 0;
+    realtime = 0;
     startTime = 0;
     timeMin = 0;
     timeMax = 0;
@@ -64,6 +65,7 @@ struct SPlayerState
   double time_offset;       // difference between time and pts
 
   double time;              // current playback time
+  double realtime;
   double timeMax;
   double timeMin;
   time_t startTime;
@@ -433,6 +435,7 @@ protected:
   void GetGeneralInfo(std::string& strVideoInfo);
   int64_t GetUpdatedTime();
   int64_t GetTime();
+  int64_t GetRealTime();
   float GetPercentage();
 
   void UpdateContent();

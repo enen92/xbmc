@@ -1648,7 +1648,9 @@ void CVideoPlayer::ProcessAudioData(CDemuxStream* pStream, DemuxPacket* pPacket)
   }
 
   m_VideoPlayerAudio->SendMessage(std::make_shared<CDVDMsgDemuxerPacket>(pPacket, drop));
-  m_CurrentAudio.packets++;
+
+  if (!drop)
+    m_CurrentAudio.packets++;
 }
 
 void CVideoPlayer::ProcessVideoData(CDemuxStream* pStream, DemuxPacket* pPacket)
@@ -1672,7 +1674,9 @@ void CVideoPlayer::ProcessVideoData(CDemuxStream* pStream, DemuxPacket* pPacket)
     drop = true;
 
   m_VideoPlayerVideo->SendMessage(std::make_shared<CDVDMsgDemuxerPacket>(pPacket, drop));
-  m_CurrentVideo.packets++;
+
+  if (!drop)
+    m_CurrentVideo.packets++;
 }
 
 void CVideoPlayer::ProcessSubData(CDemuxStream* pStream, DemuxPacket* pPacket)
@@ -2314,7 +2318,7 @@ void CVideoPlayer::CheckAutoSceneSkip()
       m_CurrentVideo.inited == false)
     return;
 
-  const int64_t clock = GetTime();
+  const int64_t clock = GetRealTime();
 
   EDL::Cut cut;
   if (!m_Edl.InCut(clock, &cut))
@@ -3327,6 +3331,12 @@ int64_t CVideoPlayer::GetTime()
 {
   CSingleLock lock(m_StateSection);
   return llrint(m_State.time);
+}
+
+int64_t CVideoPlayer::GetRealTime()
+{
+  CSingleLock lock(m_StateSection);
+  return llrint(m_State.realtime);
 }
 
 void CVideoPlayer::SetSpeed(float speed)
@@ -4729,6 +4739,8 @@ void CVideoPlayer::UpdatePlayState(double timeout)
 
     m_processInfo->SetStateRealtime(realtime);
   }
+
+  state.realtime = state.time;
 
   if (m_Edl.HasCut())
   {
