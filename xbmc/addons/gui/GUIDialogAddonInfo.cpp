@@ -788,7 +788,7 @@ void CGUIDialogAddonInfo::BuildDependencyList()
     {
 
       // only display dialog if updates for already installed dependencies will install
-      if (addonAvailable && addonAvailable->Version() > addonInstalled->Version())
+      if (addonAvailable && addonInstalled && addonAvailable->Version() > addonInstalled->Version())
       {
         m_showDepDialogOnInstall = true;
       }
