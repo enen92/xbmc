@@ -388,6 +388,7 @@ void CVideoPlayerAudio::Process()
       if (bPacketDrop)
       {
         m_syncState = IDVDStreamPlayer::SYNC_STARTING;
+        m_audioSink.Flush();
         continue;
       }
 
