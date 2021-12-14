@@ -30,8 +30,10 @@ public:
   bool HasSceneMarker() const;
   std::string GetInfo() const;
   int GetTotalCutTime() const;
-  int RemoveCutTime(int iSeek) const;
-  double RestoreCutTime(double dClock) const;
+  int RemoveCutTime(int seek) const;
+  double RestoreCutTime(double clock) const;
+
+  double GetCorrectPositionAfterCuts(double clock) const;
 
   const std::vector<EDL::Cut>& GetCutList() const { return m_vecCuts; }
 

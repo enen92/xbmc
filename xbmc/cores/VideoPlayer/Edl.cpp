@@ -722,43 +722,67 @@ int CEdl::GetTotalCutTime() const
   return m_iTotalCutTime; // ms
 }
 
-int CEdl::RemoveCutTime(int iSeek) const
+int CEdl::RemoveCutTime(int seek) const
 {
   if (!HasCut())
-    return iSeek;
+    return seek;
 
-  /**
-   * @todo Consider an optimization of using the (now unused) total cut time if the seek time
-   * requested is later than the end of the last recorded cut. For example, when calculating the
-   * total duration for display.
-   */
   int iCutTime = 0;
   for (int i = 0; i < (int)m_vecCuts.size(); i++)
   {
     if (m_vecCuts[i].action == Action::CUT)
     {
-      if (iSeek >= m_vecCuts[i].start && iSeek <= m_vecCuts[i].end) // Inside cut
-        iCutTime += iSeek - m_vecCuts[i].start - 1; // Decrease cut length by 1ms to jump over end boundary.
-      else if (iSeek >= m_vecCuts[i].start) // Cut has already been passed over.
+      if (seek >= m_vecCuts[i].start && seek < m_vecCuts[i].end) // Inside cut
+        iCutTime += seek - m_vecCuts[i].start - 1; // Decrease cut length by 1ms to jump over end boundary.
+      else if (seek >= m_vecCuts[i].start) // Cut has already been passed over.
         iCutTime += m_vecCuts[i].end - m_vecCuts[i].start;
     }
   }
-  return iSeek - iCutTime;
+  return seek - iCutTime;
 }
 
-double CEdl::RestoreCutTime(double dClock) const
+double CEdl::RestoreCutTime(double clock) const
 {
   if (!HasCut())
-    return dClock;
+    return clock;
 
-  double dSeek = dClock;
-  for (int i = 0; i < (int)m_vecCuts.size(); i++)
+  double seek = clock;
+  for(auto cut=m_vecCuts.begin();cut!=m_vecCuts.end();cut++)
   {
-    if (m_vecCuts[i].action == Action::CUT && dSeek >= m_vecCuts[i].start)
-      dSeek += static_cast<double>(m_vecCuts[i].end - m_vecCuts[i].start);
+    double cutDuration = static_cast<double>(cut->end - cut->start);
+    if (cut->action == Action::CUT && seek >= cut->start && seek < cut->end)
+    {
+      if (cut == m_vecCuts.begin())
+      {
+        seek = cut->end + (seek - cut->start);
+      }
+      else
+      {
+        seek += cutDuration;
+      }
+    }
+    else if (cut->action == Action::CUT && seek > cut->end)
+    {
+      seek += cutDuration;
+    }
   }
+  return seek;
+}
 
-  return dSeek;
+double CEdl::GetCorrectPositionAfterCuts(double clock) const
+{
+  if (!HasCut())
+    return clock;
+
+  for(auto cut=m_vecCuts.begin();cut!=m_vecCuts.end();cut++)
+  {
+    double cutDuration = static_cast<double>(cut->end - cut->start);
+    if (cut->action == Action::CUT && clock > cut->start + 1000)
+    {
+      clock += cutDuration;
+    }
+  }
+  return clock;
 }
 
 bool CEdl::HasSceneMarker() const

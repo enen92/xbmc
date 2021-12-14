@@ -2321,29 +2321,33 @@ void CVideoPlayer::CheckAutoSceneSkip()
   const int64_t clock = GetTime();
 
   EDL::Cut cut;
-  if (!m_Edl.InCut(clock, &cut))
+  if (!m_Edl.InCut(m_Edl.GetCorrectPositionAfterCuts(clock), &cut))
     return;
 
   if (cut.action == EDL::Action::CUT)
   {
-    if ((m_playSpeed > 0 && clock < cut.end - 1000) ||
-        (m_playSpeed < 0 && clock < cut.start + 1000))
+    if ((m_playSpeed > 0 && m_Edl.GetCorrectPositionAfterCuts(clock) < (cut.start + 1000)) ||
+        (m_playSpeed < 0 && m_Edl.GetCorrectPositionAfterCuts(clock) < (cut.end - 1000)))
     {
-      CLog::Log(LOGDEBUG, "{} - Clock in EDL cut [{} - {}]: {}. Automatically skipping over.",
+      CLog::Log(LOGERROR, "{} - Clock in EDL cut [{} - {}]: {}. Automatically skipping over.",
                 __FUNCTION__, CEdl::MillisecondsToTimeString(cut.start),
                 CEdl::MillisecondsToTimeString(cut.end), CEdl::MillisecondsToTimeString(clock));
 
       //Seeking either goes to the start or the end of the cut depending on the play direction.
-      int seek = m_playSpeed >= 0 ? cut.end : cut.start;
+      int seek = m_playSpeed >= 0 ? cut.end: cut.start;
+      if (m_Edl.GetLastCutTime() != seek)
+      {
+        CDVDMsgPlayerSeek::CMode mode;
+        mode.time = seek;
+        mode.backward = true;
+        mode.accurate = true;
+        mode.restore = false;
+        mode.trickplay = false;
+        mode.sync = true;
+        m_messenger.Put(std::make_shared<CDVDMsgPlayerSeek>(mode));
 
-      CDVDMsgPlayerSeek::CMode mode;
-      mode.time = seek;
-      mode.backward = true;
-      mode.accurate = true;
-      mode.restore = true;
-      mode.trickplay = false;
-      mode.sync = true;
-      m_messenger.Put(std::make_shared<CDVDMsgPlayerSeek>(mode));
+        m_Edl.SetLastCutTime(seek);
+      }
     }
   }
   else if (cut.action == EDL::Action::COMM_BREAK)
@@ -3310,6 +3314,16 @@ void CVideoPlayer::SeekTime(int64_t iTime)
 bool CVideoPlayer::SeekTimeRelative(int64_t iTime)
 {
   int64_t abstime = GetTime() + iTime;
+
+  // if the file has cuts (actual cuts not the HasCut()) we can't rely on
+  // m_clock due to the discontinuities in the file. Just do a seek to
+  // the actual future position.
+  // FIXME: HasCut doesn't actually mean the file has Cuts of type CUT-
+  if (m_Edl.HasCut())
+  {
+    SeekTime(abstime);
+    return true;
+  }
 
   CDVDMsgPlayerSeek::CMode mode;
   mode.time = (int)iTime;
@@ -4736,8 +4750,8 @@ void CVideoPlayer::UpdatePlayState(double timeout)
 
   if (m_Edl.HasCut())
   {
-    state.time = (double) m_Edl.RemoveCutTime(llrint(state.time));
-    state.timeMax = (double) m_Edl.RemoveCutTime(llrint(state.timeMax));
+    state.time = static_cast<double>(m_Edl.RemoveCutTime(llrint(state.time)));
+    state.timeMax = llrint(state.timeMax) - static_cast<double>(m_Edl.GetTotalCutTime());
   }
 
   if (m_caching > CACHESTATE_DONE && m_caching < CACHESTATE_PLAY)
