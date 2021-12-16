@@ -399,7 +399,8 @@ void CUDisks2Provider::FilesystemAdded(Filesystem *fs, bool isNew)
     m_filesystems[fs->m_object] = fs;
   }
 
-  if (fs->IsReady() && !fs->m_isMounted && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_handleMounting)
+  auto shouldautomount = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_handleMounting;
+  if (fs->IsReady() && !fs->m_isMounted && shouldautomount)
   {
     fs->Mount();
   }
