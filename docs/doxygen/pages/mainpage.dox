@@ -1,7 +1,10 @@
 /*! \file   mainpage.dox
     \brief  Introduction page
 
-  \mainpage Introduction
+  \mainpage 1: Introduction
+  			<p align="center">
+				<img src="../resources/banner_slim.png" alt="Kodi">
+			</p>
             Welcome to the documentation of Kodi. This starting page is meant to help people find their
             way around the code.
 
@@ -13,9 +16,21 @@
 
             Any help/suggestions are more than welcome.
 
-  \section  doxy_whatisxbmc What is Kodi?
-            Kodi is a free, open source (GPL) multimedia player that runs on Linux, Mac OS X (10.4 and later),
-            Windows, IOS and Android.  See http://kodi.tv for more details.
+  \section  doxy_about 1.1: About
+            Kodi is an award-winning **free and open source** software media player and entertainment hub for digital media. Available as a native application for **Android, Linux, BSD, macOS, iOS, tvOS and Windows operating systems**, Kodi runs on most common processor architectures.
+			Created in 2003 by a group of like minded programmers, Kodi is a non-profit project run by the XBMC Foundation and developed by volunteers located around the world. More than 500 software developers have contributed to Kodi to date, and 100-plus translators have worked to expand its reach, making it available in more than 70 languages.
+			While Kodi functions very well as a standard media player application for your computer, it has been designed to be the perfect companion for your HTPC. With its **beautiful interface and powerful skinning engine**, Kodi feels very natural to use from the couch with a remote control and is the ideal solution for your home theater.
+
+			<h2>Give your media the love it deserves</h2>
+			Kodi can be used to play almost all popular audio and video formats around. It was designed for network playback, so you can stream your multimedia from anywhere in the house or directly from the internet using practically any protocol available.
+
+			Point Kodi to your media and watch it **scan and automagically create a personalized library** complete with box covers, descriptions, and fanart. There are playlist and slideshow functions, a weather forecast feature and many audio visualizations. Once installed, your computer or HTPC will become a fully functional multimedia jukebox.
+
+			<p align="center">
+			<img src="../resources/kodi.gif" alt="Kodi">
+			</p>
+
+	
 */
 
 // Groups definition

@@ -1,6 +1,6 @@
 /*!
 
-\page skin_parts Skin Development
+\page skin_parts 5: Skin Development
 @brief \doc_header{ Skin Add-On Development }
 
 Kodi includes a GUI library that allows you to skin/change everything you see.
@@ -19,9 +19,12 @@ to start. You may wish to start by having a look through the tutorial section on
 skinning Kodi as well as the "Skinning Kodi" article, and try modifying a window
 or two by adding a button, or altering the textures or layout.
 
+<h2>Related pages</h2>
 - \subpage skin_controls - Controls are the substance of your skin.
 - \subpage window_ids - List of available window names, definitions, IDs and the matching XML-file
-
+- \subpage modules__infolabels_boolean_conditions
+- \subpage page_List_of_built_in_functions
+- \subpage skinning_revisions - List of changes to the skinning API
 */
 
 /*!

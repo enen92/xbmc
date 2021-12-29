@@ -1,0 +1,32 @@
+/*!
+
+@page building 2: Building
+
+Kodi uses CMake as its building system but instructions are highly dependent on your operating system and target platform. Choose your platform below and read the guide carefully before proceeding.
+
+\link build_android ![Android](../resources/android.svg) \endlink
+\link build_windows ![Windows](../resources/windows.svg) \endlink
+\link build_freebsd ![FreeBSD](../resources/freebsd.svg) \endlink
+\link build_linux ![Linux](../resources/linux.svg) \endlink
+\link build_fedora ![Fedora](../resources/fedora.svg) \endlink
+\link build_opensuse ![OpenSUSE](../resources/opensuse.svg) \endlink
+\link build_ubuntu ![Debian/Ubuntu](../resources/ubuntu.svg) \endlink
+\link build_macos ![MacOS](../resources/macos.svg) \endlink
+\link build_ios ![iOS](../resources/ios.svg) \endlink
+\link build_tvos ![tvOS](../resources/tvos.svg) \endlink
+
+<div style=display:none;>
+@subpage cmake_build_system
+@subpage build_android
+@subpage build_fedora
+@subpage build_freebsd
+@subpage build_ios
+@subpage build_linux
+@subpage build_macos
+@subpage build_opensuse
+@subpage build_tvos
+@subpage build_ubuntu
+@subpage build_windows
+</div>
+
+*/

@@ -1,0 +1,15 @@
+/*!
+
+\page addon_development 4: Add-on Development
+@brief \doc_header{ Add-On Development }
+
+@todo document struture, types, etc in a usable way
+
+<h2>Related pages</h2>
+- \subpage Doxygen_On_Addon - Documentation for Doxygen headers in Addons
+- \subpage modules__infolabels_boolean_conditions
+- \subpage page_List_of_built_in_functions
+- \subpage python_revisions - List of changes to the skinning API
+*/
+
+
