@@ -525,6 +525,16 @@ bool CFileItemHandler::FillFileItemList(const CVariant &parameterObject, CFileIt
         if (item->GetLabel().empty())
           item->SetLabel(URIUtils::GetFileName(file));
       }
+      if (parameterObject.isMember("properties") && parameterObject["properties"].isArray())
+      {
+        for (CVariant::const_iterator_array field = parameterObject["properties"].begin_array(); field != parameterObject["properties"].end_array(); field++)
+        {
+          if (field->isMember("key") && field->isMember("value"))
+          {
+              //list[index]->SetProperty(field["key"], field["value"]);
+          }
+        }
+      }
       list.Add(item);
     }
   }
