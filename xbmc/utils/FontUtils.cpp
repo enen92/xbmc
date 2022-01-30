@@ -8,16 +8,20 @@
 
 #include "FontUtils.h"
 
+#include "FileItem.h"
 #include "StringUtils.h"
 #include "URIUtils.h"
 #include "Util.h"
+#include "filesystem/Directory.h"
 #include "filesystem/File.h"
+#include "filesystem/SpecialProtocol.h"
 #include "utils/log.h"
 
 #include <ft2build.h>
 
 #include FT_FREETYPE_H
 
+using namespace XFILE;
 
 std::string UTILS::FONT::GetFontFamily(const std::string& filepath, std::vector<uint8_t>& buffer)
 {
@@ -60,13 +64,44 @@ std::string UTILS::FONT::GetFontFamily(const std::string& filepath)
   return GetFontFamily(filepath, dummy);
 }
 
-bool UTILS::FONT::IsTemporaryFontFile(const std::string& filepath)
-{
-  return StringUtils::StartsWithNoCase(URIUtils::GetFileName(filepath),
-                                       UTILS::FONT::TEMP_FONT_FILENAME_PREFIX);
-}
-
 bool UTILS::FONT::IsSupportedFontExtension(const std::string& filepath)
 {
   return URIUtils::HasExtension(filepath, UTILS::FONT::SUPPORTED_EXTENSIONS_MASK);
+}
+
+
+void UTILS::FONT::ClearTemporaryFonts()
+{
+  if (!CDirectory::Exists(static_cast<std::string>(UTILS::FONT::FONTPATH::TEMP)))
+    return;
+
+  CFileItemList items;
+  CDirectory::GetDirectory(static_cast<std::string>(UTILS::FONT::FONTPATH::TEMP), items,
+                           UTILS::FONT::SUPPORTED_EXTENSIONS_MASK,
+                           DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_BYPASS_CACHE | DIR_FLAG_GET_HIDDEN);
+  for (const auto& item : items)
+  {
+    if (item->m_bIsFolder)
+      continue;
+
+    CFile::Delete(item->GetPath());
+  }
+}
+
+std::string UTILS::FONT::FONTPATH::GetSystemFontPath(const std::string& filename)
+{
+  std::string fontPath = URIUtils::AddFileToFolder(
+      static_cast<std::string>(GetTranslatedFontPath(UTILS::FONT::FONTPATH::SYSTEM)), filename);
+  if (XFILE::CFile::Exists(fontPath))
+  {
+    return CSpecialProtocol::TranslatePath(fontPath);
+  }
+
+  CLog::LogF(LOGERROR, "Could not find application system font {}", filename);
+  return "";
+}
+
+std::string UTILS::FONT::FONTPATH::GetTranslatedFontPath(const std::string_view& fontPath)
+{
+  return CSpecialProtocol::TranslatePath(static_cast<std::string>(fontPath));
 }

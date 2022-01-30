@@ -614,7 +614,7 @@ void GUIFontManager::LoadUserFonts()
   for (auto& item : dirItems)
   {
     std::string filepath = item->GetPath();
-    if (item->m_bIsFolder || UTILS::FONT::IsTemporaryFontFile(filepath))
+    if (item->m_bIsFolder)
       continue;
 
     std::string familyName = UTILS::FONT::GetFontFamily(filepath);

@@ -21,8 +21,31 @@ constexpr const char* SUPPORTED_EXTENSIONS_MASK = ".ttf|.otf";
 // The default application font
 constexpr const char* FONT_DEFAULT_FILENAME = "arial.ttf";
 
-// Prefix used to store temporary font files in the user fonts folder
-constexpr const char* TEMP_FONT_FILENAME_PREFIX = "tmp.font.";
+namespace FONTPATH
+{
+// Temporary font path (where MKV fonts are extracted and temporarily stored)
+constexpr std::string_view TEMP = "special://temp/fonts/";
+// Directory where user defined fonts are located
+constexpr std::string_view USER = "special://home/media/Fonts/";
+// Directory where Kodi bundled fonts files are located
+constexpr std::string_view SYSTEM = "special://xbmc/media/Fonts/";
+
+/*!
+    *  \brief Provided a font path, translates and returns the
+    *  final path
+    *  \param fontPath The font path
+    *  \return The translated font path
+    */
+std::string GetTranslatedFontPath(const std::string_view& fontPath);
+
+/*!
+    *  \brief Provided a font filename returns the complete path for the font in the
+    *  system font folder (if it exists) or an empty string otherwise
+    *  \param filename The font file name
+    *  \return The path for the font or an empty string if the path does not exist
+    */
+std::string GetSystemFontPath(const std::string& filename);
+}; // namespace FONTPATH
 
 /*!
  *  \brief Get the font family name from a font file
@@ -40,19 +63,16 @@ std::string GetFontFamily(const std::string& filepath, std::vector<uint8_t>& buf
 std::string GetFontFamily(const std::string& filepath);
 
 /*!
- *  \brief Check if a file is a temporary font file. Temporary fonts are
- *         extracted by the demuxer from MKV files and stored in the user
- *         fonts folder.
- *  \param filepath The font file path
- *  \return True if it is a temporary file, otherwise false
- */
-bool IsTemporaryFontFile(const std::string& filepath);
-
-/*!
  *  \brief Check if a filename have a supported font extension.
  *  \param filepath The font file path
- *  \return True if it has a supported extension, otherwise false
+ *  \return True if it has a supported extension, false otherwise
  */
 bool IsSupportedFontExtension(const std::string& filepath);
+
+/*!
+ *  \brief Removes all temporary fonts, e.g. those extract from mkv containers
+ *  that are only available during playback
+ */
+void ClearTemporaryFonts();
 } // namespace FONT
 } // namespace UTILS

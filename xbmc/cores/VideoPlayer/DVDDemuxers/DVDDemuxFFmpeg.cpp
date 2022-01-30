@@ -1746,25 +1746,17 @@ CDemuxStream* CDVDDemuxFFmpeg::AddStream(int streamIdx)
         if (pStream->codecpar->codec_id == AV_CODEC_ID_TTF ||
             pStream->codecpar->codec_id == AV_CODEC_ID_OTF || AttachmentIsFont(attachmentMimetype))
         {
-          std::string fileName = "special://home/media/Fonts/";
+          // temporary fonts are extracted to tmp/fonts
+          std::string fileName = static_cast<std::string>(UTILS::FONT::FONTPATH::TEMP);
           XFILE::CDirectory::Create(fileName);
           AVDictionaryEntry* nameTag = av_dict_get(pStream->metadata, "filename", NULL, 0);
           if (!nameTag)
           {
-            CLog::Log(LOGERROR, "{}: TTF attachment has no name", __FUNCTION__);
+            CLog::LogF(LOGERROR, "TTF attachment has no name");
           }
           else
           {
-            // Note: Libass only supports a single additional font directory,
-            // currently set for user fonts (c.f. ass_set_fonts_dir) therefore
-            // we will also use this folder to store fonts extracted by the
-            // demuxer. The extracted fonts will have a prefix in the filename
-            // for easy identification.
-            //! @todo: this font file management system on disk could be completely
-            //! removed, by sending font data to the subtitle renderer and
-            //! using libass ass_add_font to add the fonts directly in memory.
-            fileName += UTILS::FONT::TEMP_FONT_FILENAME_PREFIX +
-                        CUtil::MakeLegalFileName(nameTag->value, LEGAL_WIN32_COMPAT);
+            fileName += CUtil::MakeLegalFileName(nameTag->value, LEGAL_WIN32_COMPAT);
             XFILE::CFile file;
             if (pStream->codecpar->extradata && file.OpenForWrite(fileName))
             {
@@ -1773,7 +1765,7 @@ CDemuxStream* CDVDDemuxFFmpeg::AddStream(int streamIdx)
               {
                 file.Close();
                 XFILE::CFile::Delete(fileName);
-                CLog::Log(LOGDEBUG, "{}: Error saving font file \"{}\"", __FUNCTION__, fileName);
+                CLog::LogF(LOGDEBUG, "Error saving font file \"{}\"", fileName);
               }
             }
           }

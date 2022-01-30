@@ -14,7 +14,6 @@
 #include "cores/VideoPlayer/Interface/TimingConstants.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
-#include "filesystem/SpecialProtocol.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "settings/SubtitlesSettings.h"
@@ -36,24 +35,6 @@ constexpr int ASS_BORDER_STYLE_BOX = 3; // Box + drop shadow
 constexpr int ASS_BORDER_STYLE_SQUARE_BOX = 4; // Square box + outline
 
 constexpr int ASS_FONT_ENCODING_AUTO = -1;
-
-// Directory where user defined fonts are located (and where MKV fonts are
-// extracted and temporarily stored)
-constexpr const char* userFontPath = "special://home/media/Fonts/";
-// Directory where Kodi bundled fonts files are located
-constexpr const char* systemFontPath = "special://xbmc/media/Fonts/";
-
-std::string GetSystemFontPath(const std::string& filename)
-{
-  std::string fontPath = URIUtils::AddFileToFolder(systemFontPath, filename);
-  if (XFILE::CFile::Exists(fontPath))
-  {
-    return CSpecialProtocol::TranslatePath(fontPath);
-  }
-
-  CLog::LogF(LOGERROR, "Could not find application system font {}", filename);
-  return "";
-}
 
 // Convert RGB/ARGB to RGBA by also applying the opacity value
 COLOR::Color ConvColor(COLOR::Color argbColor, int opacity = 100)
@@ -115,11 +96,19 @@ void CDVDSubtitlesLibass::Configure()
   // platforms (e.g. linux/windows), on some other systems like android the
   // font provider is currenlty not supported, then an user can add his
   // additionals fonts only by using the user fonts folder.
-  ass_set_fonts_dir(m_library, CSpecialProtocol::TranslatePath(userFontPath).c_str());
+  ass_set_fonts_dir(m_library, UTILS::FONT::FONTPATH::GetTranslatedFontPath(
+                                   static_cast<std::string>(UTILS::FONT::FONTPATH::USER))
+                                   .c_str());
 
-  // Load additionals application system fonts to Libass
+  // Load additional fonts into Libass memory
   CFileItemList items;
-  XFILE::CDirectory::GetDirectory(systemFontPath, items, UTILS::FONT::SUPPORTED_EXTENSIONS_MASK,
+  // Fonts from system directory
+  XFILE::CDirectory::GetDirectory(static_cast<std::string>(UTILS::FONT::FONTPATH::SYSTEM), items,
+                                  UTILS::FONT::SUPPORTED_EXTENSIONS_MASK,
+                                  XFILE::DIR_FLAG_NO_FILE_DIRS | XFILE::DIR_FLAG_NO_FILE_INFO);
+  // Temporary fonts
+  XFILE::CDirectory::GetDirectory(static_cast<std::string>(UTILS::FONT::FONTPATH::TEMP), items,
+                                  UTILS::FONT::SUPPORTED_EXTENSIONS_MASK,
                                   XFILE::DIR_FLAG_NO_FILE_DIRS | XFILE::DIR_FLAG_NO_FILE_INFO);
   for (const auto& item : items)
   {
@@ -150,7 +139,8 @@ void CDVDSubtitlesLibass::Configure()
                FONT::FONT_DEFAULT_FILENAME);
   }
 
-  ass_set_fonts(m_renderer, GetSystemFontPath(FONT::FONT_DEFAULT_FILENAME).c_str(),
+  ass_set_fonts(m_renderer,
+                UTILS::FONT::FONTPATH::GetSystemFontPath(FONT::FONT_DEFAULT_FILENAME).c_str(),
                 m_defaultFontFamilyName.c_str(), ASS_FONTPROVIDER_AUTODETECT, nullptr, 1);
 
   ass_set_font_scale(m_renderer, 1);
