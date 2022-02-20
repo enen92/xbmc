@@ -1,0 +1,98 @@
+buildType:
+  default: Debug
+  choices:
+    debug:
+      short: Debug
+      long: Emit debug information
+      buildType: Debug
+    release:
+      short: Release
+      long: Optimize generated code
+      buildType: Release
+    asan:
+      short: Asan
+      long: Instrument with Address Sanitizer
+      buildType: Asan
+    tsan:
+      short: Tsan
+      long: Instrument with Thread Sanitizer
+      buildType: Tsan
+
+
+useOpenGL:
+  default: yes
+  choices:
+    yes:
+      short: OpenGL
+      long: Enable OpenGL engine
+      settings:
+        APP_RENDER_SYSTEM: gl
+
+disablefission:
+  default: yes
+  choices:
+    yes:
+      short: disablefission
+      long: disablefission
+      settings:
+        ENABLE_DEBUGFISSION: OFF
+
+
+
+usePipewire:
+  default: no
+  choices:
+    yes:
+      short: Pipewire
+      long: Enable pipewire
+      settings:
+        ENABLE_PIPEWIRE: ON
+    no:
+      short: PipewireOff
+      long: Disable pipewire
+      settings:
+        ENABLE_PIPEWIRE: OFF
+
+optical:
+  default: yes
+  choices:
+    yes:
+      short: optical enable
+      long: Enable optical
+      settings:
+        ENABLE_OPTICAL: YES
+    no:
+      short: optical disable
+      long: Disable optical
+      settings:
+        ENABLE_OPTICAL: NO
+
+
+windowing:
+  default: wayland
+  choices:
+    x11:
+      short: x11
+      long: Enable x11 engine
+      settings:
+        CORE_PLATFORM_NAME: x11
+    wayland:
+      short: wayland
+      long: Enable wayland engine
+      settings:
+        CORE_PLATFORM_NAME: wayland
+
+ffmpeg:
+  default: internal
+  choices:
+    internal:
+      short: internalffmpeg
+      long: Enable internal ffmpeg
+      settings:
+        ENABLE_INTERNAL_FFMPEG: ON
+    external:
+      short: externalffmpeg
+      long: Build with external ffmpeg
+      settings:
+        ENABLE_INTERNAL_FFMPEG: OFF
+

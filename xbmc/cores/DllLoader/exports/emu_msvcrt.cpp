@@ -2021,20 +2021,34 @@ extern "C"
 
   struct mntent *dll_getmntent(FILE *fp)
   {
-    if (fp == NULL)
-      return NULL;
+    if (!fp)
+      return nullptr;
 
+#if defined(TARGET_LINUX)
+    struct mntent* mountPoint = getmntent(fp);
+    if (mountPoint)
+      return mountPoint;
+
+    // warn if this is a kodi vfs file not associated with a mountpoint
     CFile* pFile = g_emuFileWrapper.GetFileXbmcByStream(fp);
     if (pFile)
     {
+<<<<<<< HEAD
       CLog::Log(LOGERROR, "%s - getmntent is not implemented for our virtual filesystem", __FUNCTION__);
       return NULL;
+=======
+      CLog::LogF(LOGWARNING, "getmntent is not implemented for our virtual filesystem");
+>>>>>>> 81ea91a2eb ([Linux][Discs][DllLoader] Always check getmntent result)
     }
-#if defined(TARGET_LINUX)
-    return getmntent(fp);
+    return nullptr;
 #else
+<<<<<<< HEAD
     CLog::Log(LOGWARNING, "%s - unimplemented function called", __FUNCTION__);
     return NULL;
+=======
+    CLog::LogF(LOGWARNING, "Unimplemented function called");
+    return nullptr;
+>>>>>>> 81ea91a2eb ([Linux][Discs][DllLoader] Always check getmntent result)
 #endif
   }
 
