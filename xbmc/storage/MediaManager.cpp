@@ -46,10 +46,6 @@
 #include "utils/XMLUtils.h"
 #include "utils/log.h"
 
-#if defined(TARGET_POSIX) && !defined(TARGET_DARWIN) && !defined(TARGET_FREEBSD)
-#include <sys/ioctl.h>
-#include <linux/cdrom.h>
-#endif
 #include <string>
 #include <vector>
 
@@ -83,6 +79,10 @@ void CMediaManager::Initialize()
     m_platformStorage = IStorageProvider::CreateInstance();
   }
 #ifdef HAS_DVD_DRIVE
+  if (!m_discDriveHander)
+  {
+    m_discDriveHander.reset(IDiscDriveHandler::CreateInstance());
+  }
   m_strFirstAvailDrive = m_platformStorage->GetFirstOpticalDeviceFileName();
 #endif
   m_platformStorage->Initialize();
@@ -394,7 +394,7 @@ bool CMediaManager::HasOpticalDrive()
   return false;
 }
 
-DWORD CMediaManager::GetDriveStatus(const std::string& devicePath)
+DriveState CMediaManager::GetDriveStatus(const std::string& devicePath)
 {
 #ifdef HAS_DVD_DRIVE
 #ifdef TARGET_WINDOWS
@@ -422,7 +422,7 @@ DWORD CMediaManager::GetDriveStatus(const std::string& devicePath)
   }
   return dwRet;
 #else
-  return MEDIA_DETECT::CDetectDVDMedia::DriveReady();
+  return static_cast<DriveState>(MEDIA_DETECT::CDetectDVDMedia::DriveReady());
 #endif
 #else
   return DRIVE_NOT_READY;
@@ -599,9 +599,15 @@ bool CMediaManager::Eject(const std::string& mountpath)
   return m_platformStorage->Eject(mountpath);
 }
 
-void CMediaManager::EjectTray( const bool bEject, const char cDriveLetter )
+std::shared_ptr<IDiscDriveHandler> CMediaManager::GetDiscDriveHandler()
 {
-#ifdef HAS_DVD_DRIVE
+  return m_discDriveHander;
+}
+
+
+//void CMediaManager::EjectTray( const bool bEject, const char cDriveLetter )
+//{
+/*#ifdef HAS_DVD_DRIVE
 #ifdef TARGET_WINDOWS
   CWIN32Util::EjectTray(cDriveLetter);
 #else
@@ -620,12 +626,14 @@ void CMediaManager::EjectTray( const bool bEject, const char cDriveLetter )
       break;
   }
 #endif
-#endif
-}
+#endif*/
+//if (m_discDriveHander)
+//    m_discDriveHander->EjectDriveTray("");
+//}
 
-void CMediaManager::CloseTray(const char cDriveLetter)
-{
-#ifdef HAS_DVD_DRIVE
+//void CMediaManager::CloseTray(const char cDriveLetter)
+//{
+/*#ifdef HAS_DVD_DRIVE
 #if defined(TARGET_DARWIN)
   // FIXME...
 #elif defined(TARGET_FREEBSD)
@@ -644,22 +652,22 @@ void CMediaManager::CloseTray(const char cDriveLetter)
 #elif defined(TARGET_WINDOWS)
   CWIN32Util::CloseTray(cDriveLetter);
 #endif
-#endif
-}
+#endif*/
+//if (m_discDriveHander)
+//    m_discDriveHander->CloseDriveTray("");
+//}
 
-void CMediaManager::ToggleTray(const char cDriveLetter)
-{
-#ifdef HAS_DVD_DRIVE
-#if defined(TARGET_WINDOWS)
-  CWIN32Util::ToggleTray(cDriveLetter);
-#else
-  if (GetDriveStatus() == TRAY_OPEN || GetDriveStatus() == DRIVE_OPEN)
-    CloseTray();
-  else
-    EjectTray();
-#endif
-#endif
-}
+//void CMediaManager::ToggleTray(const char cDriveLetter)
+//{
+//#ifdef HAS_DVD_DRIVE
+//#if defined(TARGET_WINDOWS)
+//  CWIN32Util::ToggleTray(cDriveLetter);
+//#else
+//#endif
+//#endif
+//  if (m_discDriveHander)
+//    m_discDriveHander->ToggleDriveTray("");
+//}
 
 void CMediaManager::ProcessEvents()
 {

@@ -24,7 +24,9 @@
 static int Eject(const std::vector<std::string>& params)
 {
 #ifdef HAS_DVD_DRIVE
-  CServiceBroker::GetMediaManager().ToggleTray();
+  std::shared_ptr<IDiscDriveHandler> discDriveHandler = CServiceBroker::GetMediaManager().GetDiscDriveHandler();
+  if (discDriveHandler)
+    discDriveHandler->ToggleDriveTray("");
 #endif
 
   return 0;

@@ -12,6 +12,7 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "storage/MediaManager.h"
+#include "storage/IDiscDriveHandler.h"
 #include "utils/Variant.h"
 
 #include <utility>
@@ -43,7 +44,9 @@ bool CGUIDialogPlayEject::OnMessage(CGUIMessage& message)
     }
     if (iControl == ID_BUTTON_EJECT)
     {
-      CServiceBroker::GetMediaManager().ToggleTray();
+      std::shared_ptr<IDiscDriveHandler> discDriveHandler = CServiceBroker::GetMediaManager().GetDiscDriveHandler();
+      if (discDriveHandler)
+        discDriveHandler->ToggleDriveTray("");
       return true;
     }
   }

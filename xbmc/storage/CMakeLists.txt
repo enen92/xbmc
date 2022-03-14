@@ -1,7 +1,10 @@
-set(SOURCES AutorunMediaJob.cpp
+set(SOURCES AbstractDiscDriveHandler.cpp
+            AutorunMediaJob.cpp
             MediaManager.cpp)
 
-set(HEADERS AutorunMediaJob.h
+set(HEADERS AbstractDiscDriveHandler.h
+            AutorunMediaJob.h
+            IDiscDriveHandler.h
             IStorageProvider.h
             MediaManager.h)
 

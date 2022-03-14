@@ -143,7 +143,9 @@ bool CCDDARipJob::DoWork()
     if (m_eject)
     {
       CLog::Log(LOGINFO, "CCDDARipJob::{} - Ejecting CD", __func__);
-      CServiceBroker::GetMediaManager().EjectTray();
+      std::shared_ptr<IDiscDriveHandler> discDriveHandler = CServiceBroker::GetMediaManager().GetDiscDriveHandler();
+      if (discDriveHandler)
+        discDriveHandler->EjectDriveTray("");
     }
   }
 

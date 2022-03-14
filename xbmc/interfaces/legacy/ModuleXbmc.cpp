@@ -239,7 +239,7 @@ namespace XBMCAddon
     long getDVDState()
     {
       XBMC_TRACE;
-      return CServiceBroker::GetMediaManager().GetDriveStatus();
+      return static_cast<long>(CServiceBroker::GetMediaManager().GetDriveStatus());
     }
 
     long getFreeMem()
@@ -553,10 +553,10 @@ namespace XBMCAddon
 
     int getPLAYLIST_MUSIC() { return PLAYLIST_MUSIC; }
     int getPLAYLIST_VIDEO() { return PLAYLIST_VIDEO; }
-    int getTRAY_OPEN() { return TRAY_OPEN; }
-    int getDRIVE_NOT_READY() { return DRIVE_NOT_READY; }
-    int getTRAY_CLOSED_NO_MEDIA() { return TRAY_CLOSED_NO_MEDIA; }
-    int getTRAY_CLOSED_MEDIA_PRESENT() { return TRAY_CLOSED_MEDIA_PRESENT; }
+    int getTRAY_OPEN() { return static_cast<int>(TrayState::TRAY_OPEN); }
+    int getDRIVE_NOT_READY() { return static_cast<int>(DriveState::DRIVE_NOT_READY); }
+    int getTRAY_CLOSED_NO_MEDIA() { return static_cast<int>(TrayState::TRAY_CLOSED_NO_MEDIA); }
+    int getTRAY_CLOSED_MEDIA_PRESENT() { return static_cast<int>(TrayState::TRAY_CLOSED_MEDIA_PRESENT); }
     int getLOGDEBUG() { return LOGDEBUG; }
     int getLOGINFO() { return LOGINFO; }
     int getLOGWARNING() { return LOGWARNING; }

@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "IDiscDriveHandler.h"
 #include "IStorageProvider.h"
 #include "MediaSource.h" // for VECSOURCES
 #include "threads/CriticalSection.h"
@@ -16,19 +17,9 @@
 
 #include <map>
 #include <vector>
+#include <memory>
 
 #include "PlatformDefs.h"
-
-#define TRAY_OPEN     16
-#define TRAY_CLOSED_NO_MEDIA  64
-#define TRAY_CLOSED_MEDIA_PRESENT 96
-
-#define DRIVE_OPEN      0 // Open...
-#define DRIVE_NOT_READY     1 // Opening.. Closing...
-#define DRIVE_READY      2
-#define DRIVE_CLOSED_NO_MEDIA   3 // CLOSED...but no media in drive
-#define DRIVE_CLOSED_MEDIA_PRESENT  4 // Will be send once when the drive just have closed
-#define DRIVE_NONE  5 // system doesn't have an optical drive
 
 class CFileItem;
 
@@ -66,7 +57,7 @@ public:
   bool IsAudio(const std::string& devicePath="");
   bool HasOpticalDrive();
   std::string TranslateDevicePath(const std::string& devicePath, bool bReturnAsDevice=false);
-  DWORD GetDriveStatus(const std::string& devicePath="");
+  DriveState GetDriveStatus(const std::string& devicePath="");
 #ifdef HAS_DVD_DRIVE
   MEDIA_DETECT::CCdInfo* GetCdInfo(const std::string& devicePath="");
   bool RemoveCdInfo(const std::string& devicePath="");
@@ -77,9 +68,8 @@ public:
   void SetHasOpticalDrive(bool bstatus);
 
   bool Eject(const std::string& mountpath);
-  void EjectTray( const bool bEject=true, const char cDriveLetter='\0' );
-  void CloseTray(const char cDriveLetter='\0');
-  void ToggleTray(const char cDriveLetter='\0');
+
+  std::shared_ptr<IDiscDriveHandler> GetDiscDriveHandler();
 
   void ProcessEvents();
 
@@ -119,6 +109,7 @@ protected:
 
 private:
   IStorageProvider *m_platformStorage;
+  std::shared_ptr<IDiscDriveHandler> m_discDriveHander = nullptr;
 
   UTILS::DISCS::DiscInfo GetDiscInfo(const std::string& mediaPath);
   void RemoveDiscInfo(const std::string& devicePath);

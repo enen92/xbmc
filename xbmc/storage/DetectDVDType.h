@@ -20,6 +20,7 @@
 #include "threads/CriticalSection.h"
 #include "threads/Thread.h"
 #include "utils/DiscsUtils.h"
+#include "storage/IDiscDriveHandler.h"
 
 #include <memory>
 #include <string>
@@ -51,7 +52,7 @@ public:
   static void UpdateState();
 protected:
   void UpdateDvdrom();
-  DWORD GetTrayState();
+  DriveState GetTrayState();
 
 
   void DetectMediaType();
@@ -62,7 +63,7 @@ protected:
 private:
   static CCriticalSection m_muReadingMedia;
 
-  static int m_DriveState;
+  static DriveState m_DriveState;
   static time_t m_LastPoll;
   static CDetectDVDMedia* m_pInstance;
 
@@ -70,8 +71,9 @@ private:
 
   bool m_bStartup = true; // Do not autorun on startup
   bool m_bAutorun = false;
-  DWORD m_dwTrayState;
-  DWORD m_dwLastTrayState = 0;
+  TrayState m_dwTrayState;
+  TrayState m_dwLastTrayState = TrayState::UNDEFINED;
+  DriveState m_lastRecordedDriveState = DriveState::DRIVE_NONE;
 
   static std::string m_diskLabel;
   static std::string m_diskPath;

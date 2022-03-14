@@ -288,11 +288,13 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
     case CONTEXT_BUTTON_EJECT_DRIVE:
       return CServiceBroker::GetMediaManager().Eject(item->GetPath());
 #ifdef HAS_DVD_DRIVE
-    case CONTEXT_BUTTON_EJECT_DISC:
-      CServiceBroker::GetMediaManager().ToggleTray(
-          CServiceBroker::GetMediaManager().TranslateDevicePath(item->GetPath())[0]);
-#endif
+    case CONTEXT_BUTTON_EJECT_DISC: {
+      std::shared_ptr<IDiscDriveHandler> discDriveHandler = CServiceBroker::GetMediaManager().GetDiscDriveHandler();
+      if (discDriveHandler)
+        discDriveHandler->ToggleDriveTray(CServiceBroker::GetMediaManager().TranslateDevicePath(item->GetPath()));
       return true;
+    }
+#endif
     default:
       break;
   }

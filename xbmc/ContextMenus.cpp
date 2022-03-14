@@ -32,8 +32,9 @@ namespace CONTEXTMENU
   bool CEjectDisk::Execute(const CFileItemPtr& item) const
   {
 #ifdef HAS_DVD_DRIVE
-    CServiceBroker::GetMediaManager().ToggleTray(
-        CServiceBroker::GetMediaManager().TranslateDevicePath(item->GetPath())[0]);
+    std::shared_ptr<IDiscDriveHandler> discDriveHandler = CServiceBroker::GetMediaManager().GetDiscDriveHandler();
+    if (discDriveHandler)
+      discDriveHandler->ToggleDriveTray(CServiceBroker::GetMediaManager().TranslateDevicePath(item->GetPath()));
 #endif
     return true;
   }
