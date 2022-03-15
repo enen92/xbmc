@@ -34,7 +34,7 @@ namespace CONTEXTMENU
 #ifdef HAS_DVD_DRIVE
     std::shared_ptr<IDiscDriveHandler> discDriveHandler = CServiceBroker::GetMediaManager().GetDiscDriveHandler();
     if (discDriveHandler)
-      discDriveHandler->ToggleDriveTray(CServiceBroker::GetMediaManager().TranslateDevicePath(item->GetPath()));
+      discDriveHandler->ToggleDriveTray(CServiceBroker::GetMediaManager().TranslateDevicePath(item->GetPath(), true));
 #endif
     return true;
   }

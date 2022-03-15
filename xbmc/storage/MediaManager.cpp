@@ -334,6 +334,9 @@ std::string CMediaManager::TranslateDevicePath(const std::string& devicePath, bo
 
   URIUtils::RemoveSlashAtEnd(strDevice);
 #endif
+  if (bReturnAsDevice)
+    strDevice = m_strFirstAvailDrive;
+
   return strDevice;
 }
 

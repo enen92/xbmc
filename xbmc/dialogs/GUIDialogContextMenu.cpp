@@ -291,7 +291,7 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
     case CONTEXT_BUTTON_EJECT_DISC: {
       std::shared_ptr<IDiscDriveHandler> discDriveHandler = CServiceBroker::GetMediaManager().GetDiscDriveHandler();
       if (discDriveHandler)
-        discDriveHandler->ToggleDriveTray(CServiceBroker::GetMediaManager().TranslateDevicePath(item->GetPath()));
+        discDriveHandler->ToggleDriveTray(CServiceBroker::GetMediaManager().TranslateDevicePath(item->GetPath(), true));
       return true;
     }
 #endif
