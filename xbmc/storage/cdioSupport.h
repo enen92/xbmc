@@ -97,6 +97,13 @@ typedef struct TRACKINFO
 }
 trackinfo;
 
+/*! \brief Helper enum class for the MMC tray state
+*/
+enum class CdioTrayStatus: int
+{
+  CLOSED = 0, ///< The MMC tray state is reported closed
+  OPEN = 1, ///< The MMC tray state is reported open
+};
 
 class CCdInfo
 {
