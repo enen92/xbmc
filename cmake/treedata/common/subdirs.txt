@@ -35,6 +35,7 @@ xbmc/powermanagement                            powermanagement
 xbmc/programs                                   programs
 xbmc/rendering                                  rendering
 xbmc/storage                                    storage
+xbmc/storage/discs                              storage/discs
 xbmc/threads                                    threads
 xbmc/utils                                      utils
 xbmc/view                                       view
