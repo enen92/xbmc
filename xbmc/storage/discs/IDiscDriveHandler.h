@@ -12,10 +12,8 @@
 #include <string>
 
 /*! \brief Represents the state of a disc (optical) drive
-* @todo those unsigned ints are defined by licdio, we'll need some sort of map for translation in the future
-* so they can be defined in libcdio access header instead and removed from platform agnostic code
 */
-enum class DriveState : unsigned int
+enum class DriveState
 {
   DRIVE_OPEN = 0, ///< The drive is open
   DRIVE_NOT_READY = 1, ///< The drive is not ready (happens when openning or closing)
@@ -28,15 +26,13 @@ enum class DriveState : unsigned int
 };
 
 /*! \brief Represents the state of the drive tray
-* @todo those unsigned ints are defined by licdio, we'll need some sort of map for translation in the future
-* so they can be defined in libcdio access header instead and removed from platform agnostic code
 */
-enum class TrayState : unsigned int
+enum class TrayState
 {
   UNDEFINED = 0, ///< The tray is in an undefined state, we don't know yet
-  TRAY_OPEN = 16, ///< The tray is open
-  TRAY_CLOSED_NO_MEDIA = 64, ///< The tray is closed and doesn't have any optical media
-  TRAY_CLOSED_MEDIA_PRESENT = 96 ///< The tray is closed and contains optical media
+  TRAY_OPEN = 1, ///< The tray is open
+  TRAY_CLOSED_NO_MEDIA = 2, ///< The tray is closed and doesn't have any optical media
+  TRAY_CLOSED_MEDIA_PRESENT = 3 ///< The tray is closed and contains optical media
 };
 
 /*! \brief Generic interface for platform disc drive handling
