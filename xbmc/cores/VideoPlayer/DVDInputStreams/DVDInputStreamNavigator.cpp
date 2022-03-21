@@ -1287,14 +1287,7 @@ void CDVDInputStreamNavigator::EnableSubtitleStream(bool bEnable)
   if (!m_dvdnav)
     return;
 
-  vm_t* vm = m_dll.dvdnav_get_vm(m_dvdnav);
-  if (!vm)
-    return;
-
-  if(bEnable)
-    vm->state.SPST_REG |= 0x40;
-  else
-    vm->state.SPST_REG &= ~0x40;
+  m_dll.dvdnav_toggle_spu_stream(m_dvdnav, static_cast<uint8_t>(bEnable));
 }
 
 bool CDVDInputStreamNavigator::IsSubtitleStreamEnabled()

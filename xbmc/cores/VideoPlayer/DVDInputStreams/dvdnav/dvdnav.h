@@ -644,6 +644,16 @@ int8_t dvdnav_get_active_spu_stream(dvdnav_t *self);
  */
 user_ops_t dvdnav_get_restrictions(dvdnav_t *self);
 
+/*********************************************************************
+ * setting stream attributes                                         *
+ *********************************************************************/
+
+/*
+ * Set the visible (enable) status of the current spu stream
+ * (to enable/disable subtitles)
+ * visibility defines if the spu stream should be enabled/visible (1) or disabled (0)
+ */
+dvdnav_status_t dvdnav_toggle_spu_stream(dvdnav_t *self, uint8_t visibility);
 
 /*********************************************************************
  * multiple angles                                                   *
