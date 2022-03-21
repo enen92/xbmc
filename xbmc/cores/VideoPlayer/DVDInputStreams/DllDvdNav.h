@@ -100,6 +100,7 @@ public:
   virtual uint32_t dvdnav_describe_title_chapters(dvdnav_t* self, uint32_t title, uint64_t** times, uint64_t* duration)=0;
   virtual int64_t dvdnav_get_current_time(dvdnav_t* self) = 0;
   virtual int dvdnav_get_video_resolution(dvdnav_t* self, uint32_t* width, uint32_t* height)=0;
+  virtual int8_t dvdnav_get_number_of_streams(dvdnav_t* self, dvdnav_stream_type_t stream_type)=0;
 };
 
 class DllDvdNav : public DllDynamic, DllDvdNavInterface
@@ -147,6 +148,7 @@ class DllDvdNav : public DllDynamic, DllDvdNavInterface
   DEFINE_METHOD1(vm_t*, dvdnav_get_vm, (dvdnav_t *p1))
   DEFINE_METHOD3(int, dvdnav_get_button_info, (dvdnav_t* p1, int p2[2][4], int p3[2][4]))
   DEFINE_METHOD2(int8_t, dvdnav_get_audio_logical_stream, (dvdnav_t *p1, uint8_t p2))
+  DEFINE_METHOD2(int8_t, dvdnav_get_number_of_streams, (dvdnav_t *p1, dvdnav_stream_type_t p2))
   DEFINE_METHOD2(dvdnav_status_t, dvdnav_set_region_mask, (dvdnav_t *p1, int32_t p2))
   DEFINE_METHOD1(uint8_t, dvdnav_get_video_aspect, (dvdnav_t *p1))
   DEFINE_METHOD1(uint8_t, dvdnav_get_video_scale_permission, (dvdnav_t *p1))
@@ -183,6 +185,7 @@ class DllDvdNav : public DllDynamic, DllDvdNavInterface
     RESOLVE_METHOD(dvdnav_still_skip)
     RESOLVE_METHOD(dvdnav_wait_skip)
     RESOLVE_METHOD(dvdnav_stop)
+    RESOLVE_METHOD(dvdnav_get_number_of_streams)
     RESOLVE_METHOD(dvdnav_button_select)
     RESOLVE_METHOD(dvdnav_button_activate)
     RESOLVE_METHOD(dvdnav_upper_button_select)

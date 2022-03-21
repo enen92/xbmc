@@ -685,6 +685,11 @@ int8_t dvdnav_is_domain_vtsm(dvdnav_t *self);
  */
 int8_t dvdnav_is_domain_vts(dvdnav_t *self);
 
+/*
+ * Returns the number of streams provided its type (e.g. subtitles, audio, etc)
+ */
+int8_t dvdnav_get_number_of_streams(dvdnav_t *self, dvdnav_stream_type_t stream_type);
+
 /* XBMC added functions */
 int dvdnav_get_button_info(dvdnav_t* self, int alpha[2][4], int color[2][4]);
 

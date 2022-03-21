@@ -51,6 +51,15 @@ typedef struct {
 //XBMC Needs some of these
 #if 1
 
+/*
+ * Stream Types
+ * (see dvdnav_get_number_of_streams())
+ */
+typedef enum {
+  DVD_SUBTITLE_STREAM = 0,
+  DVD_AUDIO_STREAM    = 1
+} dvdnav_stream_type_t;
+
 /* Domain */
 typedef enum {
   DVD_DOMAIN_FirstPlay,  /* First Play Domain */
