@@ -103,6 +103,7 @@ public:
   virtual int dvdnav_get_video_resolution(dvdnav_t* self, uint32_t* width, uint32_t* height)=0;
   virtual int8_t dvdnav_get_number_of_streams(dvdnav_t* self, dvdnav_stream_type_t stream_type)=0;
   virtual dvdnav_status_t dvdnav_toggle_spu_stream(dvdnav_t *self, uint8_t visibility)=0;
+  virtual dvdnav_status_t dvdnav_set_active_stream(dvdnav_t *self, uint8_t stream_num, dvdnav_stream_type_t stream_type)=0;
 };
 
 class DllDvdNav : public DllDynamic, DllDvdNavInterface
@@ -176,6 +177,7 @@ class DllDvdNav : public DllDynamic, DllDvdNavInterface
   DEFINE_METHOD1(int64_t, dvdnav_get_current_time, (dvdnav_t* p1))
   DEFINE_METHOD3(int, dvdnav_get_video_resolution, (dvdnav_t* p1, uint32_t* p2, uint32_t* p3))
   DEFINE_METHOD2(dvdnav_status_t, dvdnav_toggle_spu_stream, (dvdnav_t *p1, uint8_t p2))
+  DEFINE_METHOD3(dvdnav_status_t, dvdnav_set_active_stream, (dvdnav_t *p1, uint8_t p2, dvdnav_stream_type_t p3))
   BEGIN_METHOD_RESOLVE()
     RESOLVE_METHOD(dvdnav_open)
     RESOLVE_METHOD(dvdnav_open_stream)
@@ -244,6 +246,7 @@ class DllDvdNav : public DllDynamic, DllDvdNavInterface
     RESOLVE_METHOD(dvdnav_get_current_time)
     RESOLVE_METHOD(dvdnav_get_video_resolution)
     RESOLVE_METHOD(dvdnav_toggle_spu_stream)
+    RESOLVE_METHOD(dvdnav_set_active_stream)
 END_METHOD_RESOLVE()
 };
 
