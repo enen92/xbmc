@@ -1071,28 +1071,11 @@ AudioStreamInfo CDVDInputStreamNavigator::GetAudioStreamInfo(const int iId)
 
 int CDVDInputStreamNavigator::GetAudioStreamCount()
 {
-  if (!m_dvdnav) return 0;
-
-  vm_t* vm = m_dll.dvdnav_get_vm(m_dvdnav);
-
-  if (!vm) return 0;
-  if (!vm->state.pgc) return 0;
-
-  if (vm->state.domain == VTS_DOMAIN)
+  if (!m_dvdnav)
   {
-    int streamN = 0;
-    for (int i = 0; i < 8; i++)
-    {
-      if (vm->state.pgc->audio_control[i] & (1<<15))
-        streamN++;
-    }
-    return streamN;
+    return 0;
   }
-  else
-  {
-    /* just for good measure say that non vts domain always has one */
-    return 1;
-  }
+  return m_dll.dvdnav_get_number_of_streams(m_dvdnav, DVD_AUDIO_STREAM);
 }
 
 
