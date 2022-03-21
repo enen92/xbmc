@@ -132,12 +132,13 @@ bool CDVDInputStreamNavigator::Open()
   else
   {
     // find out what region dvd reports itself to be from, and use that as mask if available
-    vm_t* vm = m_dll.dvdnav_get_vm(m_dvdnav);
-    if (vm && vm->vmgi && vm->vmgi->vmgi_mat)
-      mask = ((vm->vmgi->vmgi_mat->vmg_category >> 16) & 0xff) ^ 0xff;
+    if (m_dll.dvdnav_get_disk_region_mask(m_dvdnav, &mask) == DVDNAV_STATUS_ERR)
+    {
+      CLog::LogF(LOGERROR, "Error getting DVD region code: {}",
+              m_dll.dvdnav_err_to_string(m_dvdnav));
+      mask = 0xff;
+    }
   }
-  if(!mask)
-    mask = 0xff;
 
   CLog::Log(LOGDEBUG, "{} - Setting region mask {:02x}", __FUNCTION__, mask);
   m_dll.dvdnav_set_region_mask(m_dvdnav, mask);

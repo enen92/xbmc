@@ -97,6 +97,7 @@ public:
   virtual dvdnav_status_t dvdnav_mouse_select(dvdnav_t *self, pci_t *pci, int32_t x, int32_t y)=0;
   virtual dvdnav_status_t dvdnav_get_title_string(dvdnav_t *self, const char **title_str)=0;
   virtual dvdnav_status_t dvdnav_get_serial_string(dvdnav_t *self, const char **serial_str)=0;
+  virtual dvdnav_status_t dvdnav_get_disk_region_mask(dvdnav_t* self, int32_t* region_mask)=0;
   virtual uint32_t dvdnav_describe_title_chapters(dvdnav_t* self, uint32_t title, uint64_t** times, uint64_t* duration)=0;
   virtual int64_t dvdnav_get_current_time(dvdnav_t* self) = 0;
   virtual int dvdnav_get_video_resolution(dvdnav_t* self, uint32_t* width, uint32_t* height)=0;
@@ -139,6 +140,7 @@ class DllDvdNav : public DllDynamic, DllDvdNavInterface
   DEFINE_METHOD2(uint16_t, dvdnav_spu_stream_to_lang, (dvdnav_t *p1, uint8_t p2))
   DEFINE_METHOD2(dvdnav_status_t, dvdnav_get_current_highlight, (dvdnav_t *p1, int32_t *p2))
   DEFINE_METHOD2(dvdnav_status_t, dvdnav_menu_call, (dvdnav_t *p1, DVDMenuID_t p2))
+  DEFINE_METHOD2(dvdnav_status_t, dvdnav_get_disk_region_mask, (dvdnav_t *p1, int32_t* p2))
   DEFINE_METHOD1(dvdnav_status_t, dvdnav_prev_pg_search, (dvdnav_t *p1))
   DEFINE_METHOD1(dvdnav_status_t, dvdnav_next_pg_search, (dvdnav_t *p1))
   DEFINE_METHOD4(dvdnav_status_t, dvdnav_get_highlight_area, (pci_t *p1, int32_t p2, int32_t p3, dvdnav_highlight_area_t *p4))
@@ -186,6 +188,7 @@ class DllDvdNav : public DllDynamic, DllDvdNavInterface
     RESOLVE_METHOD(dvdnav_wait_skip)
     RESOLVE_METHOD(dvdnav_stop)
     RESOLVE_METHOD(dvdnav_get_number_of_streams)
+    RESOLVE_METHOD(dvdnav_get_disk_region_mask)
     RESOLVE_METHOD(dvdnav_button_select)
     RESOLVE_METHOD(dvdnav_button_activate)
     RESOLVE_METHOD(dvdnav_upper_button_select)
