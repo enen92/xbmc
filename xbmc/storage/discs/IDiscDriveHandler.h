@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <vector>
 #include <memory>
 #include <string>
 
@@ -48,6 +49,8 @@ enum class TrayState
 class IDiscDriveHandler
 {
 public:
+  virtual std::vector<std::string> GetDevices() = 0;
+
   /*! \brief Get the optical drive state provided its device path
   * \param devicePath the path for the device drive (e.g. /dev/sr0)
   * \return The drive state

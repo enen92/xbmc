@@ -269,6 +269,8 @@ public:
   lsn_t cdio_get_track_last_lsn(const CdIo_t *p_cdio, track_t i_track);
   driver_return_code_t cdio_read_audio_sectors(const CdIo_t *p_cdio, void *p_buf, lsn_t i_lsn, uint32_t i_blocks);
   driver_return_code_t cdio_close_tray(const char* psz_source, driver_id_t* driver_id);
+  char ** cdio_get_devices(driver_id_t driver_id);
+  void cdio_free_device_list(char * device_list[]);
   const char* cdio_driver_errmsg(driver_return_code_t drc);
 
   char* GetDeviceFileName();

@@ -202,6 +202,18 @@ driver_return_code_t CLibcdio::cdio_close_tray(const char* psz_source, driver_id
   return (::cdio_close_tray(psz_source, driver_id));
 }
 
+char ** CLibcdio::cdio_get_devices(driver_id_t driver_id)
+{
+  std::unique_lock<CCriticalSection> lock(*this);
+  return (::cdio_get_devices(driver_id));
+}
+
+void CLibcdio::cdio_free_device_list(char * device_list[])
+{
+  std::unique_lock<CCriticalSection> lock(*this);
+  return (::cdio_free_device_list(device_list));
+}
+
 const char* CLibcdio::cdio_driver_errmsg(driver_return_code_t drc)
 {
   return (::cdio_driver_errmsg(drc));

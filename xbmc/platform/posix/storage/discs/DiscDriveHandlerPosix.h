@@ -23,6 +23,8 @@ public:
   */
   ~CDiscDriveHandlerPosix() override = default;
 
+  std::vector<std::string> GetDevices() override;
+
   /*! \brief Get the optical drive state provided its device path
   * \param devicePath the path for the device drive (e.g. /dev/sr0)
   * \return The drive state

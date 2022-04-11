@@ -78,6 +78,7 @@ void CMediaManager::Initialize()
   }
 #ifdef HAS_DVD_DRIVE
   m_platformDiscDriveHander = IDiscDriveHandler::CreateInstance();
+  m_platformDiscDriveHander->GetDevices();
   m_strFirstAvailDrive = m_platformStorage->GetFirstOpticalDeviceFileName();
 #endif
   m_platformStorage->Initialize();

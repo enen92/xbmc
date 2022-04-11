@@ -24,6 +24,31 @@ std::shared_ptr<IDiscDriveHandler> IDiscDriveHandler::CreateInstance()
   return std::make_shared<CDiscDriveHandlerPosix>();
 }
 
+std::vector<std::string> CDiscDriveHandlerPosix::GetDevices()
+{
+  std::vector<std::string> deviceList;
+  const std::shared_ptr<CLibcdio> libCdio = CLibcdio::GetInstance();
+  if (!libCdio)
+  {
+    CLog::LogF(LOGERROR, "Failed to obtain libcdio handler");
+    return deviceList;
+  }
+  char** devices = libCdio->cdio_get_devices(DRIVER_DEVICE);
+  if (!devices) {
+    return deviceList;
+  }
+
+  int i = 0;
+  while (devices[i])
+  {
+    deviceList.emplace_back(devices[i]);
+    i++;
+  }
+
+  libCdio->cdio_free_device_list(devices);
+  return deviceList;
+}
+
 DriveState CDiscDriveHandlerPosix::GetDriveState(const std::string& devicePath)
 {
   DriveState driveStatus = DriveState::NOT_READY;
