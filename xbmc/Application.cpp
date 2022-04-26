@@ -1240,6 +1240,8 @@ bool CApplication::LoadSkin(const std::string& skinID)
 
   g_localizeStrings.LoadSkinStrings(langPath, settings->GetString(CSettings::SETTING_LOCALE_LANGUAGE));
 
+  g_SkinInfo->LoadTimers();
+
   const auto start = std::chrono::steady_clock::now();
 
   CLog::Log(LOGINFO, "  load new skin...");
@@ -1306,6 +1308,10 @@ bool CApplication::LoadSkin(const std::string& skinID)
     }
   }
 
+  // start timer manager after all windows were loaded and skin state was restored since timers might depend on
+  // boolean conditions that reference specific windows
+  g_SkinInfo->StartTimerEvaluation();
+
   return true;
 }
 
@@ -1315,6 +1321,9 @@ void CApplication::UnloadSkin()
     g_SkinInfo->SaveSettings();
   else if (!m_saveSkinOnUnloading)
     m_saveSkinOnUnloading = true;
+
+  if (g_SkinInfo)
+    g_SkinInfo->Unload();
 
   CGUIComponent *gui = CServiceBroker::GetGUI();
   if (gui)
