@@ -91,6 +91,11 @@ bool CSkinGUIInfo::GetInt(int& value, const CGUIListItem *gitem, int contextWind
       value = g_SkinInfo->GetTimerElapsedSeconds(info.GetData3());
       return true;
     }
+    case SKIN_INTEGER:
+    {
+      value = CSkinSettings::GetInstance().GetInt(info.GetData1());
+      return true;
+    }
   }
   return false;
 }
