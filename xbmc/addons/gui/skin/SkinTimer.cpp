@@ -11,12 +11,14 @@
 
 CSkinTimer::CSkinTimer(const std::string& name,
                        const INFO::InfoPtr startCondition,
+                       const INFO::InfoPtr resetCondition,
                        const INFO::InfoPtr stopCondition,
                        const std::string& startAction,
                        const std::string& stopAction,
                        bool resetOnStart)
   : m_name{name},
     m_startCondition{startCondition},
+    m_resetCondition{resetCondition},
     m_stopCondition{stopCondition},
     m_startAction{startAction},
     m_stopAction{stopAction},
@@ -37,6 +39,11 @@ void CSkinTimer::Start()
   OnStart();
 }
 
+void CSkinTimer::Reset()
+{
+  CStopWatch::Reset();
+}
+
 void CSkinTimer::Stop()
 {
   CStopWatch::Stop();
@@ -48,6 +55,11 @@ bool CSkinTimer::VerifyStartCondition() const
   return m_startCondition && m_startCondition->Get();
 }
 
+bool CSkinTimer::VerifyResetCondition() const
+{
+  return m_resetCondition && m_resetCondition->Get();
+}
+
 bool CSkinTimer::VerifyStopCondition() const
 {
   return m_stopCondition && m_stopCondition->Get();
@@ -56,6 +68,11 @@ bool CSkinTimer::VerifyStopCondition() const
 INFO::InfoPtr CSkinTimer::GetStartCondition() const
 {
   return m_startCondition;
+}
+
+INFO::InfoPtr CSkinTimer::GetResetCondition() const
+{
+  return m_resetCondition;
 }
 
 INFO::InfoPtr CSkinTimer::GetStopCondition() const

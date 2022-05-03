@@ -69,11 +69,12 @@ void CSkinTimerManager::LoadTimerInternal(const TiXmlElement* node)
   }
 
   INFO::InfoPtr startInfo{nullptr};
+  INFO::InfoPtr resetInfo{nullptr};
   INFO::InfoPtr stopInfo{nullptr};
   std::string timerName = node->FirstChild("name")->FirstChild()->Value();
   std::string startAction;
   std::string stopAction;
-  bool reset{false};
+  bool resetOnStart{false};
 
   if (m_timers.count(timerName) > 0)
   {
@@ -91,8 +92,15 @@ void CSkinTimerManager::LoadTimerInternal(const TiXmlElement* node)
     // check if timer needs to be reset after start
     if (node->Attribute("reset") && StringUtils::EqualsNoCase(node->Attribute("reset"), "true"))
     {
-      reset = true;
+      resetOnStart = true;
     }
+  }
+
+  if (node->FirstChild("reset") && node->FirstChild("reset")->FirstChild() &&
+      !node->FirstChild("reset")->FirstChild()->ValueStr().empty())
+  {
+    resetInfo = CServiceBroker::GetGUI()->GetInfoManager().Register(
+        node->FirstChild("reset")->FirstChild()->ValueStr());
   }
 
   if (node->FirstChild("stop") && node->FirstChild("stop")->FirstChild() &&
@@ -133,7 +141,7 @@ void CSkinTimerManager::LoadTimerInternal(const TiXmlElement* node)
   }
 
   m_timers[timerName] = std::make_unique<CSkinTimer>(
-      CSkinTimer(timerName, startInfo, stopInfo, startAction, stopAction, reset));
+      CSkinTimer(timerName, startInfo, resetInfo, stopInfo, startAction, stopAction, resetOnStart));
 }
 
 bool CSkinTimerManager::TimerIsRunning(const std::string& timer) const
@@ -201,6 +209,10 @@ void CSkinTimerManager::Stop()
     {
       CServiceBroker::GetGUI()->GetInfoManager().UnRegister(timer->GetStopCondition());
     }
+    if (timer->GetResetCondition())
+    {
+      CServiceBroker::GetGUI()->GetInfoManager().UnRegister(timer->GetResetCondition());
+    }
   }
   m_timers.clear();
 }
@@ -226,6 +238,10 @@ void CSkinTimerManager::Process()
       else if (timer->IsRunning() && timer->VerifyStopCondition())
       {
         timer->Stop();
+      }
+      if (timer->GetElapsedSeconds() > 0 && timer->VerifyResetCondition())
+      {
+        timer->Reset();
       }
     }
     Sleep(500ms);
