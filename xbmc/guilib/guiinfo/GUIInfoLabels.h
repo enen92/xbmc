@@ -394,6 +394,7 @@
 #define INTEGER_LESS_OR_EQUAL       454
 #define INTEGER_EVEN                455
 #define INTEGER_ODD                 456
+#define INTEGER_VALUEOF 457
 
 #define SKIN_BOOL                   600
 #define SKIN_STRING                 601
