@@ -14,7 +14,6 @@
 #define LABEL_ROW3                       12
 
  // Displays current position, visible after seek or when forced
- // Alt, use conditional visibility Player.DisplayAfterSeek
 #define LABEL_CURRENT_TIME               22
 
  // Displays when video is rebuffering

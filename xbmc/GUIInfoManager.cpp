@@ -454,12 +454,6 @@ const infomap integer_bools[] =  {{ "isequal",          INTEGER_IS_EQUAL },
 ///     video playback).
 ///     <p>
 ///   }
-///   \table_row3{   <b>`Player.DisplayAfterSeek`</b>,
-///                  \anchor Player_DisplayAfterSeek
-///                  _boolean_,
-///     @return **True** for the first 2.5 seconds after a seek.
-///     <p>
-///   }
 ///   \table_row3{   <b>`Player.Seekbar`</b>,
 ///                  \anchor Player_Seekbar
 ///                  _integer_,
@@ -820,7 +814,6 @@ const infomap player_labels[] = {{"hasmedia", PLAYER_HAS_MEDIA},
                                  {"forwarding8x", PLAYER_FORWARDING_8x},
                                  {"forwarding16x", PLAYER_FORWARDING_16x},
                                  {"forwarding32x", PLAYER_FORWARDING_32x},
-                                 {"displayafterseek", PLAYER_DISPLAY_AFTER_SEEK},
                                  {"caching", PLAYER_CACHING},
                                  {"seekbar", PLAYER_SEEKBAR},
                                  {"seeking", PLAYER_SEEKING},
@@ -9613,9 +9606,13 @@ const infomap slideshow[] =      {{ "ispaused",               SLIDESHOW_ISPAUSED
 ///
 /// -----------------------------------------------------------------------------
 
-
 /// \page modules__infolabels_boolean_conditions
 /// \section modules_rm_infolabels_booleans Additional revision history for Infolabels and Boolean Conditions
+/// <hr>
+/// \subsection modules_rm_infolabels_booleans_v20 Kodi v20 (Nexus)
+/// @skinning_v20 **[Removed Boolean Conditions]** The following boolean conditions have been removed:
+///   - `Player.DisplayAfterSeek` - use TODO instead
+///
 /// <hr>
 /// \subsection modules_rm_infolabels_booleans_v19 Kodi v19 (Matrix)
 /// @skinning_v19 **[Removed Infolabels]** The following infolabels have been removed:
