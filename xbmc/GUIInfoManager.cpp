@@ -879,9 +879,17 @@ const infomap player_labels[] = {{"hasmedia", PLAYER_HAS_MEDIA},
 ///     while still making it clear they can have any value.
 ///     <p>
 ///   }
+///   \table_row3{   <b>`Player.HasSeeked(interval)`</b>,
+///                  \anchor Player_HasSeeked
+///                  _boolean_,
+///     @return **True** if the Player has performed a seek operation in the last provided second `interval`\, **False** otherwise.
+///     @param interval - the time interval (in seconds)
+///     <p><hr>
+///     @skinning_v20 **[New Boolean Condition]** \link Player_HasSeeked `Player.HasSeeked(interval)`\endlink
+///     <p>
+///   }
 
-
-const infomap player_param[] =   {{ "art",              PLAYER_ITEM_ART }};
+const infomap player_param[] = {{"art", PLAYER_ITEM_ART}, {"hasseeked", PLAYER_HASSEEKED}};
 
 /// \page modules__infolabels_boolean_conditions
 ///   \table_row3{   <b>`Player.SeekTime`</b>,
