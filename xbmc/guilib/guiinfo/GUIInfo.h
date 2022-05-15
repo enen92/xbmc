@@ -44,6 +44,14 @@ public:
       SetInfoFlag(flag);
   }
 
+  explicit CGUIInfo(
+      int info, uint32_t data1, int data2, const std::string& data3, uint32_t flag = 0)
+    : m_info(info), m_data1(data1), m_data2(data2), m_data3(data3), m_data4(0)
+  {
+    if (flag > 0)
+      SetInfoFlag(flag);
+  }
+
   CGUIInfo(int info, uint32_t data1, const std::string& data3)
   : m_info(info),
     m_data1(data1),
