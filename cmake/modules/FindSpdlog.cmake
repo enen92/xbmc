@@ -51,7 +51,6 @@ if(ENABLE_INTERNAL_SPDLOG)
                    -DSPDLOG_BUILD_TESTS=OFF
                    -DSPDLOG_BUILD_BENCH=OFF
                    -DSPDLOG_FMT_EXTERNAL=ON
-                   -DCMAKE_PREFIX_PATH=${DEPENDS_PATH}
                    "${EXTRA_ARGS}")
 
     # spdlog debug uses postfix d for all platforms
