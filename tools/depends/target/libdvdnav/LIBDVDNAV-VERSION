@@ -1,5 +1,5 @@
 LIBNAME=libdvdnav
-BASE_URL=https://github.com/xbmc/libdvdnav
-VERSION=6.1.1-Next-Nexus-Alpha2
+BASE_URL=https://github.com/enen92/libdvdnav
+VERSION=vfs_upstream
 ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
-SHA512=01c415a561ea8bd9d568ad2668fbf8bc54304557e413776e1b841145cad3f7b9991a6772af7bac408b2cb87c6236c378e79c1c023a58b280a6c92fee151f0fb1
+SHA512=5abe729f1844bec72e3cfdd9ecbb7aa5ed621f601314d95a5b5c0a5bfa48851536a7aab84330fb2e126d99c8946995eba79d254a9f15d4c23453616759d7a16f

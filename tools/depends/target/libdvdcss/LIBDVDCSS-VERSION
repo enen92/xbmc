@@ -1,5 +1,5 @@
 LIBNAME=libdvdcss
-BASE_URL=https://github.com/xbmc/libdvdcss
-VERSION=1.4.3-Next-Nexus-Alpha2
+BASE_URL=https://github.com/enen92/libdvdcss
+VERSION=vfs_upstream
 ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
-SHA512=a8cc334036888599feaafc7e563ca079a22e52ca3d0a5f5579571f95fe27d22778f390c86b72912a1bacb0ea6b8a6008ff9d47b32383e3eac810e6ba92e8dea1
+SHA512=81d58b91fed6633c8850b1eaf5cb12062b69e1394fa9f42b81d0e27dec3ac52ace6fe6f6ca6ef6ef2ae422ba61f15ab06c11a3f44d58a345aef3b7b09c0f9ebf
