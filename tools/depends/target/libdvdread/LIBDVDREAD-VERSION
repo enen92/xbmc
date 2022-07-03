@@ -1,7 +1,7 @@
 LIBNAME=libdvdread
-BASE_URL=https://github.com/xbmc/libdvdread
-VERSION=6.1.3-Next-Nexus-Alpha2
+BASE_URL=https://github.com/enen92/libdvdread
+VERSION=windows_stat_fix
 ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
-SHA512=f96e365ac6788c538b5ed54c5330ef8625962e77c27098b5cbd21332fed5cbafd422f2a997499bc17aa814849fa44b131942278547207e6611a491b0ee05b91a
+SHA512=98049aaacccfc04c5a4e77f5eeef411d34a98a979652ab0d45e269488b2c51cde9b9c097de8facc7e3251bfe3bf0192e81f49bd6d507a35b54052ca21eaf157e
 BYPRODUCT=libdvdread.a
 BYPRODUCT_WIN=dvdread.lib
