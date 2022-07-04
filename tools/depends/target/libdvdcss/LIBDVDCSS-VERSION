@@ -1,7 +1,7 @@
 LIBNAME=libdvdcss
-BASE_URL=https://github.com/xbmc/libdvdcss
-VERSION=1.4.3-Next-Nexus-Alpha2
+BASE_URL=https://github.com/enen92/libdvdcss
+VERSION=windows_fix_vfs
 ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
-SHA512=a8cc334036888599feaafc7e563ca079a22e52ca3d0a5f5579571f95fe27d22778f390c86b72912a1bacb0ea6b8a6008ff9d47b32383e3eac810e6ba92e8dea1
+SHA512=935799d35085eca4c1695c8be267eef2ea08f112fa6357e217dda967e347032bebd33686afe88eb830000fb52d171bd66efe4a318fc5d71207a94eb2e7dfd5bd
 BYPRODUCT=libdvdcss.a
 BYPRODUCT_WIN=dvdcss.lib
