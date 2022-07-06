@@ -2893,6 +2893,7 @@ void CFileItemList::StackFolders()
         }
 
         // check for dvd folders
+        //if (1==1)
         if (!bMatch)
         {
           std::string dvdPath = item->GetOpticalMediaPath();
@@ -2962,6 +2963,13 @@ void CFileItemList::StackFiles()
     if (URIUtils::HasEncodedFilename(CURL(filePath)))
       file1 = CURL::Decode(file1);
 
+    if (StringUtils::EqualsNoCase(file1, "VIDEO_TS.ifo"))
+    {
+      auto paths = URIUtils::SplitPath(URIUtils::GetParentPath(filePath));
+      if (!paths.empty())
+        file1 = paths.back() + "-" + file1;
+    }
+
     int j;
     while (expr != stackRegExps.end())
     {
@@ -2994,6 +3002,13 @@ void CFileItemList::StackFiles()
           URIUtils::Split(item2->GetPath(), filePath2, file2);
           if (URIUtils::HasEncodedFilename(CURL(filePath2)) )
             file2 = CURL::Decode(file2);
+
+          if (StringUtils::EqualsNoCase(file2, "VIDEO_TS.ifo"))
+          {
+            auto paths = URIUtils::SplitPath(URIUtils::GetParentPath(filePath2));
+            if (!paths.empty())
+              file2 = paths.back() + "-" + file2;
+          }
 
           if (expr->RegFind(file2, offset) != -1)
           {

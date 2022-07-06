@@ -66,7 +66,7 @@ bool CApplicationStackHelper::InitializeStack(const CFileItem & item)
   Clear();
   // read and determine kind of stack
   CStackDirectory dir;
-  if (!dir.GetDirectory(item.GetURL(), *m_currentStack) || m_currentStack->IsEmpty())
+  if (!dir.GetDirectory(item.GetURL(), *m_currentStack.get()) || m_currentStack->IsEmpty())
     return false;
   for (int i = 0; i < m_currentStack->Size(); i++)
   {
@@ -74,7 +74,8 @@ bool CApplicationStackHelper::InitializeStack(const CFileItem & item)
     SetRegisteredStack(GetStackPartFileItem(i), stack);
     SetRegisteredStackPartNumber(GetStackPartFileItem(i), i);
   }
-  m_currentStackIsDiscImageStack = CFileItem(CStackDirectory::GetFirstStackedFile(item.GetPath()), false).IsDiscImage();
+  CFileItem firstItemInStack = CFileItem(CStackDirectory::GetFirstStackedFile(item.GetPath()), false);
+  m_currentStackIsDiscImageStack = firstItemInStack.IsDiscImage() || firstItemInStack.IsDVDFile() || firstItemInStack.IsBDFile();
 
   return true;
 }
