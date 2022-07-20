@@ -18,18 +18,7 @@ if(ENABLE_DVDCSS)
 
   set(MODULE_LC libdvdcss)
 
-<<<<<<< HEAD
-  # We require this due to the odd nature of github URL's compared to our other tarball
-  # mirror system. If User sets LIBDVDCSS_URL or libdvdcss_URL, allow get_filename_component in SETUP_BUILD_VARS
-  if(LIBDVDCSS_URL OR ${MODULE_LC}_URL)
-    if(${MODULE_LC}_URL)
-      set(LIBDVDCSS_URL ${${MODULE_LC}_URL})
-    endif()
-    set(LIBDVDCSS_URL_PROVIDED TRUE)
-  endif()
-=======
   if(ENABLE_INTERNAL_LIBDVD)
->>>>>>> 50fdddced0 (WIP!: allow system libs for dvdread/nav/css)
 
     # We require this due to the odd nature of github URL's compared to our other tarball
     # mirror system. If User sets LIBDVDCSS_URL or libdvdcss_URL, allow get_filename_component in SETUP_BUILD_VARS
@@ -97,7 +86,7 @@ if(ENABLE_DVDCSS)
 
   else()
     if(PKG_CONFIG_FOUND)
-      pkg_check_modules(PC_DVDCSS dvdcss QUIET)
+      pkg_check_modules(PC_DVDCSS libdvdcss QUIET)
     endif()
 
     find_path(LIBDVDCSS_INCLUDE_DIR NAMES dvdcss.h

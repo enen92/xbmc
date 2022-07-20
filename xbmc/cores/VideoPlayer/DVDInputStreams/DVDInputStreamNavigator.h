@@ -17,9 +17,15 @@
 #include "cores/MenuType.h"
 #include "utils/Geometry.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 #include <dvdnav/dvdnav.h>
 #include <dvdnav/dvd_types.h>
-
+#ifdef __cplusplus
+}
+#endif
 #include <string>
 
 #define DVD_VIDEO_BLOCKSIZE         DVD_VIDEO_LB_LEN // 2048 bytes

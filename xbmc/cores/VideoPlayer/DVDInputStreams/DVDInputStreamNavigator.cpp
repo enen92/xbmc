@@ -27,6 +27,8 @@
 #include "platform/Environment.h"
 #endif
 
+#include <sys/uio.h>
+
 namespace
 {
 constexpr int HOLDMODE_NONE = 0;
@@ -1414,7 +1416,7 @@ std::string CDVDInputStreamNavigator::GetDVDVolIdString()
   if (!m_dvdnav)
     return "";
 
-  const char* volIdTmp = m_dll.dvdnav_get_volid_string(m_dvdnav);
+  const char* volIdTmp = dvdnav_get_volid_string(m_dvdnav);
   if (volIdTmp)
   {
     std::string volId{volIdTmp};
