@@ -11,6 +11,7 @@ set(SOURCES AddonsDirectory.cpp
             DirectoryFactory.cpp
             DirectoryHistory.cpp
             DllLibCurl.cpp
+            DvdCallback.cpp
             EventsDirectory.cpp
             FavouritesDirectory.cpp
             FileCache.cpp
@@ -73,6 +74,7 @@ set(HEADERS AddonsDirectory.h
             DirectoryFactory.h
             DirectoryHistory.h
             DllLibCurl.h
+            DvdCallback.h
             EventsDirectory.h
             FTPDirectory.h
             FTPParse.h
