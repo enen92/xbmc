@@ -28,7 +28,7 @@
 #include "platform/Environment.h"
 #endif
 
-#include <sys/uio.h>
+//#include <sys/uio.h>
 
 namespace
 {
