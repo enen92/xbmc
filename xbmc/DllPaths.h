@@ -10,7 +10,7 @@
 
 #if defined (TARGET_ANDROID)
 #include "DllPaths_generated_android.h"
-#else
+#elif !defined (TARGET_WINDOWS)
 #include "DllPaths_generated.h"
 #endif
 

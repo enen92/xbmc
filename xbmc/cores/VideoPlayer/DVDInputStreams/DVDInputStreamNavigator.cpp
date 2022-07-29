@@ -165,9 +165,9 @@ bool CDVDInputStreamNavigator::Open()
     kodiDvdFilesystem.file_open = CDVDCallback::file_open;
     kodiDvdFilesystem.stat = CDVDCallback::stat;
     kodiDvdFilesystem.close = CDVDCallback::close;
-    if (dvdnav_open_vfs_files(&m_dvdnav, nullptr, &loggerCallback, path.c_str(), &kodiDvdFilesystem) != DVDNAV_STATUS_OK)
+    if (dvdnav_open_files(&m_dvdnav, nullptr, &loggerCallback, path.c_str(), &kodiDvdFilesystem) != DVDNAV_STATUS_OK)
     {
-      CLog::Log(LOGERROR, "Error on dvdnav_open_vfs_files");
+      CLog::Log(LOGERROR, "Error on dvdnav_open_files");
       Close();
       return false;
     }
