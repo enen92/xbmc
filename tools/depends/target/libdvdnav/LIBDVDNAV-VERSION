@@ -1,7 +1,7 @@
 LIBNAME=libdvdnav
 BASE_URL=https://github.com/enen92/libdvdnav
-VERSION=upstream_submission_kodi
+VERSION=upstream_submission_kodi2
 ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
-SHA512=fca8c19a6787bb7a88a6a5e35f6a524505b607861b3bb391e3eca1e91b67d05b12417153542b161da0f13c4f5152f1d4860a34a6d230155c9c8c767fb35725b2
+SHA512=36bfedfd5628014164d757588e9165a7c4eb9f0dcd0c3fc393c7d6e1457d33f64f88a3a488c90d2862bfe65f99de274baa81c8e446ca9ad74d76d13166cebe24
 BYPRODUCT=libdvdnav.a
 BYPRODUCT_WIN=libdvdnav.lib

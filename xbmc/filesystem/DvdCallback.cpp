@@ -16,6 +16,12 @@
 
 using namespace XFILE;
 
+#ifdef TARGET_WINDOWS
+#include "platform/win32/dirent.h"
+#else
+#include <dirent.h>
+#endif
+
 struct SDirState
 {
   CFileItemList list;

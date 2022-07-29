@@ -28,7 +28,22 @@
 #include "platform/Environment.h"
 #endif
 
-//#include <sys/uio.h>
+//FIXME
+#ifdef TARGET_WINDOWS
+#include "platform/win32/dirent.h"
+#else
+#include <dirent.h>
+#endif
+
+#ifdef TARGET_WINDOWS
+struct iovec
+{
+  void* iov_base; /* Pointer to data. */
+  size_t iov_len; /* Length of data.  */
+};
+#else
+#include <sys/uio.h> /* struct iovec */
+#endif
 
 namespace
 {
