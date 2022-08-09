@@ -84,7 +84,7 @@ static int dvd_inputstreamnavigator_cb_seek(void * p_stream, uint64_t i_pos);
 static int dvd_inputstreamnavigator_cb_read(void * p_stream, void * buffer, int i_read);
 static int dvd_inputstreamnavigator_cb_readv(void * p_stream, void * p_iovec, int i_blocks);
 
-static dvdnav_filesystem kodiDvdFilesystem;
+static dvdnav_filesystem_h kodiDvdFilesystem;
 
 CDVDInputStreamNavigator::CDVDInputStreamNavigator(IVideoPlayer* player, const CFileItem& fileitem)
   : CDVDInputStream(DVDSTREAM_TYPE_DVD, fileitem), m_pstream(nullptr)

@@ -62,7 +62,7 @@ void CDVDCallback::dir_close(dvd_dir_h *dir)
   }
 }
 
-dvd_dir_h* CDVDCallback::dir_open(const char* strDirname)
+dvd_dir_h* CDVDCallback::dir_open(dvdnav_filesystem_h *fs, const char* strDirname)
 {
   CLog::Log(LOGDEBUG, "CDVDCallback - Opening dir {}", CURL::GetRedacted(strDirname));
 
@@ -98,7 +98,7 @@ int CDVDCallback::dir_read(dvd_dir_h *dir, dvd_dirent_t *entry)
   return 0;
 }
 
-int64_t CDVDCallback::file_close(dvd_file_h *file)
+int CDVDCallback::file_close(dvd_file_h *file)
 {
   if (file)
   {
@@ -108,7 +108,7 @@ int64_t CDVDCallback::file_close(dvd_file_h *file)
   return 0;
 }
 
-dvd_file_h * CDVDCallback::file_open(const char *filename, const char *cmode)
+dvd_file_h * CDVDCallback::file_open(dvdnav_filesystem_h *fs, const char *filename)
 {
   dvd_file_h* file = new dvd_file_h;
 
@@ -136,20 +136,17 @@ int64_t CDVDCallback::file_seek(dvd_file_h *file, int64_t offset, int32_t origin
   return static_cast<CFile*>(file->internal)->Seek(offset, origin);
 }
 
-int64_t CDVDCallback::file_read(dvd_file_h *file, char *buf, int64_t size)
+ssize_t CDVDCallback::file_read(dvd_file_h *file, char *buf, size_t size)
 {
-  return static_cast<int64_t>(static_cast<CFile*>(file->internal)->Read(buf, static_cast<size_t>(size)));
+  return static_cast<ssize_t>(static_cast<CFile*>(file->internal)->Read(buf, size));
 }
 
 
-  int CDVDCallback::stat(const char *path, dvdstat_t* statbuff)
+  int CDVDCallback::stat(dvdnav_filesystem_h *fs, const char *path, dvdstat_t* statbuff)
   {
     struct __stat64 tStat;
     int result = CFile::Stat(path, &tStat);
     statbuff->size = tStat.st_size;
-    statbuff->is_blk = S_ISBLK(tStat.st_mode);
-    statbuff->is_chr = S_ISCHR(tStat.st_mode);
-    statbuff->is_dir = S_ISDIR(tStat.st_mode);
-    statbuff->is_reg = S_ISREG(tStat.st_mode);
+    statbuff->st_mode = tStat.st_mode;
     return result;
   }
