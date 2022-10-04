@@ -13,7 +13,7 @@
 #include "threads/CriticalSection.h"
 
 #include <EGL/eglext.h>
-#include <EGL/eglextchromium.h>
+#include <EGL/eglext_angle.h>
 #include <X11/Xutil.h>
 
 class CGLContextEGL : public CGLContext

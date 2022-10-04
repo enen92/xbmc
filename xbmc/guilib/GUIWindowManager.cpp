@@ -179,139 +179,139 @@ void CGUIWindowManager::Initialize()
 
 void CGUIWindowManager::CreateWindows()
 {
-  Add(new CGUIWindowHome);
-  Add(new CGUIWindowPrograms);
-  Add(new CGUIWindowPictures);
-  Add(new CGUIWindowFileManager);
-  Add(new CGUIWindowSettings);
-  Add(new CGUIWindowSystemInfo);
-  Add(new CGUIWindowSettingsScreenCalibration);
-  Add(new CGUIWindowSettingsCategory);
-  Add(new CGUIWindowVideoNav);
-  Add(new CGUIWindowVideoPlaylist);
-  Add(new CGUIWindowLoginScreen);
-  Add(new CGUIWindowSettingsProfile);
-  Add(new CGUIWindow(WINDOW_SKIN_SETTINGS, "SkinSettings.xml"));
-  Add(new CGUIWindowAddonBrowser);
-  Add(new CGUIWindowScreensaverDim);
-  Add(new CGUIWindowDebugInfo);
-  Add(new CGUIWindowPointer);
-  Add(new CGUIDialogYesNo);
-  Add(new CGUIDialogProgress);
-  Add(new CGUIDialogExtendedProgressBar);
-  Add(new CGUIDialogKeyboardGeneric);
-  Add(new CGUIDialogKeyboardTouch);
-  Add(new CGUIDialogVolumeBar);
-  Add(new CGUIDialogSeekBar);
-  Add(new CGUIDialogSubMenu);
-  Add(new CGUIDialogContextMenu);
-  Add(new CGUIDialogKaiToast);
-  Add(new CGUIDialogNumeric);
-  Add(new CGUIDialogGamepad);
-  Add(new CGUIDialogButtonMenu);
-  Add(new CGUIDialogPlayerControls);
-  Add(new CGUIDialogPlayerProcessInfo);
-  Add(new CGUIDialogSlider);
-  Add(new CGUIDialogMusicOSD);
-  Add(new CGUIDialogVisualisationPresetList);
+  Add(std::make_shared<CGUIWindowHome>());
+  Add(std::make_shared<CGUIWindowPrograms>());
+  Add(std::make_shared<CGUIWindowPictures>());
+  Add(std::make_shared<CGUIWindowFileManager>());
+  Add(std::make_shared<CGUIWindowSettings>());
+  Add(std::make_shared<CGUIWindowSystemInfo>());
+  Add(std::make_shared<CGUIWindowSettingsScreenCalibration>());
+  Add(std::make_shared<CGUIWindowSettingsCategory>());
+  Add(std::make_shared<CGUIWindowVideoNav>());
+  Add(std::make_shared<CGUIWindowVideoPlaylist>());
+  Add(std::make_shared<CGUIWindowLoginScreen>());
+  Add(std::make_shared<CGUIWindowSettingsProfile>());
+  Add(std::make_shared<CGUIWindow>(WINDOW_SKIN_SETTINGS, "SkinSettings.xml"));
+  Add(std::make_shared<CGUIWindowAddonBrowser>());
+  Add(std::make_shared<CGUIWindowScreensaverDim>());
+  Add(std::make_shared<CGUIWindowDebugInfo>());
+  Add(std::make_shared<CGUIWindowPointer>());
+  Add(std::make_shared<CGUIDialogYesNo>());
+  Add(std::make_shared<CGUIDialogProgress>());
+  Add(std::make_shared<CGUIDialogExtendedProgressBar>());
+  Add(std::make_shared<CGUIDialogKeyboardGeneric>());
+  Add(std::make_shared<CGUIDialogKeyboardTouch>());
+  Add(std::make_shared<CGUIDialogVolumeBar>());
+  Add(std::make_shared<CGUIDialogSeekBar>());
+  Add(std::make_shared<CGUIDialogSubMenu>());
+  Add(std::make_shared<CGUIDialogContextMenu>());
+  Add(std::make_shared<CGUIDialogKaiToast>());
+  Add(std::make_shared<CGUIDialogNumeric>());
+  Add(std::make_shared<CGUIDialogGamepad>());
+  Add(std::make_shared<CGUIDialogButtonMenu>());
+  Add(std::make_shared<CGUIDialogPlayerControls>());
+  Add(std::make_shared<CGUIDialogPlayerProcessInfo>());
+  Add(std::make_shared<CGUIDialogSlider>());
+  Add(std::make_shared<CGUIDialogMusicOSD>());
+  Add(std::make_shared<CGUIDialogVisualisationPresetList>());
 #if defined(HAS_GL) || defined(HAS_DX)
-  Add(new CGUIDialogCMSSettings);
+  Add(std::make_shared< CGUIDialogCMSSettings>());
 #endif
-  Add(new CGUIDialogVideoSettings);
-  Add(new CGUIDialogAudioSettings);
-  Add(new CGUIDialogSubtitleSettings);
-  Add(new CGUIDialogVideoBookmarks);
+  Add(std::make_shared<CGUIDialogVideoSettings>());
+  Add(std::make_shared<CGUIDialogAudioSettings>());
+  Add(std::make_shared<CGUIDialogSubtitleSettings>());
+  Add(std::make_shared<CGUIDialogVideoBookmarks>());
   // Don't add the filebrowser dialog - it's created and added when it's needed
-  Add(new CGUIDialogNetworkSetup);
-  Add(new CGUIDialogMediaSource);
-  Add(new CGUIDialogProfileSettings);
-  Add(new CGUIDialogFavourites);
-  Add(new CGUIDialogSongInfo);
-  Add(new CGUIDialogSmartPlaylistEditor);
-  Add(new CGUIDialogSmartPlaylistRule);
-  Add(new CGUIDialogBusy);
-  Add(new CGUIDialogBusyNoCancel);
-  Add(new CGUIDialogPictureInfo);
-  Add(new CGUIDialogAddonInfo);
-  Add(new CGUIDialogAddonSettings);
+  Add(std::make_shared<CGUIDialogNetworkSetup>());
+  Add(std::make_shared<CGUIDialogMediaSource>());
+  Add(std::make_shared<CGUIDialogProfileSettings>());
+  Add(std::make_shared<CGUIDialogFavourites>());
+  Add(std::make_shared<CGUIDialogSongInfo>());
+  Add(std::make_shared<CGUIDialogSmartPlaylistEditor>());
+  Add(std::make_shared<CGUIDialogSmartPlaylistRule>());
+  Add(std::make_shared<CGUIDialogBusy>());
+  Add(std::make_shared<CGUIDialogBusyNoCancel>());
+  Add(std::make_shared<CGUIDialogPictureInfo>());
+  Add(std::make_shared<CGUIDialogAddonInfo>());
+  Add(std::make_shared<CGUIDialogAddonSettings>());
 
-  Add(new CGUIDialogLockSettings);
+  Add(std::make_shared<CGUIDialogLockSettings>());
 
-  Add(new CGUIDialogContentSettings);
+  Add(std::make_shared<CGUIDialogContentSettings>());
 
-  Add(new CGUIDialogLibExportSettings);
+  Add(std::make_shared<CGUIDialogLibExportSettings>());
 
-  Add(new CGUIDialogInfoProviderSettings);
+  Add(std::make_shared<CGUIDialogInfoProviderSettings>());
 
-  Add(new CGUIDialogPlayEject);
+  Add(std::make_shared<CGUIDialogPlayEject>());
 
-  Add(new CGUIDialogPeripherals);
-  Add(new CGUIDialogPeripheralSettings);
+  Add(std::make_shared<CGUIDialogPeripherals>());
+  Add(std::make_shared<CGUIDialogPeripheralSettings>());
 
-  Add(new CGUIDialogMediaFilter);
-  Add(new CGUIDialogSubtitles);
+  Add(std::make_shared<CGUIDialogMediaFilter>());
+  Add(std::make_shared<CGUIDialogSubtitles>());
 
-  Add(new CGUIWindowMusicPlayList);
-  Add(new CGUIWindowMusicNav);
-  Add(new CGUIWindowMusicPlaylistEditor);
+  Add(std::make_shared<CGUIWindowMusicPlayList>());
+  Add(std::make_shared<CGUIWindowMusicNav>());
+  Add(std::make_shared<CGUIWindowMusicPlaylistEditor>());
 
   /* Load PVR related Windows and Dialogs */
-  Add(new CGUIDialogTeletext);
-  Add(new CGUIWindowPVRTVChannels);
-  Add(new CGUIWindowPVRTVRecordings);
-  Add(new CGUIWindowPVRTVGuide);
-  Add(new CGUIWindowPVRTVTimers);
-  Add(new CGUIWindowPVRTVTimerRules);
-  Add(new CGUIWindowPVRTVSearch);
-  Add(new CGUIWindowPVRRadioChannels);
-  Add(new CGUIWindowPVRRadioRecordings);
-  Add(new CGUIWindowPVRRadioGuide);
-  Add(new CGUIWindowPVRRadioTimers);
-  Add(new CGUIWindowPVRRadioTimerRules);
-  Add(new CGUIWindowPVRRadioSearch);
-  Add(new CGUIDialogPVRRadioRDSInfo);
-  Add(new CGUIDialogPVRGuideInfo);
-  Add(new CGUIDialogPVRRecordingInfo);
-  Add(new CGUIDialogPVRTimerSettings);
-  Add(new CGUIDialogPVRGroupManager);
-  Add(new CGUIDialogPVRChannelManager);
-  Add(new CGUIDialogPVRGuideSearch);
-  Add(new CGUIDialogPVRChannelsOSD);
-  Add(new CGUIDialogPVRChannelGuide);
-  Add(new CGUIDialogPVRRecordingSettings);
-  Add(new CGUIDialogPVRClientPriorities);
-  Add(new CGUIDialogPVRGuideControls);
+  Add(std::make_shared<CGUIDialogTeletext>());
+  Add(std::make_shared<CGUIWindowPVRTVChannels>());
+  Add(std::make_shared<CGUIWindowPVRTVRecordings>());
+  Add(std::make_shared<CGUIWindowPVRTVGuide>());
+  Add(std::make_shared<CGUIWindowPVRTVTimers>());
+  Add(std::make_shared<CGUIWindowPVRTVTimerRules>());
+  Add(std::make_shared<CGUIWindowPVRTVSearch>());
+  Add(std::make_shared<CGUIWindowPVRRadioChannels>());
+  Add(std::make_shared<CGUIWindowPVRRadioRecordings>());
+  Add(std::make_shared<CGUIWindowPVRRadioGuide>());
+  Add(std::make_shared<CGUIWindowPVRRadioTimers>());
+  Add(std::make_shared<CGUIWindowPVRRadioTimerRules>());
+  Add(std::make_shared<CGUIWindowPVRRadioSearch>());
+  Add(std::make_shared<CGUIDialogPVRRadioRDSInfo>());
+  Add(std::make_shared<CGUIDialogPVRGuideInfo>());
+  Add(std::make_shared<CGUIDialogPVRRecordingInfo>());
+  Add(std::make_shared<CGUIDialogPVRTimerSettings>());
+  Add(std::make_shared<CGUIDialogPVRGroupManager>());
+  Add(std::make_shared<CGUIDialogPVRChannelManager>());
+  Add(std::make_shared<CGUIDialogPVRGuideSearch>());
+  Add(std::make_shared<CGUIDialogPVRChannelsOSD>());
+  Add(std::make_shared<CGUIDialogPVRChannelGuide>());
+  Add(std::make_shared<CGUIDialogPVRRecordingSettings>());
+  Add(std::make_shared<CGUIDialogPVRClientPriorities>());
+  Add(std::make_shared<CGUIDialogPVRGuideControls>());
 
-  Add(new CGUIDialogSelect);
-  Add(new CGUIDialogColorPicker);
-  Add(new CGUIDialogMusicInfo);
-  Add(new CGUIDialogOK);
-  Add(new CGUIDialogVideoInfo);
-  Add(new CGUIDialogTextViewer);
-  Add(new CGUIWindowFullScreen);
-  Add(new CGUIWindowVisualisation);
-  Add(new CGUIWindowSlideShow);
+  Add(std::make_shared<CGUIDialogSelect>());
+  Add(std::make_shared<CGUIDialogColorPicker>());
+  Add(std::make_shared<CGUIDialogMusicInfo>());
+  Add(std::make_shared<CGUIDialogOK>());
+  Add(std::make_shared<CGUIDialogVideoInfo>());
+  Add(std::make_shared<CGUIDialogTextViewer>());
+  Add(std::make_shared<CGUIWindowFullScreen>());
+  Add(std::make_shared<CGUIWindowVisualisation>());
+  Add(std::make_shared<CGUIWindowSlideShow>());
 
-  Add(new CGUIDialogVideoOSD);
-  Add(new CGUIWindowScreensaver);
-  Add(new CGUIWindowWeather);
-  Add(new CGUIWindowStartup);
-  Add(new CGUIWindowSplash);
+  Add(std::make_shared<CGUIDialogVideoOSD>());
+  Add(std::make_shared<CGUIWindowScreensaver>());
+  Add(std::make_shared<CGUIWindowWeather>());
+  Add(std::make_shared<CGUIWindowStartup>());
+  Add(std::make_shared<CGUIWindowSplash>());
 
-  Add(new CGUIWindowEventLog);
+  Add(std::make_shared<CGUIWindowEventLog>());
 
-  Add(new GAME::CGUIControllerWindow);
-  Add(new GAME::CGUIPortWindow);
-  Add(new GAME::CGUIWindowGames);
-  Add(new GAME::CDialogGameOSD);
-  Add(new GAME::CDialogGameSaves);
-  Add(new GAME::CDialogGameVideoFilter);
-  Add(new GAME::CDialogGameStretchMode);
-  Add(new GAME::CDialogGameVolume);
-  Add(new GAME::CDialogGameAdvancedSettings);
-  Add(new GAME::CDialogGameVideoRotation);
-  Add(new GAME::CDialogInGameSaves);
-  Add(new RETRO::CGameWindowFullScreen);
+  Add(std::make_shared<GAME::CGUIControllerWindow>());
+  Add(std::make_shared<GAME::CGUIPortWindow>());
+  Add(std::make_shared<GAME::CGUIWindowGames>());
+  Add(std::make_shared<GAME::CDialogGameOSD>());
+  Add(std::make_shared<GAME::CDialogGameSaves>());
+  Add(std::make_shared<GAME::CDialogGameVideoFilter>());
+  Add(std::make_shared<GAME::CDialogGameStretchMode>());
+  Add(std::make_shared<GAME::CDialogGameVolume>());
+  Add(std::make_shared<GAME::CDialogGameAdvancedSettings>());
+  Add(std::make_shared<GAME::CDialogGameVideoRotation>());
+  Add(std::make_shared<GAME::CDialogInGameSaves>());
+  Add(std::make_shared<RETRO::CGameWindowFullScreen>());
 }
 
 bool CGUIWindowManager::DestroyWindows()
@@ -464,7 +464,7 @@ void CGUIWindowManager::DestroyWindow(int id)
   {
     Remove(id);
     pWindow->FreeResources(true);
-    delete pWindow;
+    //delete pWindow;
   }
 }
 
