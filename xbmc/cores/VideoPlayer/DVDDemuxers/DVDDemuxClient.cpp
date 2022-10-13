@@ -222,10 +222,17 @@ bool CDVDDemuxClient::ParsePacket(DemuxPacket* pkt)
       case STREAM_AUDIO:
       {
         CDemuxStreamClientInternalTpl<CDemuxStreamAudio>* sta = static_cast<CDemuxStreamClientInternalTpl<CDemuxStreamAudio>*>(st);
-        if (stream->m_context->channels != sta->iChannels && stream->m_context->channels != 0)
+#if LIBAVCODEC_BUILD >= AV_VERSION_INT(59, 37, 100) && \
+    LIBAVUTIL_BUILD >= AV_VERSION_INT(57, 28, 100)
+        int stream_channels = stream->m_context->ch_layout.nb_channels;
+#else
+        int stream_channels = stream->m_context->channels;
+#endif
+        if (stream_channels != sta->iChannels && stream_channels != 0)
         {
-          CLog::Log(LOGDEBUG, "CDVDDemuxClient::ParsePacket - ({}) channels changed from {} to {}", st->uniqueId, sta->iChannels, stream->m_context->channels);
-          sta->iChannels = stream->m_context->channels;
+          CLog::Log(LOGDEBUG, "CDVDDemuxClient::ParsePacket - ({}) channels changed from {} to {}",
+                    st->uniqueId, sta->iChannels, stream_channels);
+          sta->iChannels = stream_channels;
           sta->changes++;
           sta->disabled = false;
         }
@@ -237,7 +244,7 @@ bool CDVDDemuxClient::ParsePacket(DemuxPacket* pkt)
           sta->changes++;
           sta->disabled = false;
         }
-        if (stream->m_context->channels)
+        if (stream_channels)
           st->changes = -1; // stop parsing
         break;
       }
