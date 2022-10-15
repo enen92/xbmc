@@ -142,6 +142,11 @@ protected:
 
   StreamHdrType DetermineHdrType(AVStream* pStream);
 
+  int GetPacketExtradata(const AVPacket* pkt,
+                         const AVCodecParserContext* parserCtx,
+                         AVCodecContext* codecCtx,
+                         uint8_t** p_extradata);
+
   CCriticalSection m_critSection;
   std::map<int, CDemuxStream*> m_streams;
   std::map<int, std::unique_ptr<CDemuxParserFFmpeg>> m_parsers;

@@ -52,6 +52,11 @@ protected:
   std::shared_ptr<CDemuxStream> GetStreamInternal(int iStreamId);
   bool IsVideoReady();
 
+  int GetPacketExtradata(const DemuxPacket* pkt,
+                         const AVCodecParserContext* parserCtx,
+                         AVCodecContext* codecCtx,
+                         uint8_t** p_extradata);
+
   std::shared_ptr<CDVDInputStream> m_pInput;
   std::shared_ptr<CDVDInputStream::IDemux> m_IDemux;
   std::map<int, std::shared_ptr<CDemuxStream>> m_streams;

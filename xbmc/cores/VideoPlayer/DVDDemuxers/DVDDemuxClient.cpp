@@ -14,6 +14,10 @@
 #include "cores/VideoPlayer/Interface/TimingConstants.h"
 #include "utils/log.h"
 
+extern "C" {
+#include <libavcodec/bsf.h>
+}
+
 #include <utility>
 
 #define FF_MAX_EXTRADATA_SIZE ((1 << 28) - AV_INPUT_BUFFER_PADDING_SIZE)
@@ -115,6 +119,151 @@ void CDVDDemuxClient::Flush()
   m_dtsAtDisplayTime = DVD_NOPTS_VALUE;
 }
 
+int CDVDDemuxClient::GetPacketExtradata(const DemuxPacket* pkt,
+                                        const AVCodecParserContext* parserCtx,
+                                        AVCodecContext* codecCtx,
+                                        uint8_t** p_extradata)
+{
+  int extradata_size = 0;
+
+  if (!pkt || !p_extradata)
+    return 0;
+
+  *p_extradata = nullptr;
+
+#if LIBAVFORMAT_BUILD >= AV_VERSION_INT(59, 0, 100)
+  AVBSFContext* bsf = nullptr;
+  AVPacket* dst_pkt = nullptr;
+  const AVBitStreamFilter* f;
+  AVPacket* pkt_ref = nullptr;
+  AVPacket* src_pkt = nullptr;
+  int ret = 0;
+  uint8_t* ret_extradata = nullptr;
+  size_t ret_extradata_size = 0;
+
+  f = av_bsf_get_by_name("extract_extradata");
+  if (!f)
+    return 0;
+
+  bsf = nullptr;
+  ret = av_bsf_alloc(f, &bsf);
+  if (ret < 0)
+    return 0;
+
+  bsf->par_in->codec_id = codecCtx->codec_id;
+
+  ret = av_bsf_init(bsf);
+  if (ret < 0)
+  {
+    av_bsf_free(&bsf);
+    return 0;
+  }
+
+  src_pkt = av_packet_alloc();
+  if (!src_pkt)
+  {
+    av_bsf_free(&bsf);
+    return 0;
+  }
+  src_pkt->data = pkt->pData;
+  src_pkt->size = pkt->iSize;
+  src_pkt->dts = src_pkt->pts = AV_NOPTS_VALUE;
+
+  dst_pkt = av_packet_alloc();
+  pkt_ref = dst_pkt;
+
+  ret = av_packet_ref(pkt_ref, src_pkt);
+  if (ret < 0)
+  {
+    av_bsf_free(&bsf);
+    av_packet_free(&dst_pkt);
+    av_packet_free(&src_pkt);
+    return 0;
+  }
+
+  ret = av_bsf_send_packet(bsf, pkt_ref);
+  if (ret < 0)
+  {
+    av_packet_unref(pkt_ref);
+    av_bsf_free(&bsf);
+    av_packet_free(&dst_pkt);
+    av_packet_free(&src_pkt);
+    return 0;
+  }
+
+  ret = 0;
+  while (ret >= 0)
+  {
+    ret = av_bsf_receive_packet(bsf, pkt_ref);
+    if (ret < 0)
+    {
+      if (ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
+        break;
+
+      continue;
+    }
+
+    ret_extradata =
+        av_packet_get_side_data(pkt_ref, AV_PKT_DATA_NEW_EXTRADATA, &ret_extradata_size);
+    if (ret_extradata && ret_extradata_size > 0 && ret_extradata_size < FF_MAX_EXTRADATA_SIZE)
+    {
+      *p_extradata = (uint8_t*)av_malloc(ret_extradata_size + AV_INPUT_BUFFER_PADDING_SIZE);
+      if (!*p_extradata)
+      {
+        CLog::Log(LOGERROR, "{} - failed to allocate {} bytes for extradata", __FUNCTION__,
+                  ret_extradata_size);
+
+        av_packet_unref(pkt_ref);
+        av_bsf_free(&bsf);
+        av_packet_free(&dst_pkt);
+        av_packet_free(&src_pkt);
+        return 0;
+      }
+
+      CLog::Log(LOGDEBUG, "{} - fetching extradata, extradata_size({})", __FUNCTION__,
+                ret_extradata_size);
+
+      memcpy(*p_extradata, ret_extradata, ret_extradata_size);
+      memset(*p_extradata + ret_extradata_size, 0, AV_INPUT_BUFFER_PADDING_SIZE);
+      extradata_size = ret_extradata_size;
+
+      av_packet_unref(pkt_ref);
+      break;
+    }
+
+    av_packet_unref(pkt_ref);
+  }
+
+  av_bsf_free(&bsf);
+  av_packet_free(&dst_pkt);
+  av_packet_free(&src_pkt);
+#else
+  if (codecCtx && parserCtx && parserCtx->parser && parserCtx->parser->split)
+    extradata_size = parserCtx->parser->split(codecCtx, pkt->pData, pkt->iSize);
+
+  if (extradata_size <= 0 && extradata_size >= FF_MAX_EXTRADATA_SIZE)
+  {
+    CLog::Log(LOGDEBUG, "{} - fetched extradata of weird size {}", __FUNCTION__, extradata_size);
+    return 0;
+  }
+
+  *p_extradata = (uint8_t*)av_malloc(extradata_size + AV_INPUT_BUFFER_PADDING_SIZE);
+  if (!*p_extradata)
+  {
+    CLog::Log(LOGERROR, "{} - failed to allocate {} bytes for extradata", __FUNCTION__,
+              extradata_size);
+    return 0;
+  }
+
+  CLog::Log(LOGDEBUG, "{} - fetching extradata, extradata_size({})", __FUNCTION__, extradata_size);
+
+  memcpy(*p_extradata, pkt->pData, extradata_size);
+  memset(*p_extradata + extradata_size, 0, AV_INPUT_BUFFER_PADDING_SIZE);
+#endif
+
+  return extradata_size;
+}
+
 bool CDVDDemuxClient::ParsePacket(DemuxPacket* pkt)
 {
   bool change = false;
@@ -150,19 +299,18 @@ bool CDVDDemuxClient::ParsePacket(DemuxPacket* pkt)
     stream->m_context->time_base.den = DVD_TIME_BASE;
   }
 
-  if (stream->m_parser_split && stream->m_parser->parser->split)
+  if (stream->m_parser_split && stream->m_parser && stream->m_parser->parser)
   {
-    int len = stream->m_parser->parser->split(stream->m_context, pkt->pData, pkt->iSize);
-    if (len > 0 && len < FF_MAX_EXTRADATA_SIZE)
+    uint8_t* old_extradata = st->ExtraData;
+    int len = GetPacketExtradata(pkt, stream->m_parser, stream->m_context,
+                                 &st->ExtraData);
+    if (len > 0)
     {
-      if (st->ExtraData)
-        delete[] st->ExtraData;
+      if (old_extradata)
+        av_free(old_extradata);
       st->changes++;
       st->disabled = false;
       st->ExtraSize = len;
-      st->ExtraData = new uint8_t[len+AV_INPUT_BUFFER_PADDING_SIZE];
-      memcpy(st->ExtraData, pkt->pData, len);
-      memset(st->ExtraData + len, 0 , AV_INPUT_BUFFER_PADDING_SIZE);
       stream->m_parser_split = false;
       change = true;
       CLog::Log(LOGDEBUG, "CDVDDemuxClient::ParsePacket - split extradata");
