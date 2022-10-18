@@ -131,7 +131,6 @@ int CDVDDemuxClient::GetPacketExtradata(const DemuxPacket* pkt,
 
   *p_extradata = nullptr;
 
-#if LIBAVFORMAT_BUILD >= AV_VERSION_INT(59, 0, 100)
   AVBSFContext* bsf = nullptr;
   AVPacket* dst_pkt = nullptr;
   const AVBitStreamFilter* f;
@@ -237,29 +236,6 @@ int CDVDDemuxClient::GetPacketExtradata(const DemuxPacket* pkt,
   av_bsf_free(&bsf);
   av_packet_free(&dst_pkt);
   av_packet_free(&src_pkt);
-#else
-  if (codecCtx && parserCtx && parserCtx->parser && parserCtx->parser->split)
-    extradata_size = parserCtx->parser->split(codecCtx, pkt->pData, pkt->iSize);
-
-  if (extradata_size <= 0 && extradata_size >= FF_MAX_EXTRADATA_SIZE)
-  {
-    CLog::Log(LOGDEBUG, "{} - fetched extradata of weird size {}", __FUNCTION__, extradata_size);
-    return 0;
-  }
-
-  *p_extradata = (uint8_t*)av_malloc(extradata_size + AV_INPUT_BUFFER_PADDING_SIZE);
-  if (!*p_extradata)
-  {
-    CLog::Log(LOGERROR, "{} - failed to allocate {} bytes for extradata", __FUNCTION__,
-              extradata_size);
-    return 0;
-  }
-
-  CLog::Log(LOGDEBUG, "{} - fetching extradata, extradata_size({})", __FUNCTION__, extradata_size);
-
-  memcpy(*p_extradata, pkt->pData, extradata_size);
-  memset(*p_extradata + extradata_size, 0, AV_INPUT_BUFFER_PADDING_SIZE);
-#endif
 
   return extradata_size;
 }
@@ -370,12 +346,7 @@ bool CDVDDemuxClient::ParsePacket(DemuxPacket* pkt)
       case STREAM_AUDIO:
       {
         CDemuxStreamClientInternalTpl<CDemuxStreamAudio>* sta = static_cast<CDemuxStreamClientInternalTpl<CDemuxStreamAudio>*>(st);
-#if LIBAVCODEC_BUILD >= AV_VERSION_INT(59, 37, 100) && \
-    LIBAVUTIL_BUILD >= AV_VERSION_INT(57, 28, 100)
         int stream_channels = stream->m_context->ch_layout.nb_channels;
-#else
-        int stream_channels = stream->m_context->channels;
-#endif
         if (stream_channels != sta->iChannels && stream_channels != 0)
         {
           CLog::Log(LOGDEBUG, "CDVDDemuxClient::ParsePacket - ({}) channels changed from {} to {}",
