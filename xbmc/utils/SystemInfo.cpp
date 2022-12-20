@@ -1287,7 +1287,7 @@ std::string CSysInfo::GetBuildTargetPlatformName(void)
 std::string CSysInfo::GetBuildTargetPlatformVersion(void)
 {
 #if defined(TARGET_DARWIN_OSX)
-  return XSTR_MACRO(__MAC_OS_X_VERSION_MIN_REQUIRED);
+  return XSTR_MACRO(CMAKE_OSX_DEPLOYMENT_TARGET);
 #elif defined(TARGET_DARWIN_IOS)
   return XSTR_MACRO(__IPHONE_OS_VERSION_MIN_REQUIRED);
 #elif defined(TARGET_DARWIN_TVOS)

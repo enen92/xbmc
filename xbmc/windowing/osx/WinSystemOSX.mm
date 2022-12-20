@@ -855,6 +855,20 @@ bool CWinSystemOSX::ResizeWindow(int newWidth, int newHeight, int newLeft, int n
   m_nWidth = newWidth;
   m_nHeight = newHeight;
 
+#if __MAC_OS_X_VERSION_MAX_ALLOWED < 120000
+  // Workaround for sdk version below 12.0 (since the safearea does not exist). If we get a resize event
+  // while in fullscreen and the new dimensions do not match the current resolution this
+  // indicates the available area in the scren is smaller than the full size of the screen.
+  //! TODO - remove me when we bump to 12.0
+  RESOLUTION currentRes = m_gfxContext->GetVideoResolution();
+  RESOLUTION_INFO resInfo = m_gfxContext->GetResInfo(currentRes);
+  if (m_bFullScreen && newHeight < resInfo.iHeight)
+  {
+    resInfo.guiInsets = EdgeInsets(0, 0, 0, resInfo.iHeight - newHeight);
+    m_gfxContext->SetResInfo(currentRes, resInfo);
+  }
+#endif
+
   [(OSXGLWindow*)m_appWindow setResizeState:false];
 
   return true;
@@ -901,6 +915,18 @@ bool CWinSystemOSX::SetFullScreen(bool fullScreen, RESOLUTION_INFO& res, bool bl
 
     // remove frame origin offset of original display
     pScreen.frame.origin = NSZeroPoint;
+
+    // Update safeareainsets (display may have a notch)
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 120000
+    if (@available(macOS 12.0, *))
+    {
+      RESOLUTION currentRes = m_gfxContext->GetVideoResolution();
+      RESOLUTION_INFO resInfo = m_gfxContext->GetResInfo(currentRes);
+      resInfo.guiInsets = EdgeInsets(pScreen.safeAreaInsets.right, pScreen.safeAreaInsets.bottom,
+                                     pScreen.safeAreaInsets.left, pScreen.safeAreaInsets.top);
+      m_gfxContext->SetResInfo(currentRes, resInfo);
+    }
+#endif
 
     dispatch_sync(dispatch_get_main_queue(), ^{
       [window.contentView setFrameSize:NSMakeSize(m_nWidth, m_nHeight)];
