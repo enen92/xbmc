@@ -138,10 +138,11 @@
 
 - (void)windowDidChangeScreen:(NSNotification*)notification
 {
-  // user has moved the window to a
-  // different screen
-  //  if (CServiceBroker::GetWinSystem()->IsFullScreen())
-  //    CServiceBroker::GetWinSystem()->SetMovedToOtherScreen(true);
+  // user has moved the window to a different screen
+  CWinSystemOSX* winSystem = dynamic_cast<CWinSystemOSX*>(CServiceBroker::GetWinSystem());
+  if (!winSystem)
+    return;
+  winSystem->WindowChangedScreen();
 }
 
 - (NSSize)windowWillResize:(NSWindow*)sender toSize:(NSSize)frameSize

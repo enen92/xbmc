@@ -1189,27 +1189,15 @@ void CWinSystemOSX::OnMove(int x, int y)
 
 void CWinSystemOSX::WindowChangedScreen()
 {
-  // user has moved the window to a
-  // different screen
-  NSOpenGLContext* context = [NSOpenGLContext currentContext];
+  // user has moved the window to a different screen
   m_lastDisplayNr = 0;
 
+  NSWindow* window = [[NSApplication sharedApplication] keyWindow];
   // if we are here the user dragged the window to a different
   // screen and we return the screen of the window
-  if (context)
+  if (window)
   {
-    NSView* view;
-
-    view = context.view;
-    if (view)
-    {
-      NSWindow* window;
-      window = view.window;
-      if (window)
-      {
-        m_lastDisplayNr = GetDisplayIndex(GetDisplayIDFromScreen(window.screen));
-      }
-    }
+    m_lastDisplayNr = GetDisplayIndex(GetDisplayIDFromScreen(window.screen));
   }
 }
 
