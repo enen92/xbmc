@@ -14,6 +14,7 @@ xbmc/platform/android/peripherals           platform/android/peripherals
 xbmc/platform/android/powermanagement       platform/android/powermanagement
 xbmc/platform/android/speech                platform/android/speech
 xbmc/platform/android/storage               platform/android/storage
+xbmc/platform/posix/storage/discs           platform/posix/storage/discs
 xbmc/platform/android/utils                 platform/android/utils
 xbmc/platform/linux/peripherals             platform/linux/peripherals
 xbmc/platform/linux/threads                 platform/linux/threads
