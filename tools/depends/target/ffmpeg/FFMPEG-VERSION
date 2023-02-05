@@ -1,5 +1,5 @@
 LIBNAME=ffmpeg
-BASE_URL=https://github.com/xbmc/FFmpeg
-VERSION=5.1.2-Nexus-Alpha3
+BASE_URL=https://github.com/enen92/FFmpeg
+VERSION=a53_extradata_pass_head
 ARCHIVE=$(LIBNAME)-$(VERSION).tar.gz
-SHA512=ce60852b8456d6f4bfc60de0ceadb33034d9b3eea8c0bc84d8b7199984ecbf334a2c4d9b42eade439d0ef30ce22e3b2ca0a49d4df837a18cd3136b4343ed3113
+SHA512=5fc9b93fb47e1136eb968d8c0fdeef62acd760b7801e82f95d37ca3f6fda6ad56355e91b85efee3a468aefa67ee3817fb272fd329c9ac43a0238edffd67798e2
