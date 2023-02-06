@@ -2322,6 +2322,10 @@ void CDVDDemuxFFmpeg::ParsePacket(AVPacket* pkt)
         }
       }
     }
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_SUBTITLES_PARSECAPTIONS))
+    {
+      ExtractA53CC(pkt, st->codecpar);
+    }
   }
 }
 

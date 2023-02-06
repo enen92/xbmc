@@ -1574,26 +1574,40 @@ void CVideoPlayer::Process()
     {
       if (m_pCCDemuxer)
       {
-        bool first = true;
-        while (!m_bAbortRequest)
+        if (pPacket->iSideDataElems > 0)
         {
-          DemuxPacket *pkt = m_pCCDemuxer->Read(first ? pPacket : NULL);
-          if (!pkt)
-            break;
-
-          first = false;
-          if (m_pCCDemuxer->GetNrOfStreams() != m_SelectionStreams.CountTypeOfSource(STREAM_SUBTITLE, STREAM_SOURCE_VIDEOMUX))
+          AVPacketSideData* sideData{reinterpret_cast<AVPacketSideData*>(pPacket->pSideData)};
+          for (int i{0}; i < pPacket->iSideDataElems; i++)
           {
-            m_SelectionStreams.Clear(STREAM_SUBTITLE, STREAM_SOURCE_VIDEOMUX);
-            m_SelectionStreams.Update(NULL, m_pCCDemuxer.get(), "");
-            UpdateContent();
-            OpenDefaultStreams(false);
+            AVPacketSideData* sd = &sideData[i];
+
+            if (sd->type != AV_PKT_DATA_A53_CC)
+              continue;
+            
+            auto ccData = std::make_unique<CCaptionBlock>(pPacket->pts, sd->data, sd->size);
+            
+            while (!m_bAbortRequest)
+            {
+              DemuxPacket* pkt = m_pCCDemuxer->Process(ccData.release());
+              if (!pkt)
+                break;
+
+              if (m_pCCDemuxer->GetNrOfStreams() !=
+                  m_SelectionStreams.CountTypeOfSource(STREAM_SUBTITLE, STREAM_SOURCE_VIDEOMUX))
+              {
+                m_SelectionStreams.Clear(STREAM_SUBTITLE, STREAM_SOURCE_VIDEOMUX);
+                m_SelectionStreams.Update(nullptr, m_pCCDemuxer.get(), "");
+                UpdateContent();
+                OpenDefaultStreams(false);
+              }
+              CDemuxStream* pSubStream = m_pCCDemuxer->GetStream(pkt->iStreamId);
+              if (pSubStream && m_CurrentSubtitle.id == pkt->iStreamId &&
+                  m_CurrentSubtitle.source == STREAM_SOURCE_VIDEOMUX)
+                ProcessSubData(pSubStream, pkt);
+              else
+                CDVDDemuxUtils::FreeDemuxPacket(pkt);
+            }
           }
-          CDemuxStream *pSubStream = m_pCCDemuxer->GetStream(pkt->iStreamId);
-          if (pSubStream && m_CurrentSubtitle.id == pkt->iStreamId && m_CurrentSubtitle.source == STREAM_SOURCE_VIDEOMUX)
-            ProcessSubData(pSubStream, pkt);
-          else
-            CDVDDemuxUtils::FreeDemuxPacket(pkt);
         }
       }
     }

@@ -19,6 +19,7 @@
 extern "C"
 {
 #include <libavcodec/bsf.h>
+#include <libavutil/opt.h>
 }
 
 #include <map>
@@ -259,4 +260,226 @@ std::tuple<uint8_t*, int> GetPacketExtradata(const AVPacket* pkt,
   av_packet_free(&dstPkt);
 
   return std::make_tuple(extraData, extraDataSize);
+}
+
+void ExtractA53CC(AVPacket* pkt, const AVCodecParameters* codecPar)
+{
+  if (!pkt)
+    return;
+
+  AVCodecID codecId = codecPar->codec_id;
+  // clang-format off
+  if (
+    codecId != AV_CODEC_ID_MPEG2VIDEO &&
+    codecId != AV_CODEC_ID_H264 &&
+    codecId != AV_CODEC_ID_HEVC
+  )
+  {
+    // clang-format on
+    return;
+  }
+    
+  AVBSFList* bsfList = av_bsf_list_alloc();
+  if (codecId == AV_CODEC_ID_MPEG2VIDEO)
+  {
+    const AVBitStreamFilter* mpeg2MetadataFilter = av_bsf_get_by_name("mpeg2_metadata");
+    if (!mpeg2MetadataFilter)
+    {
+      av_bsf_list_free(&bsfList);
+      return;
+    }
+    AVBSFContext* mpeg2MetadataBSF = nullptr;
+    int ret = av_bsf_alloc(mpeg2MetadataFilter, &mpeg2MetadataBSF);
+    if (ret < 0)
+    {
+      av_bsf_list_free(&bsfList);
+      return;
+    }
+    AVDictionary *bsfPrm = nullptr;
+    av_dict_set(&bsfPrm, "a53_cc", "extract", 0);
+    av_opt_set_dict2(mpeg2MetadataBSF, &bsfPrm, AV_OPT_SEARCH_CHILDREN);
+
+    ret = avcodec_parameters_copy(mpeg2MetadataBSF->par_in, codecPar);
+    if (ret < 0)
+    {
+      av_bsf_free(&mpeg2MetadataBSF);
+      av_bsf_list_free(&bsfList);
+      return;
+    }
+
+    ret = av_bsf_init(mpeg2MetadataBSF);
+    if (ret < 0)
+    {
+      av_bsf_free(&mpeg2MetadataBSF);
+      av_bsf_list_free(&bsfList);
+      return;
+    }
+    av_bsf_list_append(bsfList, mpeg2MetadataBSF);
+  }
+  else if (codecId == AV_CODEC_ID_H264)
+  {
+    // h264_mp4toannexb
+    const AVBitStreamFilter* h264AnnexBFilter = av_bsf_get_by_name("h264_mp4toannexb");
+    if (!h264AnnexBFilter)
+    {
+      av_bsf_list_free(&bsfList);
+      return;
+    }
+    AVBSFContext* h264AnnexBBSF = nullptr;
+    int ret = av_bsf_alloc(h264AnnexBFilter, &h264AnnexBBSF);
+    if (ret < 0)
+    {
+      av_bsf_list_free(&bsfList);
+      return;
+    }
+
+    ret = avcodec_parameters_copy(h264AnnexBBSF->par_in, codecPar);
+    if (ret < 0)
+    {
+      av_bsf_free(&h264AnnexBBSF);
+      av_bsf_list_free(&bsfList);
+      return;
+    }
+
+    ret = av_bsf_init(h264AnnexBBSF);
+    if (ret < 0)
+    {
+      av_bsf_free(&h264AnnexBBSF);
+      av_bsf_list_free(&bsfList);
+      return;
+    }
+    av_bsf_list_append(bsfList, h264AnnexBBSF);
+    
+    // h264_metadata
+    const AVBitStreamFilter* h264MetadataFilter = av_bsf_get_by_name("h264_metadata");
+    if (!h264MetadataFilter)
+    {
+      av_bsf_free(&h264AnnexBBSF);
+      av_bsf_list_free(&bsfList);
+      return;
+    }
+    AVBSFContext* h264MetadataBBSF = nullptr;
+    ret = av_bsf_alloc(h264MetadataFilter, &h264MetadataBBSF);
+    if (ret < 0)
+    {
+      av_bsf_free(&h264AnnexBBSF);
+      av_bsf_list_free(&bsfList);
+      return;
+    }
+    AVDictionary *bsfPrm = nullptr;
+    av_dict_set(&bsfPrm, "a53_cc", "extract", 0);
+    av_opt_set_dict2(h264MetadataBBSF, &bsfPrm, AV_OPT_SEARCH_CHILDREN);
+
+    ret = avcodec_parameters_copy(h264MetadataBBSF->par_in, codecPar);
+    if (ret < 0)
+    {
+      av_bsf_free(&h264AnnexBBSF);
+      av_bsf_list_free(&bsfList);
+      return;
+    }
+
+    ret = av_bsf_init(h264MetadataBBSF);
+    if (ret < 0)
+    {
+      av_bsf_free(&h264AnnexBBSF);
+      av_bsf_free(&h264MetadataBBSF);
+      av_bsf_list_free(&bsfList);
+      return;
+    }
+    av_bsf_list_append(bsfList, h264MetadataBBSF);
+  }
+
+  // Construct filter chain
+  AVBSFContext* filterChain = nullptr;
+  int ret = av_bsf_list_finalize(&bsfList, &filterChain);
+  if (ret < 0)
+  {
+    av_bsf_list_free(&bsfList);
+    return;
+  }
+  
+  ret = avcodec_parameters_copy(filterChain->par_in, codecPar);
+  if (ret < 0)
+  {
+    av_bsf_list_free(&bsfList);
+    return;
+  }
+  ret = av_bsf_init(filterChain);
+  if (ret < 0)
+  {
+    av_bsf_list_free(&bsfList);
+    return;
+  }
+  
+  // Filter packets
+  AVPacket* dstPkt = av_packet_alloc();
+  if (!dstPkt)
+  {
+    CLog::LogF(LOGERROR, "failed to allocate packet");
+    av_bsf_list_free(&bsfList);
+    return;
+  }
+  AVPacket* pktRef = dstPkt;
+
+  ret = av_packet_ref(pktRef, pkt);
+  if (ret < 0)
+  {
+    av_bsf_list_free(&bsfList);
+    av_packet_free(&dstPkt);
+    return;
+  }
+
+  ret = av_bsf_send_packet(filterChain, pktRef);
+  if (ret < 0)
+  {
+    av_packet_unref(pktRef);
+    av_bsf_list_free(&bsfList);
+    av_packet_free(&dstPkt);
+    return;
+  }
+
+  ret = 0;
+  while (ret >= 0)
+  {
+    ret = av_bsf_receive_packet(filterChain, pktRef);
+    if (ret < 0)
+    {
+      if (ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
+        break;
+
+      continue;
+    }
+
+    size_t a53SideDataSize = 0;
+    uint8_t* a53SideData =
+        av_packet_get_side_data(pktRef, AV_PKT_DATA_A53_CC, &a53SideDataSize);
+    if (a53SideData && a53SideDataSize > 0)
+    {
+      uint8_t* a53CC = static_cast<uint8_t*>(av_malloc(a53SideDataSize));
+      if (!a53CC)
+      {
+        CLog::LogF(LOGERROR, "failed to allocate {} bytes for extradata", a53SideDataSize);
+
+        av_packet_unref(pktRef);
+        av_bsf_list_free(&bsfList);
+        av_packet_free(&dstPkt);
+        return;
+      }
+
+      CLog::LogF(LOGDEBUG, "Storing a53 side data({})", a53SideDataSize);
+
+      memcpy(a53CC, a53SideData, a53SideDataSize);
+      ret = av_packet_add_side_data(pkt, AV_PKT_DATA_A53_CC, a53CC, a53SideDataSize);
+
+      av_packet_unref(pktRef);
+      break;
+    }
+
+    av_packet_unref(pktRef);
+  }
+
+  av_bsf_list_free(&bsfList);
+  av_packet_free(&dstPkt);
+
+  return;
 }
