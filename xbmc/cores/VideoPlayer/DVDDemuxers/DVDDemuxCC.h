@@ -34,14 +34,15 @@ public:
   std::vector<CDemuxStream*> GetStreams() const override;
   int GetNrOfStreams() const override;
 
-  DemuxPacket* Process(CCaptionBlock* captionBlock);
+  void Enqueue(CCaptionBlock* captionBlock);
+  DemuxPacket* Process(double iTime);
   DemuxPacket* Read(DemuxPacket *packet);
   static void Handler(int service, void *userdata);
 
 protected:
   bool OpenDecoder();
   void Dispose();
-  DemuxPacket* Decode();
+  DemuxPacket* Decode(double iTime);
 
   struct streamdata
   {

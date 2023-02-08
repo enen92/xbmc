@@ -65,7 +65,8 @@ public:
 
     // subtitle related messages
     SUBTITLE_CLUTCHANGE,
-    SUBTITLE_ADDFILE
+    SUBTITLE_ADDFILE,
+    PICTURE_AVAILABLE
   };
   // clang-format on
 

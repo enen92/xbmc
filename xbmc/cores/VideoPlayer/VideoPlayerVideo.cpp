@@ -736,6 +736,8 @@ bool CVideoPlayerVideo::ProcessDecoderOutput(double &frametime, double &pts)
     if (m_speed != 0)
       pts += m_picture.iDuration * m_speed / abs(m_speed);
 
+    m_messageParent.Put(std::make_shared<CDVDMsgType<double>>(CDVDMsg::PICTURE_AVAILABLE, m_picture.pts));
+
     m_outputSate = OutputPicture(&m_picture);
 
     if (m_outputSate == OUTPUT_AGAIN)

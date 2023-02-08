@@ -106,20 +106,23 @@ int CDVDDemuxCC::GetNrOfStreams() const
   return m_streams.size();
 }
 
-DemuxPacket* CDVDDemuxCC::Process(CCaptionBlock* captionBlock)
+void CDVDDemuxCC::Enqueue(CCaptionBlock* captionBlock)
 {
   if (captionBlock)
   {
     m_ccTempBuffer.push_back(captionBlock);
   }
+}
 
+DemuxPacket* CDVDDemuxCC::Process(double iTime)
+{
   if (!m_ccDecoder)
   {
     if (!OpenDecoder())
       return nullptr;
   }
   std::sort(m_ccTempBuffer.begin(), m_ccTempBuffer.end(), reorder_sort);
-  DemuxPacket* pPacket = Decode();
+  DemuxPacket* pPacket = Decode(iTime);
   return pPacket;
 }
 
@@ -208,17 +211,24 @@ void CDVDDemuxCC::Dispose()
   }
 }
 
-DemuxPacket* CDVDDemuxCC::Decode()
+DemuxPacket* CDVDDemuxCC::Decode(double iTime)
 {
   DemuxPacket *pPacket = NULL;
 
-  while(!m_hasData && !m_ccTempBuffer.empty())
+  if (!m_hasData)
   {
-    CCaptionBlock* cc = m_ccTempBuffer.back();
-    m_ccTempBuffer.pop_back();
-    m_curPts = cc->GetPTS();
-    m_ccDecoder->Decode(cc->GetData());
-    delete cc;
+    for(auto it= m_ccTempBuffer.begin(); it < m_ccTempBuffer.end();++it)
+    { 
+      CCaptionBlock* cc = *it;
+      if (cc->GetPTS() < iTime)
+      {
+        //m_ccTempBuffer.pop_back();
+        m_curPts = cc->GetPTS();
+        m_ccDecoder->Decode(cc->GetData());
+        m_ccTempBuffer.erase(it);
+        delete cc;
+      }
+    }
   }
 
   if (m_hasData)
