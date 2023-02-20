@@ -398,7 +398,9 @@ PLT_MediaObject* CUPnPServer::Build(const std::shared_ptr<CFileItem>& item,
             }
         }
         else
-            item->m_bIsFolder = CDirectory::Exists(item->GetPath());
+            item->m_bIsFolder =
+                StringUtils::StartsWithNoCase(item->GetPath(), "virtualpath://upnproot") ||
+                CDirectory::Exists(item->GetPath());
 
         // not a virtual path directory, new system
         object = BuildObject(*item.get(), file_path, with_count, thumb_loader, &context, this, UPnPContentDirectory);
