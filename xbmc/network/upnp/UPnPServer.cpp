@@ -272,8 +272,9 @@ PLT_MediaObject* CUPnPServer::Build(const std::shared_ptr<CFileItem>& item,
 
     m_logger->debug("Preparing upnp object for item '{}'", (const char*)path);
 
-    if (path == "virtualpath://upnproot") {
+    if (path.StartsWith("virtualpath://upnproot")) {
         path.TrimRight("/");
+        item->m_bIsFolder =  true;
         if (path.StartsWith("virtualpath://")) {
             object = new PLT_MediaContainer;
             object->m_Title = item->GetLabel().c_str();
@@ -331,6 +332,11 @@ PLT_MediaObject* CUPnPServer::Build(const std::shared_ptr<CFileItem>& item,
                     }
                 }
 
+                // all items appart from songs (artists, albums, etc) are folders
+                if (!item->HasMusicInfoTag() || item->GetMusicInfoTag()->GetType() != MediaTypeSong)
+                {
+                    item->m_bIsFolder = true;
+                }
 
                 if (item->GetLabel().empty()) {
                     /* if no label try to grab it from node type */
@@ -379,6 +385,11 @@ PLT_MediaObject* CUPnPServer::Build(const std::shared_ptr<CFileItem>& item,
                     item->m_bIsFolder = true;
                     item->GetVideoInfoTag()->m_iEpisode = (int)item->GetProperty("totalepisodes").asInteger();
                     item->GetVideoInfoTag()->SetPlayCount(static_cast<int>(item->GetProperty("watchedepisodes").asInteger()));
+                }
+                // if this is an item in the library without a playable path it most be a folder
+                else if (item->GetVideoInfoTag()->m_strFileNameAndPath.empty())
+                {
+                    item->m_bIsFolder = true;
                 }
 
                 // try to grab title from tag
