@@ -73,7 +73,8 @@ EClientQuirks GetClientQuirks(const PLT_HttpRequestContext* context)
 
   if (user_agent) {
       if (user_agent->Find("XBox", 0, true) >= 0 ||
-          user_agent->Find("Xenon", 0, true) >= 0)
+          user_agent->Find("Xenon", 0, true) >= 0 ||
+          user_agent->Find("Samsung/1.0 UPnP/1.0", 0, true) >= 0)
           quirks |= ECLIENTQUIRKS_ONLYSTORAGEFOLDER | ECLIENTQUIRKS_BASICVIDEOCLASS;
 
       if (user_agent->Find("Windows-Media-Player", 0, true) >= 0)
