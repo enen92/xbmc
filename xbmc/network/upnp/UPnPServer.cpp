@@ -36,6 +36,7 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
+#include "utils/Base64.h"
 #include "utils/log.h"
 #include "video/VideoDatabase.h"
 #include "video/VideoLibraryQueue.h"
@@ -408,25 +409,38 @@ PLT_MediaObject* CUPnPServer::Build(const std::shared_ptr<CFileItem>& item,
                 }
             }
         }
+        else if (item->IsPlayList())
+            item->m_bIsFolder = true;
+        else if (item->IsAudio())
+            item->m_bIsFolder = false;
         else
             item->m_bIsFolder = CDirectory::Exists(item->GetPath());
 
         // not a virtual path directory, new system
         object = BuildObject(*item.get(), file_path, with_count, thumb_loader, &context, this, UPnPContentDirectory);
 
+        if (item->GetVideoInfoTag()->m_type == MediaTypeEpisode)
+        {
+            teste++;
+            std::string title = "episode" + std::to_string(teste);
+            //object->m_ObjectID = title.c_str();
+        }
+            
+        
         // set parent id if passed, otherwise it should have been determined
         if (object && parent_id) {
-            object->m_ParentID = parent_id;
+            auto coiso = std::string(parent_id) == "0"? "0" : Base64::Encode(std::string(parent_id));
+            object->m_ParentID = coiso.c_str();
         }
     }
 
     if (object) {
         // remap Root virtualpath://upnproot/ to id "0"
-        if (object->m_ObjectID == "virtualpath://upnproot/")
+        if (object->m_ObjectID == Base64::Encode("virtualpath://upnproot/").c_str())
             object->m_ObjectID = "0";
 
         // remap Parent Root virtualpath://upnproot/ to id "0"
-        if (object->m_ParentID == "virtualpath://upnproot/")
+        if (object->m_ParentID == Base64::Encode("virtualpath://upnproot/").c_str())
             object->m_ParentID = "0";
     }
 
@@ -571,7 +585,10 @@ CUPnPServer::OnBrowseMetadata(PLT_ActionReference&          action,
 
     NPT_String                     didl;
     NPT_Reference<PLT_MediaObject> object;
-    NPT_String id = TranslateWMPObjectId(object_id, m_logger);
+    
+    auto coiso = std::string(object_id) == "0"? "0" : Base64::Decode(std::string(object_id));
+    
+    NPT_String id = TranslateWMPObjectId(coiso.c_str(), m_logger);
     CFileItemPtr                   item;
     NPT_Reference<CThumbLoader>    thumb_loader;
 
@@ -670,7 +687,8 @@ CUPnPServer::OnBrowseDirectChildren(PLT_ActionReference&          action,
                                     const PLT_HttpRequestContext& context)
 {
     CFileItemList items;
-    NPT_String parent_id = TranslateWMPObjectId(object_id, m_logger);
+    auto coiso = std::string(object_id) == "0"? "0" : Base64::Decode(std::string(object_id));
+    NPT_String parent_id = TranslateWMPObjectId(coiso.c_str(), m_logger);
 
     m_logger->info("Received Browse DirectChildren request for object '{}', with sort criteria {}",
                    object_id, sort_criteria);
@@ -679,7 +697,7 @@ CUPnPServer::OnBrowseDirectChildren(PLT_ActionReference&          action,
         action->SetError(701, "Incorrect ObjectID.");
         return NPT_FAILURE;
     }
-
+    items.SetIgnoreURLOptions(true);
     items.SetPath(std::string(parent_id));
 
     // guard against loading while saving to the same cache file

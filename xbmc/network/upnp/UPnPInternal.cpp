@@ -27,6 +27,7 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
+#include "utils/Base64.h"
 #include "video/VideoInfoTag.h"
 
 #include <algorithm>
@@ -85,6 +86,8 @@ EClientQuirks GetClientQuirks(const PLT_HttpRequestContext* context)
       if (server->Find("Xbox", 0, true) >= 0)
           quirks |= ECLIENTQUIRKS_ONLYSTORAGEFOLDER | ECLIENTQUIRKS_BASICVIDEOCLASS;
   }
+  //quirks |= ECLIENTQUIRKS_ONLYSTORAGEFOLDER | ECLIENTQUIRKS_BASICVIDEOCLASS;
+  //quirks |= ECLIENTQUIRKS_UNKNOWNSERIES;
 
   return (EClientQuirks)quirks;
 }
@@ -256,7 +259,7 @@ PopulateObjectFromTag(CMusicInfoTag&         tag,
       object.m_Creator = tag.GetAlbumArtistString().c_str();
     object.m_MiscInfo.original_track_number = tag.GetTrackNumber();
     if(tag.GetDatabaseId() >= 0) {
-      object.m_ReferenceID = NPT_String::Format("musicdb://songs/%i%s", tag.GetDatabaseId(), URIUtils::GetExtension(tag.GetURL()).c_str());
+      //object.m_ReferenceID = NPT_String::Format("musicdb://songs/%i%s", tag.GetDatabaseId(), URIUtils::GetExtension(tag.GetURL()).c_str());
     }
     if (object.m_ReferenceID == object.m_ObjectID)
         object.m_ReferenceID = "";
@@ -292,12 +295,12 @@ PopulateObjectFromTag(CVideoInfoTag&         tag,
           object.m_Affiliation.album = tag.m_strAlbum.c_str();
           object.m_Title = tag.m_strTitle.c_str();
           object.m_Date = tag.GetPremiered().GetAsW3CDate().c_str();
-          object.m_ReferenceID = NPT_String::Format("videodb://musicvideos/titles/%i", tag.m_iDbId);
+          //object.m_ReferenceID = NPT_String::Format("videodb://musicvideos/titles/%i", tag.m_iDbId);
         } else if (tag.m_type == MediaTypeMovie) {
           object.m_ObjectClass.type = "object.item.videoItem.movie";
           object.m_Title = tag.m_strTitle.c_str();
           object.m_Date = tag.GetPremiered().GetAsW3CDate().c_str();
-          object.m_ReferenceID = NPT_String::Format("videodb://movies/titles/%i", tag.m_iDbId);
+          //object.m_ReferenceID = NPT_String::Format("videodb://movies/titles/%i", tag.m_iDbId);
         } else {
           object.m_Recorded.series_title = tag.m_strShowTitle.c_str();
 
@@ -310,7 +313,7 @@ PopulateObjectFromTag(CVideoInfoTag&         tag,
                   object.m_Date = CDateTime(tag.GetYear(), 1, 1, 0, 0, 0).GetAsW3CDate().c_str();
               else
                   object.m_Date = tag.m_premiered.GetAsW3CDate().c_str();
-              object.m_ReferenceID = NPT_String::Format("videodb://tvshows/titles/%i", tag.m_iDbId);
+              //object.m_ReferenceID = NPT_String::Format("videodb://tvshows/titles/%i", tag.m_iDbId);
           } else if (tag.m_type == MediaTypeSeason) {
               object.m_ObjectClass.type = "object.container.album.videoAlbum.videoBroadcastSeason";
               object.m_Title = tag.m_strTitle.c_str();
@@ -320,7 +323,7 @@ PopulateObjectFromTag(CVideoInfoTag&         tag,
                   object.m_Date = CDateTime(tag.GetYear(), 1, 1, 0, 0, 0).GetAsW3CDate().c_str();
               else
                   object.m_Date = tag.m_premiered.GetAsW3CDate().c_str();
-              object.m_ReferenceID = NPT_String::Format("videodb://tvshows/titles/%i/%i", tag.m_iIdShow, tag.m_iSeason);
+              //object.m_ReferenceID = NPT_String::Format("videodb://tvshows/titles/%i/%i", tag.m_iIdShow, tag.m_iSeason);
           } else {
               object.m_ObjectClass.type = "object.item.videoItem.videoBroadcast";
               object.m_Recorded.program_title  = "S" + ("0" + NPT_String::FromInteger(tag.m_iSeason)).Right(2);
@@ -329,7 +332,7 @@ PopulateObjectFromTag(CVideoInfoTag&         tag,
               object.m_Recorded.episode_number = tag.m_iEpisode;
               object.m_Recorded.episode_season = tag.m_iSeason;
               object.m_Title = object.m_Recorded.series_title + " - " + object.m_Recorded.program_title;
-              object.m_ReferenceID = NPT_String::Format("videodb://tvshows/titles/%i/%i/%i", tag.m_iIdShow, tag.m_iSeason, tag.m_iDbId);
+              //object.m_ReferenceID = NPT_String::Format("videodb://tvshows/titles/%i/%i/%i", tag.m_iIdShow, tag.m_iSeason, tag.m_iDbId);
               object.m_Date = tag.m_firstAired.GetAsW3CDate().c_str();
           }
         }
@@ -428,13 +431,13 @@ BuildObject(CFileItem&                    item,
                           context->GetLocalAddress().GetPort(), "/");
     ips.Remove(context->GetLocalAddress().GetIpAddress());
     ips.Insert(ips.GetFirstItem(), context->GetLocalAddress().GetIpAddress());
-    } else if(upnp_server) {
-        rooturi = NPT_HttpUrl("localhost", upnp_server->GetPort(), "/");
-    }
+  } else if(upnp_server) {
+    rooturi = NPT_HttpUrl("localhost", upnp_server->GetPort(), "/");
+  }
 
     if (!item.m_bIsFolder) {
         object = new PLT_MediaItem();
-        object->m_ObjectID = item.GetPath().c_str();
+        object->m_ObjectID = Base64::Encode(item.GetPath()).c_str();
 
         /* Setup object type */
         if (item.IsMusicDb() || item.IsAudio()) {
@@ -500,14 +503,14 @@ BuildObject(CFileItem&                    item,
 
         // Some upnp clients expect all audio items to have parent root id 4
 #ifdef WMP_ID_MAPPING
-        object->m_ParentID = "4";
+        //object->m_ParentID = "4";
 #endif
     } else {
         PLT_MediaContainer* container = new PLT_MediaContainer;
         object = container;
 
         /* Assign a title and id for this container */
-        container->m_ObjectID = item.GetPath().c_str();
+        container->m_ObjectID = Base64::Encode(item.GetPath()).c_str();
         container->m_ObjectClass.type = "object.container";
         container->m_ChildrenCount = -1;
 
@@ -526,7 +529,7 @@ BuildObject(CFileItem&                    item,
                       }
 #ifdef WMP_ID_MAPPING
                       // Some upnp clients expect all artists to have parent root id 107
-                      container->m_ParentID = "107";
+                      //container->m_ParentID = "107";
 #endif
                   }
                   break;
@@ -544,7 +547,7 @@ BuildObject(CFileItem&                    item,
                       }
 #ifdef WMP_ID_MAPPING
                       // Some upnp clients expect all albums to have parent root id 7
-                      container->m_ParentID = "7";
+                      //container->m_ParentID = "7";
 #endif
                   }
                   break;

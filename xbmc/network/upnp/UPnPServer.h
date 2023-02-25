@@ -149,6 +149,8 @@ public:
     bool m_scanning;
 
     Logger m_logger;
+    
+    int teste{0};
 
   public:
     // class members
