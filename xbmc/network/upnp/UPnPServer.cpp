@@ -279,11 +279,11 @@ PLT_MediaObject* CUPnPServer::Build(const std::shared_ptr<CFileItem>& item,
             object = new PLT_MediaContainer;
             object->m_Title = item->GetLabel().c_str();
             object->m_ObjectClass.type = "object.container";
-            object->m_ObjectID = path;
+            object->m_ObjectID = EncodeObjectId(path.GetChars());
 
             // root
-            object->m_ObjectID = "0";
-            object->m_ParentID = "-1";
+            object->m_ObjectID = EncodeObjectId("0");
+            object->m_ParentID = EncodeObjectId("-1");
             // root has 5 children
 
             //This is dead code because of the HACK a few lines up setting with_count to false
@@ -429,18 +429,18 @@ PLT_MediaObject* CUPnPServer::Build(const std::shared_ptr<CFileItem>& item,
 
         // set parent id if passed, otherwise it should have been determined
         if (object && parent_id) {
-            object->m_ParentID = parent_id;
+            object->m_ParentID = EncodeObjectId(parent_id);
         }
     }
 
     if (object) {
         // remap Root virtualpath://upnproot/ to id "0"
-        if (object->m_ObjectID == "virtualpath://upnproot/")
-            object->m_ObjectID = "0";
+        if (StringUtils::EqualsNoCase(object->m_ObjectID, EncodeObjectId("virtualpath://upnproot/")))
+            object->m_ObjectID = EncodeObjectId("0");
 
         // remap Parent Root virtualpath://upnproot/ to id "0"
-        if (object->m_ParentID == "virtualpath://upnproot/")
-            object->m_ParentID = "0";
+        if (StringUtils::EqualsNoCase(object->m_ParentID, EncodeObjectId("virtualpath://upnproot/")))
+            object->m_ParentID = EncodeObjectId("0");
     }
 
     return object;
@@ -584,11 +584,12 @@ CUPnPServer::OnBrowseMetadata(PLT_ActionReference&          action,
 
     NPT_String                     didl;
     NPT_Reference<PLT_MediaObject> object;
-    NPT_String id = TranslateWMPObjectId(object_id, m_logger);
     CFileItemPtr                   item;
     NPT_Reference<CThumbLoader>    thumb_loader;
 
-    m_logger->info("Received UPnP Browse Metadata request for object '{}'", object_id);
+    m_logger->info("Received UPnP Browse Metadata request for encoded object '{}' (plain value: '{}')", object_id, DecodeObjectId(object_id).GetChars());
+
+    NPT_String id = TranslateWMPObjectId(DecodeObjectId(object_id), m_logger);
 
     if(NPT_FAILED(ObjectIDValidate(id))) {
         action->SetError(701, "Incorrect ObjectID.");
@@ -603,7 +604,7 @@ CUPnPServer::OnBrowseMetadata(PLT_ActionReference&          action,
             item->SetLabel("Root");
             item->SetLabelPreformatted(true);
             object = Build(item, true, context, thumb_loader);
-            object->m_ParentID = "-1";
+            object->m_ParentID = EncodeObjectId("-1");
         } else {
             return NPT_FAILURE;
         }
@@ -683,10 +684,10 @@ CUPnPServer::OnBrowseDirectChildren(PLT_ActionReference&          action,
                                     const PLT_HttpRequestContext& context)
 {
     CFileItemList items;
-    NPT_String parent_id = TranslateWMPObjectId(object_id, m_logger);
+    m_logger->info("Received Browse DirectChildren request for encoded object '{}' (plain value: '{}'), with sort criteria {}",
+                   object_id, DecodeObjectId(object_id).GetChars(), sort_criteria);
 
-    m_logger->info("Received Browse DirectChildren request for object '{}', with sort criteria {}",
-                   object_id, sort_criteria);
+    NPT_String parent_id = TranslateWMPObjectId(DecodeObjectId(object_id), m_logger);
 
     if(NPT_FAILED(ObjectIDValidate(parent_id))) {
         action->SetError(701, "Incorrect ObjectID.");
