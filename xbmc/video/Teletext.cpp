@@ -1231,6 +1231,13 @@ void CTeletextDecoder::RenderPage()
     else
       StartRow = 1;
 
+    /* Update on every changed second */
+    if (m_txtCache->TimeString[7] != prevTimeSec)
+    {
+      prevTimeSec = m_txtCache->TimeString[7];
+      m_updateTexture = true;
+    }
+
     DoRenderPage(StartRow, national_subset_bak);
   }
   else
