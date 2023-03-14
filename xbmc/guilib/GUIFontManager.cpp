@@ -15,6 +15,7 @@
 #include "addons/FontResource.h"
 #include "addons/Skin.h"
 #include "addons/addoninfo/AddonType.h"
+#include "filesystem/SpecialProtocol.h"
 #include "windowing/GraphicContext.h"
 
 #include <mutex>
@@ -46,6 +47,7 @@
 #include "filesystem/SpecialProtocol.h"
 #endif
 
+using namespace XFILE;
 using namespace ADDON;
 
 namespace
@@ -424,46 +426,89 @@ void GUIFontManager::LoadFonts(const std::string& fontSet)
 {
   // Get the file to load fonts from:
   const std::string filePath = g_SkinInfo->GetSkinPath("Font.xml", &m_skinResolution);
-  CLog::LogF(LOGINFO, "Loading fonts from '{}'", filePath);
 
-  CXBMCTinyXML xmlDoc;
-  if (!LoadXMLData(filePath, xmlDoc))
-    return;
-
-  TiXmlElement* pRootElement = xmlDoc.RootElement();
-  // Resolve includes in Font.xml
-  g_SkinInfo->ResolveIncludes(pRootElement);
-  // take note of the first font available in case we can't load the one specified
   std::string firstFont;
-  const TiXmlElement* pChild = pRootElement->FirstChildElement("fontset");
-  while (pChild)
+  CXBMCTinyXML xmlDoc;
+  if (LoadXMLData(filePath, xmlDoc))
   {
-    const char* idAttr = pChild->Attribute("id");
-    if (idAttr)
+    TiXmlElement* pRootElement = xmlDoc.RootElement();
+    // Resolve includes in Font.xml
+    g_SkinInfo->ResolveIncludes(pRootElement);
+    // take note of the first font available in case we can't load the one specified
+    const TiXmlElement* pChild = pRootElement->FirstChildElement("fontset");
+    while (pChild)
     {
-      if (firstFont.empty())
-        firstFont = idAttr;
-
-      if (StringUtils::EqualsNoCase(fontSet, idAttr))
+      const char* idAttr = pChild->Attribute("id");
+      if (idAttr)
       {
-        LoadFonts(pChild->FirstChild("font"));
-        return;
+        if (firstFont.empty())
+          firstFont = idAttr;
+
+        if (StringUtils::EqualsNoCase(fontSet, idAttr))
+        {
+          // Found the requested font, so load it and return
+          CLog::LogF(LOGINFO, "Loading <fontset> with name '{}' from '{}'", fontSet, filePath);
+          LoadFonts(pChild->FirstChild("font"));
+          return;
+        }
       }
+      pChild = pChild->NextSiblingElement("fontset");
     }
-    pChild = pChild->NextSiblingElement("fontset");
   }
 
-  // no fontset was loaded, try the first
+  // If we got here, then the requested fontset was not found in the skin's Font.xml file
+  // Look at additional fontsets that are defined in .xml files in the skin's fonts directory
+  CFileItemList items;
+  CDirectory::GetDirectory(CSpecialProtocol::TranslatePath("special://skin/fonts"), items, ".xml",
+                           DIR_FLAG_BYPASS_CACHE);
+  for (int i = 0; i < items.Size(); i++)
+  {
+    if (xmlDoc.LoadFile(items[i]->GetPath()))
+    {
+      TiXmlElement* pRootElement = xmlDoc.RootElement();
+      g_SkinInfo->ResolveIncludes(pRootElement);
+      if (pRootElement && pRootElement->ValueStr() == "fonts")
+      {
+        const TiXmlElement* pChild = pRootElement->FirstChildElement("fontset");
+        while (pChild)
+        {
+          const char* idAttr = pChild->Attribute("id");
+          if (idAttr)
+          {
+            // If we didn't find any fontsets in the skin's Font.xml file,
+            // then save the first one found here in case the one asked for isn't found
+            if (firstFont.empty())
+              firstFont = idAttr;
+
+            if (StringUtils::EqualsNoCase(fontSet, idAttr))
+            {
+              // Found the requested font, so load it and return
+              CLog::LogF(LOGINFO, "Loading <fontset> with name '{}' from '{}'", fontSet,
+                         items[i]->GetPath());
+              LoadFonts(pChild->FirstChild("font"));
+              return;
+            }
+          }
+          pChild = pChild->NextSiblingElement("fontset");
+        }
+      }
+    }
+  }
+
+  // Requested fontset was not found, try the first
   if (!firstFont.empty())
   {
     CLog::Log(LOGWARNING,
-              "GUIFontManager::{}: File doesn't have <fontset> with name '{}', defaulting to first "
-              "fontset",
-              __func__, fontSet);
+              "GUIFontManager::{}: <fontset> with name '{}' was not found, defaulting to first "
+              "fontset '{}'",
+              __func__, fontSet, firstFont);
     LoadFonts(firstFont);
   }
   else
-    CLog::LogF(LOGERROR, "File '{}' doesn't have a valid <fontset>", filePath);
+    CLog::LogF(LOGERROR,
+               "GUIFontManager::{}: No valid <fontset> found in File '{}' "
+               "or in xml files in fonts directory",
+               __func__, filePath);
 }
 
 void GUIFontManager::LoadFonts(const TiXmlNode* fontNode)

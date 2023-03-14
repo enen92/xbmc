@@ -197,6 +197,10 @@ public:
                                             std::vector<StringSettingOption>& list,
                                             std::string& current,
                                             void* data);
+  static void GetFontsetsFromFile(const std::string fontsetFilePath,
+                                  std::vector<StringSettingOption>& list,
+                                  const std::string settingValue,
+                                  bool* currentValueSet);
   static void SettingOptionsSkinThemesFiller(const std::shared_ptr<const CSetting>& setting,
                                              std::vector<StringSettingOption>& list,
                                              std::string& current,
