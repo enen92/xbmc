@@ -2525,7 +2525,8 @@
             <options>monitors</options>
           </constraints>
           <dependencies>
-            <dependency type="enable" on="property" name="SupportsScreenMove" />
+            <dependency type="enable" setting="videoscreen.screen" operator="!is">-1</dependency> <!-- DM_WINDOWED -->
+            <dependency type="update" setting="videoscreen.screenmode" />
           </dependencies>
           <control type="spinner" format="string" delayed="true" />
         </setting>
@@ -2583,7 +2584,8 @@
           <level>1</level>
           <default>false</default>
           <dependencies>
-            <dependency type="enable" on="property" name="IsFullscreen" />
+            <dependency type="enable" setting="videoscreen.screen" operator="!is">-1</dependency> <!-- DM_WINDOWED -->
+            <dependency type="update" setting="videoscreen.screenmode" />
           </dependencies>
           <control type="toggle" />
         </setting>

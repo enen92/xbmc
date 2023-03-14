@@ -508,6 +508,8 @@ private:
   void ResolveSettingDependencies(const std::shared_ptr<CSetting>& setting);
   void ResolveSettingDependencies(const Setting& setting);
 
+  void RefreshVisibilityAndEnableStatus(const std::shared_ptr<const CSetting>& setting);
+
   SettingMap::const_iterator FindSetting(std::string settingId) const;
   SettingMap::iterator FindSetting(std::string settingId);
   std::pair<SettingMap::iterator, bool> InsertSetting(std::string settingId, const Setting& setting);
