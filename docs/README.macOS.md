@@ -114,11 +114,6 @@ make -j$(getconf _NPROCESSORS_ONLN)
 ./configure --host=x86_64-apple-darwin --with-platform=macos --with-sdk=10.13
 ```
 
-Developers can also select native windowing/input handling with the following
-```
-./configure --host=x86_64-apple-darwin --with-platform=macos --with-windowsystem=native
-```
-
 ### 4.1. Advanced Configure Options
 
 
@@ -187,11 +182,6 @@ Developers can also select native windowing/input handling with the following
 **Apple Specific:**
 
 ```
---with-windowsystem=<native:sdl>
-```
-  Windowing system to use (default is sdl when not provided). arm64 MacOS requires native
-
-```
 --with-sdk=<sdknumber>
 ```
   specify sdk platform version.
@@ -239,11 +229,6 @@ mkdir $HOME/kodi-build
 Generate Xcode project as per configure command in **[Configure and build tools and dependencies](#4-configure-and-build-tools-and-dependencies)**:
 ```
 make -C tools/depends/target/cmakebuildsys BUILD_DIR=$HOME/kodi-build GEN=Xcode
-```
-
-To explicitly select the windowing/input system to use do the following (default is to use SDL if not provided)
-```
-make -C tools/depends/target/cmakebuildsys BUILD_DIR=$HOME/kodi-build GEN=Xcode APP_WINDOW_SYSTEM=native
 ```
 
 **TIP:** BUILD_DIR can be omitted, and project will be created in $HOME/kodi/build
