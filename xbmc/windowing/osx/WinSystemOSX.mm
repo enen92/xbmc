@@ -63,10 +63,6 @@ namespace
 {
 constexpr int MAX_DISPLAYS = 32;
 constexpr const char* DEFAULT_SCREEN_NAME = "Default";
-//! MacOS specific window top position setting
-constexpr const char* SETTING_WINDOW_TOP = "window.top";
-//! MacOS specific window left position setting
-constexpr const char* SETTING_WINDOW_LEFT = "window.left";
 } // namespace
 
 static std::array<NSWindowController*, MAX_DISPLAYS> blankingWindowControllers;
@@ -613,11 +609,6 @@ bool CWinSystemOSX::CreateNewWindow(const std::string& name, bool fullScreen, RE
   // screen index is not found/available.
   const std::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
   m_lastDisplayNr = GetDisplayIndex(settings->GetString(CSettings::SETTING_VIDEOSCREEN_MONITOR));
-  NSScreen* screen = nil;
-  if (m_lastDisplayNr < NSScreen.screens.count)
-  {
-    screen = [NSScreen.screens objectAtIndex:m_lastDisplayNr];
-  }
 
   // force initial window creation to be windowed, if fullscreen, it will switch to it below
   // fixes the white screen of death if starting fullscreen and switching to windowed.
@@ -665,35 +656,6 @@ bool CWinSystemOSX::CreateNewWindow(const std::string& name, bool fullScreen, RE
 
       // associate with current window
       [appWindow setContentView:view];
-
-      // set the window to the appropriate screen and screen position
-      if (screen)
-      {
-        if (m_bFullScreen)
-        {
-          [appWindow setFrameOrigin:screen.frame.origin];
-        }
-        else
-        {
-          // if there are stored window positions use that as the origin point
-          const int top = settings->GetInt(SETTING_WINDOW_TOP);
-          const int left = settings->GetInt(SETTING_WINDOW_LEFT);
-
-          NSPoint windowPos;
-          if (top != 0 || left != 0)
-          {
-            windowPos = NSMakePoint(left, top);
-          }
-          else
-          {
-            // otherwise center the window on the screen
-            windowPos =
-                NSMakePoint(screen.frame.origin.x + screen.frame.size.width / 2 - m_nWidth / 2,
-                            screen.frame.origin.y + screen.frame.size.height / 2 - m_nHeight / 2);
-          }
-          [appWindow setFrameOrigin:windowPos];
-        }
-      }
     });
 
     [view.getGLContext makeCurrentContext];
@@ -1178,15 +1140,6 @@ void CWinSystemOSX::OnMove(int x, int y)
       NSRect frame = win.contentView.frame;
       CServiceBroker::GetAppMessenger()->PostMsg(TMSG_VIDEORESIZE, frame.size.width,
                                                  frame.size.height);
-    });
-  }
-  // store window position in window mode
-  if (!m_bFullScreen)
-  {
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      settings->SetInt(SETTING_WINDOW_LEFT, m_appWindow.frame.origin.x);
-      settings->SetInt(SETTING_WINDOW_TOP, m_appWindow.frame.origin.y);
-      settings->Save();
     });
   }
 }
