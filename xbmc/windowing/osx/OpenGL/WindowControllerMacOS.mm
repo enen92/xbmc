@@ -54,7 +54,8 @@
 
 - (void)windowDidResize:(NSNotification*)aNotification
 {
-  NSRect rect = [self.window contentRectForFrameRect:self.window.frame];
+  NSRect rect = [self.window.contentView
+      convertRectToBacking:[self.window contentRectForFrameRect:self.window.frame]];
   int width = static_cast<int>(rect.size.width);
   int height = static_cast<int>(rect.size.height);
 
@@ -160,6 +161,12 @@
   if (!winSystem)
     return;
   winSystem->WindowChangedScreen();
+}
+
+- (void)windowDidChangeBackingProperties:(NSNotification*)notification
+{
+  // if the backing scale change we need to force resize the window
+  [self windowDidResize:notification];
 }
 
 - (NSSize)windowWillResize:(NSWindow*)sender toSize:(NSSize)frameSize
