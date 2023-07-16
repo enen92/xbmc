@@ -148,7 +148,15 @@ bool CAutorun::RunDisc(IDirectory* pDir, const std::string& strDrive, int& nAdde
   bool bPlaying(false);
   CFileItemList vecItems;
 
-  const CURL pathToUrl(strDrive);
+  CURL pathToUrl{strDrive};
+  // set the hostname to the drive path
+  if (pathToUrl.GetRedacted() == "iso9660://")
+  {
+    pathToUrl.Reset();
+    pathToUrl.SetProtocol("iso9660");
+    pathToUrl.SetHostName(CServiceBroker::GetMediaManager().TranslateDevicePath(""));
+  }
+
   if ( !pDir->GetDirectory( pathToUrl, vecItems ) )
   {
     return false;
