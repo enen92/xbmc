@@ -49,6 +49,7 @@ public:
 
   static const std::string &GetDVDLabel();
   static const std::string &GetDVDPath();
+  static UTILS::DISCS::DiscType GetDiscType();
 
   static void UpdateState();
 protected:

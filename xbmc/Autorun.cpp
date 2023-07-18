@@ -118,6 +118,8 @@ bool CAutorun::PlayDisc(const std::string& path, bool bypassSettings, bool start
   if (mediaPath.empty() || mediaPath == "iso9660://")
     mediaPath = CServiceBroker::GetMediaManager().GetDiscPath();
 
+  mediaPath = "bluray://";
+
   const CURL pathToUrl(mediaPath);
   std::unique_ptr<IDirectory> pDir ( CDirectoryFactory::Create( pathToUrl ));
   bool bPlaying = RunDisc(pDir.get(), mediaPath, nAddedToPlaylist, true, bypassSettings, startFromBeginning);
@@ -151,8 +153,27 @@ bool CAutorun::RunDisc(IDirectory* pDir, const std::string& strDrive, int& nAdde
   const CURL pathToUrl(strDrive);
   if ( !pDir->GetDirectory( pathToUrl, vecItems ) )
   {
-    return false;
+    //return false;
   }
+
+  if (strDrive == "bluray://")
+  {
+    CFileItemPtr item(new CFileItem(CServiceBroker::GetMediaManager().TranslateDevicePath(""), false));
+    item->SetLabel(CServiceBroker::GetMediaManager().GetDiskLabel(strDrive));
+    item->GetVideoInfoTag()->m_strFileNameAndPath =
+    CServiceBroker::GetMediaManager().GetDiskUniqueId(strDrive);
+
+    if (!startFromBeginning && !item->GetVideoInfoTag()->m_strFileNameAndPath.empty())
+    item->SetStartOffset(STARTOFFSET_RESUME);
+
+    CServiceBroker::GetPlaylistPlayer().ClearPlaylist(PLAYLIST::TYPE_VIDEO);
+    CServiceBroker::GetPlaylistPlayer().SetShuffle(PLAYLIST::TYPE_VIDEO, false);
+    CServiceBroker::GetPlaylistPlayer().Add(PLAYLIST::TYPE_VIDEO, item);
+    CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(PLAYLIST::TYPE_VIDEO);
+    CServiceBroker::GetPlaylistPlayer().Play(0, "");
+    return true;
+  }
+
 
   // Sorting necessary for easier HDDVD handling
   vecItems.Sort(SortByLabel, SortOrderAscending);

@@ -429,6 +429,11 @@ const std::string &CDetectDVDMedia::GetDVDLabel()
   return m_diskLabel;
 }
 
+UTILS::DISCS::DiscType CDetectDVDMedia::GetDiscType()
+{
+  return m_discInfo.type;
+}
+
 const std::string &CDetectDVDMedia::GetDVDPath()
 {
   return m_diskPath;

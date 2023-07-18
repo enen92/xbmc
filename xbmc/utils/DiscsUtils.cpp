@@ -15,6 +15,8 @@
 #ifdef HAVE_LIBBLURAY
 //! @todo it's wrong to include vfs scoped files in a utils class, refactor
 // to use libbluray directly.
+#include <libbluray/bluray.h>
+#include <libbluray/bluray-version.h>
 #include "filesystem/BlurayDirectory.h"
 #endif
 
@@ -56,13 +58,21 @@ UTILS::DISCS::DiscInfo UTILS::DISCS::ProbeBlurayDiscInfo(const std::string& medi
 {
   DiscInfo info;
 #ifdef HAVE_LIBBLURAY
-  XFILE::CBlurayDirectory bdDir;
-  if (!bdDir.InitializeBluray(mediaPath))
+  auto bd = bd_init();
+  auto coiso = bd_open_disc(bd, mediaPath.c_str(), nullptr);
+  const BLURAY_DISC_INFO* disc_info = bd_get_disc_info(bd);
+  if (!disc_info || !disc_info->bluray_detected)
     return info;
 
   info.type = DiscType::BLURAY;
-  info.name = bdDir.GetBlurayTitle();
-  info.serial = bdDir.GetBlurayID();
+  #if (BLURAY_VERSION > BLURAY_VERSION_CODE(1,0,0))
+    info.name = disc_info->disc_name ? disc_info->disc_name : "";
+    info.serial = disc_info->udf_volume_id ? disc_info->udf_volume_id : "";
+  #endif
+  if (info.name.empty())
+  {
+    info.name = "Blu-ray";
+  }
 #endif
   return info;
 }
