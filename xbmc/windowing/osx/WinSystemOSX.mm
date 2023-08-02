@@ -1305,12 +1305,12 @@ CGLContextObj CWinSystemOSX::GetCGLContextObj()
 
 CGraphicContext& CWinSystemOSX::GetGfxContext() const
 {
-  if (m_glView)
-  {
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      [m_glView NotifyContext];
-    });
-  }
+  //if (m_glView)
+  //{
+  //  dispatch_sync(dispatch_get_main_queue(), ^{
+  //    [m_glView NotifyContext];
+  //  });
+  //}
 
   return CWinSystemBase::GetGfxContext();
 }
