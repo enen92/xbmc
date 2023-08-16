@@ -2439,8 +2439,8 @@ bool CDVDDemuxFFmpeg::IsTransportStreamReady()
     return false;
 
   TRANSPORT_STREAM_STATE state = TransportStreamVideoState();
-  if (state == TRANSPORT_STREAM_STATE::NONE)
-    state = TransportStreamAudioState();
+  //if (state == TRANSPORT_STREAM_STATE::NONE)
+  //  state = TransportStreamAudioState();
 
   return state == TRANSPORT_STREAM_STATE::READY;
 }
