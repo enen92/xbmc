@@ -22,6 +22,7 @@
 
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
+#import <IOKit/hidsystem/ev_keymap.h>
 
 #pragma mark - objc implementation
 
@@ -29,6 +30,7 @@
 {
   std::queue<XBMC_Event> events;
   CCriticalSection m_inputlock;
+  id m_mediaKeysTap;
   bool m_inputEnabled;
 
   //! macOS requires the calls the NSCursor hide/unhide to be balanced
@@ -47,10 +49,8 @@
 {
   self = [super init];
 
-  [self enableInputEvents];
   m_lastAppCursorVisibilityAction = NSCursorVisibilityBalancer::NONE;
-  m_inputEnabled = true;
-
+  [self enableInputEvents];
   return self;
 }
 
@@ -158,11 +158,16 @@
 
 - (void)enableInputEvents
 {
+  m_mediaKeysTap = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskSystemDefined
+                                                         handler:^(NSEvent* event) {
+                                                           return [self InputEventHandler:event];
+                                                         }];
   m_inputEnabled = true;
 }
 
 - (void)disableInputEvents
 {
+  m_mediaKeysTap = nil;
   m_inputEnabled = false;
 }
 
@@ -307,6 +312,21 @@
 
       break;
     }
+    // media keys
+    case NSEventTypeSystemDefined:
+    {
+      if (nsEvent.subtype == NX_SUBTYPE_AUX_CONTROL_BUTTONS)
+      {
+        const int keyCode = (([nsEvent data1] & 0xFFFF0000) >> 16);
+        const int keyFlags = ([nsEvent data1] & 0x0000FFFF);
+        const int keyState = (((keyFlags & 0xFF00) >> 8)) == 0xA;
+        if (keyState == 1) // if pressed
+        {
+          passEvent = [self HandleMediaKey:keyCode];
+        }
+      }
+      break;
+    }
     default:
       return nsEvent;
   }
@@ -387,6 +407,57 @@
   // cocoa world is upside down ...
   location.y = frame.size.height - location.y;
   return location;
+}
+
+- (BOOL)HandleMediaKey:(int)keyCode
+{
+  BOOL passEvent = true;
+  switch (keyCode)
+  {
+    case NX_KEYTYPE_PLAY:
+    {
+      CAction* action = new CAction(ACTION_PLAYER_PLAYPAUSE);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1,
+                                                 static_cast<void*>(action));
+      passEvent = false;
+      break;
+    }
+    case NX_KEYTYPE_NEXT:
+    {
+      CAction* action = new CAction(ACTION_NEXT_ITEM);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1,
+                                                 static_cast<void*>(action));
+      passEvent = false;
+      break;
+    }
+    case NX_KEYTYPE_PREVIOUS:
+    {
+      CAction* action = new CAction(ACTION_PREV_ITEM);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1,
+                                                 static_cast<void*>(action));
+      passEvent = false;
+      break;
+    }
+    case NX_KEYTYPE_FAST:
+    {
+      CAction* action = new CAction(ACTION_PLAYER_FORWARD);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1,
+                                                 static_cast<void*>(action));
+      passEvent = false;
+      break;
+    }
+    case NX_KEYTYPE_REWIND:
+    {
+      CAction* action = new CAction(ACTION_PLAYER_REWIND);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1,
+                                                 static_cast<void*>(action));
+      passEvent = false;
+      break;
+    }
+    default:
+      break;
+  }
+  return passEvent;
 }
 
 @end
