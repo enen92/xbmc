@@ -1,0 +1,6 @@
+LIBNAME=smctemp
+VERSION=0.0.1
+BASE_URL=https://github.com/enen92/smctemp/archive/
+ARCHIVE=e973f651db9fa44a9ddb0ca81489c8ec0709838c.tar.gz
+SHA512=296e3606d21a2b13dd7494ffec81b3efce715dfac90507517df1b14ca8d3a7a21f7a829e89d188608504cec5841b4ca978aaa86528088d191df827ffc5292c45
+BYPRODUCT=libsmctemp.a

@@ -10,12 +10,12 @@
 
 #include "utils/Temperature.h"
 
-#include "platform/darwin/osx/smc.h"
 #include "platform/posix/PosixResourceCounter.h"
 
 #include <array>
 #include <string>
 
+#include <smctemp.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
@@ -118,9 +118,7 @@ float CCPUInfoOsx::GetCPUFrequency()
 
 bool CCPUInfoOsx::GetTemperature(CTemperature& temperature)
 {
-  int value = SMCGetTemperature(SMC_KEY_CPU_TEMP);
-
-  temperature = CTemperature::CreateFromCelsius(value);
-
+  smctemp::SmcTemp smcTemp = smctemp::SmcTemp();
+  temperature = CTemperature::CreateFromCelsius(smcTemp.GetCpuTemp());
   return true;
 }

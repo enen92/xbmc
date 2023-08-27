@@ -1,14 +1,12 @@
 set(SOURCES CocoaInterface.mm
             CPUInfoOsx.cpp
             HotKeyController.m
-            PlatformDarwinOSX.cpp
-            smc.c)
+            PlatformDarwinOSX.cpp)
 
 set(HEADERS CocoaInterface.h
             CPUInfoOsx.h
             HotKeyController.h
-            PlatformDarwinOSX.h
-            smc.h)
+            PlatformDarwinOSX.h)
 
 if(ENABLE_XBMCHELPER)
   list(APPEND SOURCES XBMCHelper.cpp)

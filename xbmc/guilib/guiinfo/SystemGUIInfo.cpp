@@ -22,7 +22,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "network/Network.h"
 #if defined(TARGET_DARWIN_OSX)
-#include "platform/darwin/osx/smc.h"
+#include <smctemp.h>
 #endif
 #include "guilib/guiinfo/GUIInfo.h"
 #include "guilib/guiinfo/GUIInfoHelper.h"
@@ -95,7 +95,8 @@ CTemperature CSystemGUIInfo::GetGPUTemperature() const
   char scale = 0;
 
 #if defined(TARGET_DARWIN_OSX)
-  value = SMCGetTemperature(SMC_KEY_GPU_TEMP);
+  smctemp::SmcTemp smcTemp = smctemp::SmcTemp();
+  value = smcTemp.GetGpuTemp();
   return CTemperature::CreateFromCelsius(value);
 #elif defined(TARGET_WINDOWS_STORE)
   return CTemperature::CreateFromCelsius(0);
