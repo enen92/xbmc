@@ -223,6 +223,8 @@ typedef enum
 
   // Add any other keys here
 
+  /* Dead keys */
+
   /* Media keys */
   XBMCK_STOP = 337,
   XBMCK_RECORD = 338,

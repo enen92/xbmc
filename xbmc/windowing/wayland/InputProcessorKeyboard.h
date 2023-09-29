@@ -57,6 +57,7 @@ private:
 
   void ConvertAndSendKey(std::uint32_t scancode, bool pressed);
   XBMC_Event SendKey(unsigned char scancode, XBMCKey key, std::uint16_t unicodeCodepoint, bool pressed);
+  void NotifyComposingKey(std::uint16_t unicodeCodepoint);
   void KeyRepeatTimeout();
 
   IInputHandlerKeyboard& m_handler;

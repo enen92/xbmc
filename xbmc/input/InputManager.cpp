@@ -349,6 +349,13 @@ bool CInputManager::OnEvent(XBMC_Event& newEvent)
       m_Keyboard.ProcessKeyUp();
       OnKeyUp(m_Keyboard.TranslateKey(newEvent.key.keysym));
       break;
+    case XBMC_KEYCOMPOSING:
+    {
+      CAction action =
+          CAction(ACTION_KEYBOARD_COMPOSING_KEY, static_cast<wchar_t>(newEvent.key.keysym.unicode));
+      ExecuteInputAction(action);
+      break;
+    }
     case XBMC_MOUSEBUTTONDOWN:
     case XBMC_MOUSEBUTTONUP:
     case XBMC_MOUSEMOTION:

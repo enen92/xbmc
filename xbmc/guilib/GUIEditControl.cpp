@@ -222,6 +222,26 @@ bool CGUIEditControl::OnAction(const CAction &action)
         return CGUIButtonControl::OnAction(action);
       }
     }
+    else if (action.GetID() == ACTION_KEYBOARD_COMPOSING_KEY)
+    {
+      const auto unicode = action.GetUnicode();
+      // reset cursor (blinking |)
+      if (unicode == XBMCK_UNKNOWN)
+      {
+        m_cursorChar = '|';
+        m_cursorBlinkEnabled = true;
+      }
+      // composing key type cursor (the deadkey unicode value without blinking)
+      else
+      {
+        if (m_inputType == INPUT_TYPE_PASSWORD || m_inputType == INPUT_TYPE_PASSWORD_MD5 ||
+            m_inputType == INPUT_TYPE_PASSWORD_NUMBER_VERIFY_NEW)
+          m_cursorChar = '*';
+        else
+          m_cursorChar = unicode;
+        m_cursorBlinkEnabled = false;
+      }
+    }
     else if (action.GetID() == KEY_UNICODE)
     {
       // input from the keyboard
@@ -606,9 +626,12 @@ bool CGUIEditControl::SetStyledText(const std::wstring &text)
   }
 
   // show the cursor
-  uint32_t ch = L'|' | style;
-  if ((++m_cursorBlink % 64) > 32)
-    ch |= (3 << 16);
+  uint32_t ch = m_cursorChar | style;
+  if (m_cursorBlinkEnabled)
+  {
+    if ((++m_cursorBlink % 64) > 32)
+      ch |= (3 << 16);
+  }
   styled.insert(styled.begin() + m_cursorPos, ch);
 
   return m_label2.SetStyledText(styled, colors);

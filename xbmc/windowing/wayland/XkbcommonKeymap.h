@@ -14,6 +14,7 @@
 #include <memory>
 #include <vector>
 
+#include <xkbcommon/xkbcommon-compose.h>
 #include <xkbcommon/xkbcommon.h>
 #ifdef TARGET_WEBOS
 #include <xkbcommon/xkbcommon-webos-keysyms.h>
@@ -41,6 +42,21 @@ namespace WAYLAND
  *
  * Instances can be easily created from keymap strings with \ref CXkbcommonContext
  */
+
+enum class KeyComposerState
+{
+  IDLE,
+  COMPOSING,
+  FINISHED,
+  CANCELLED
+};
+
+struct KeyComposerStatus
+{
+  KeyComposerState state{KeyComposerState::IDLE};
+  std::uint32_t keysym{0};
+};
+
 class CXkbcommonKeymap
 {
 public:
@@ -48,11 +64,17 @@ public:
   {
     void operator()(xkb_keymap* keymap) const;
   };
+  struct XkbComposeTableDeleter
+  {
+    void operator()(xkb_compose_table* composeTable) const;
+  };
 
   /**
    * Construct for known xkb_keymap
    */
-  explicit CXkbcommonKeymap(std::unique_ptr<xkb_keymap, XkbKeymapDeleter> keymap);
+  explicit CXkbcommonKeymap(
+      std::unique_ptr<xkb_keymap, XkbKeymapDeleter> keymap,
+      std::unique_ptr<xkb_compose_table, XkbComposeTableDeleter> composeTable);
 
   /**
    * Get xkb keysym for keycode - only a single keysym is supported
@@ -91,6 +113,10 @@ public:
    */
   bool ShouldKeycodeRepeat(xkb_keycode_t code) const;
 
+  KeyComposerStatus KeyComposerFeed(xkb_keycode_t code) const;
+
+  void KeyComposerFlush() const;
+
   static XBMCKey XBMCKeyForKeysym(xkb_keysym_t sym);
 
 private:
@@ -98,10 +124,17 @@ private:
   {
     void operator()(xkb_state* state) const;
   };
+  struct XkbComposeStateDeleter
+  {
+    void operator()(xkb_compose_state* state) const;
+  };
   static std::unique_ptr<xkb_state, XkbStateDeleter> CreateXkbStateFromKeymap(xkb_keymap* keymap);
+  static std::unique_ptr<xkb_compose_state, XkbComposeStateDeleter>
+  CreateXkbComposedStateStateFromTable(xkb_compose_table* composeTable);
 
   std::unique_ptr<xkb_keymap, XkbKeymapDeleter> m_keymap;
   std::unique_ptr<xkb_state, XkbStateDeleter> m_state;
+  std::unique_ptr<xkb_compose_state, XkbComposeStateDeleter> m_composeState;
 
   struct ModifierMapping
   {
@@ -126,8 +159,8 @@ public:
    * This function does not own the file descriptor. It must not be closed
    * from this function.
    */
-  std::unique_ptr<CXkbcommonKeymap> KeymapFromString(std::string const& keymap);
-  std::unique_ptr<CXkbcommonKeymap> KeymapFromNames(const std::string &rules, const std::string &model, const std::string &layout, const std::string &variant, const std::string &options);
+  std::unique_ptr<CXkbcommonKeymap> LocalizedKeymapFromString(std::string const& keymap,
+                                                              std::string const& locale);
 
 private:
   struct XkbContextDeleter
