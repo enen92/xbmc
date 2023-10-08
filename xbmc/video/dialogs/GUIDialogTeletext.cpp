@@ -110,6 +110,7 @@ void CGUIDialogTeletext::Render()
       Close();
   }
 
+  CLog::Log(LOGERROR, "CGUITeletextBox::Render CALLED");
   unsigned char* textureBuffer = (unsigned char*)m_TextDecoder.GetTextureBuffer();
   if (!m_bClose && m_TextDecoder.NeedRendering() && textureBuffer)
   {
