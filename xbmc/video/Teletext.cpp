@@ -1322,13 +1322,16 @@ void CTeletextDecoder::RenderPage()
         }
       }
 
+      CLog::Log(LOGERROR, "CALLED");
       if (!IsSubtitlePage(m_txtCache->Page))
       {
         /* Update on every changed second */
+        CLog::Log(LOGERROR, "{} {}", m_txtCache->TimeString[7], prevTimeSec);
         if (m_txtCache->TimeString[7] != prevTimeSec)
         {
           prevTimeSec = m_txtCache->TimeString[7];
           m_updateTexture = true;
+           CLog::Log(LOGERROR, "UPDATE!");
         }
       }
       else
