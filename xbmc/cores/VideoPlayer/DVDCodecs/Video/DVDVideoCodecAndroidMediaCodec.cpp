@@ -124,6 +124,10 @@ void CMediaCodecVideoBuffer::Set(int bufferId,
   m_bufferId = bufferId;
   m_textureId = textureId;
   m_surfacetexture = std::move(surfacetexture);
+  float textureMatrix[16];
+  m_surfacetexture->updateTexImage();
+  m_surfacetexture->getTransformMatrix(textureMatrix);
+  CLog::Log(LOGERROR, "CMediaCodecVideoBuffer::Matrix {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}", textureMatrix[0], textureMatrix[1], textureMatrix[2],textureMatrix[3], textureMatrix[4], textureMatrix[5], textureMatrix[6], textureMatrix[7], textureMatrix[8], textureMatrix[9], textureMatrix[10], textureMatrix[11], textureMatrix[12], textureMatrix[13], textureMatrix[14], textureMatrix[15]);
   m_frameready = std::move(frameready);
   m_videoview = std::move(videoview);
 }
@@ -188,6 +192,7 @@ int CMediaCodecVideoBuffer::GetTextureId() const
 void CMediaCodecVideoBuffer::GetTransformMatrix(float *textureMatrix)
 {
   m_surfacetexture->getTransformMatrix(textureMatrix);
+  CLog::Log(LOGERROR, "Matrix {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}", *(textureMatrix),*(textureMatrix +1), *(textureMatrix +2), *(textureMatrix+3), *(textureMatrix+4), *(textureMatrix+5), *(textureMatrix+6), *(textureMatrix+7), *(textureMatrix+8), *(textureMatrix+9), *(textureMatrix+10), *(textureMatrix+11), *(textureMatrix+12), *(textureMatrix+13),*(textureMatrix+14),*(textureMatrix+15) );
 }
 
 void CMediaCodecVideoBuffer::UpdateTexImage()
@@ -206,6 +211,7 @@ void CMediaCodecVideoBuffer::UpdateTexImage()
   WaitForFrame(50);
 
   m_surfacetexture->updateTexImage();
+
   if (xbmc_jnienv()->ExceptionCheck())
   {
     CLog::Log(LOGERROR, "CMediaCodecVideoBuffer::UpdateTexImage updateTexImage:ExceptionCheck");
