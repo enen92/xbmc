@@ -1829,6 +1829,7 @@ void CDVDVideoCodecAndroidMediaCodec::surfaceCreated(CJNISurfaceHolder holder)
 
 void CDVDVideoCodecAndroidMediaCodec::surfaceDestroyed(CJNISurfaceHolder holder)
 {
+  CLog::Log(LOGERROR, "Surface Destroyed");
   if (m_state != MEDIACODEC_STATE_STOPPED && m_state != MEDIACODEC_STATE_UNINITIALIZED)
   {
     m_state = MEDIACODEC_STATE_STOPPED;

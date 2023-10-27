@@ -100,6 +100,10 @@ void CRendererMediaCodecSurface::ReleaseVideoBuffer(int idx, bool render)
     CMediaCodecVideoBuffer *mcvb(dynamic_cast<CMediaCodecVideoBuffer*>(buf.videoBuffer));
     if (mcvb)
     {
+      CLog::Log(LOGERROR, "Rendering....");
+      float textureMatrix[16];
+      mcvb->GetTransformMatrix(textureMatrix);
+      CLog::Log(LOGERROR, "CMediaCodecVideoBuffer::Matrix {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}", textureMatrix[0], textureMatrix[1], textureMatrix[2],textureMatrix[3], textureMatrix[4], textureMatrix[5], textureMatrix[6], textureMatrix[7], textureMatrix[8], textureMatrix[9], textureMatrix[10], textureMatrix[11], textureMatrix[12], textureMatrix[13], textureMatrix[14], textureMatrix[15]);
       if (render && m_bConfigured)
         mcvb->RenderUpdate(m_surfDestRect, CXBMCApp::Get().GetNextFrameTime());
       else
