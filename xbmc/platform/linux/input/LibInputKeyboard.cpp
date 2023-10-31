@@ -8,6 +8,7 @@
 
 #include "LibInputKeyboard.h"
 
+#include "LangInfo.h"
 #include "LibInputSettings.h"
 #include "ServiceBroker.h"
 #include "application/AppInboundProtocol.h"
@@ -176,6 +177,11 @@ static void xkbLogger(xkb_context* context,
   };
   CLog::LogF(logLevel, "{}", message);
 }
+
+struct XkbComposeTableDeleter
+{
+  void operator()(xkb_compose_table* composeTable) const;
+};
 } // namespace
 
 CLibInputKeyboard::CLibInputKeyboard()
@@ -197,6 +203,25 @@ CLibInputKeyboard::CLibInputKeyboard()
   {
     CLog::Log(LOGERROR, "CLibInputKeyboard::{} - failed set default keymap", __FUNCTION__);
     return;
+  }
+
+  // create compose table and composed state
+  std::unique_ptr<xkb_compose_table, XkbComposeTableDeleter> xkbComposeTable{
+      xkb_compose_table_new_from_locale(m_ctx, g_langInfo.GetSystemLocale().name(),
+                                        XKB_COMPOSE_COMPILE_NO_FLAGS),
+      XkbComposeTableDeleter()};
+  if (!xkbComposeTable)
+  {
+    CLog::LogF(LOGWARNING,
+               "Failed to compile localized compose table, composed key support will be disabled");
+    return;
+  }
+
+  m_composeState = {xkb_compose_state_new(xkbComposeTable.get(), XKB_COMPOSE_STATE_NO_FLAGS),
+                    XkbComposeStateDeleter()};
+  if (!m_composeState)
+  {
+    throw std::runtime_error("Failed to create keyboard composer");
   }
 }
 

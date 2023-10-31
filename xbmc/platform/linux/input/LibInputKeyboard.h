@@ -12,9 +12,11 @@
 #include "windowing/XBMC_events.h"
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include <libinput.h>
+#include <xkbcommon/xkbcommon-compose.h>
 #include <xkbcommon/xkbcommon.h>
 
 class CLibInputKeyboard
@@ -38,6 +40,11 @@ private:
   xkb_state *m_state = nullptr;
   xkb_mod_index_t m_modindex[4];
   xkb_led_index_t m_ledindex[3];
+  struct XkbComposeStateDeleter
+  {
+    void operator()(xkb_compose_state* state) const;
+  };
+  std::unique_ptr<xkb_compose_state, XkbComposeStateDeleter> m_composeState;
 
   int m_leds;
 
