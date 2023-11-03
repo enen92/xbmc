@@ -24,6 +24,7 @@ DEPENDS = \
   libass \
   libbluray \
   libcec \
+  libexif \
   libffi \
   libgcrypt \
   libgpg-error \
@@ -188,6 +189,7 @@ samba-gplv3: gnutls $(ZLIB)
 taglib: $(ZLIB)
 wayland: expat libffi
 waylandpp: wayland $(WAYLANDPP_DEPS)
+libexif: gettext
 xz: gettext
 
 .installed-$(PLATFORM): $(DEPENDS)

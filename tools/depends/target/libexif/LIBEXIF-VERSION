@@ -1,0 +1,6 @@
+LIBNAME=libexif
+VERSION=0.6.24
+BASE_URL=https://github.com/libexif/libexif/releases/download/v$(VERSION)/
+ARCHIVE=$(LIBNAME)-$(VERSION).tar.bz2
+SHA512=35c9e7af2c3d44a638dc6bbe8f96962d41c0f3fe4a257494f7a73baefab9aba507477175289ccf9002a66cc16ca53d5d1f44d6fef9e014b27f687ecdc58f5111
+BYPRODUCT=libexif.a
