@@ -525,12 +525,12 @@ void CUPnPPlayer::DoAudioWork()
                                                  static_cast<void*>(new CFileItem(*item)));
     }
 
-    NPT_CHECK_LABEL(m_delegate->m_transport->GetStateVariableValue("TransportState", data), failed);
-    if(data == "STOPPED")
-    {
-      m_started = false;
-      m_callback.OnPlayBackEnded();
-    }
+    //NPT_CHECK_LABEL(m_delegate->m_transport->GetStateVariableValue("TransportState", data), failed);
+    //if(data == "STOPPED")
+    //{
+    //  m_started = false;
+    //  m_callback.OnPlayBackEnded();
+    //}
   }
   return;
 failed:
