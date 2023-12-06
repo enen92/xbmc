@@ -525,7 +525,8 @@ void CUPnPPlayer::DoAudioWork()
                                                  static_cast<void*>(new CFileItem(*item)));
     }
 
-    //NPT_CHECK_LABEL(m_delegate->m_transport->GetStateVariableValue("TransportState", data), failed);
+    NPT_CHECK_LABEL(m_delegate->m_transport->GetStateVariableValue("TransportState", data), failed);
+    CLog::Log(LOGERROR, "UPNP TRANSPORT STATE IS: {}", data.GetChars());
     //if(data == "STOPPED")
     //{
     //  m_started = false;
