@@ -580,8 +580,10 @@ CUPnPRenderer::OnSetAVTransportURI(PLT_ActionReference& action)
     // and wait for play command
     const auto& components = CServiceBroker::GetAppComponents();
     const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-    if (!appPlayer->IsPlaying() &&
-        CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() != WINDOW_SLIDESHOW)
+    //! @todo Remove the dependency on GUI!
+    if (!appPlayer->IsPlaying() && !appPlayer->IsInMenu() &&
+        CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() != WINDOW_DIALOG_SELECT_SIMPLE_MENU &&
+        CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() != WINDOW_SLIDESHOW) 
     {
       service->SetStateVariable("TransportState", "STOPPED");
       service->SetStateVariable("TransportStatus", "OK");
