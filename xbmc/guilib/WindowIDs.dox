@@ -136,6 +136,7 @@ This page shows the window names, the window definition, the window ID and the s
 | DialogColorPicker       | WINDOW_DIALOG_COLOR_PICKER           | 12008     | DialogColorPicker.xml               |                                    |
 | SelectVideoVersion      | WINDOW_DIALOG_SELECT_VIDEO_VERSION   | 12015     | DialogSelect.xml                    | @skinning_v21 **New window** SelectVideoVersion |
 | SelectVideoExtra        | WINDOW_DIALOG_SELECT_VIDEO_EXTRA     | 12016     | DialogSelect.xml                    | @skinning_v21 **New window** SelectVideoExtra |
+| SelectSimpleMenu        | WINDOW_DIALOG_SELECT_SIMPLE_MENU     | 12017     | DialogSelect.xml                    | @skinning_v21 **New window** SelectSimpleMenu |
 | Weather                 | WINDOW_WEATHER                       | 12600     | MyWeather.xml                       |                                    |
 | Screensaver             | WINDOW_SCREENSAVER                   | 12900     | none                                |                                    |
 | VideoOSD                | WINDOW_DIALOG_VIDEO_OSD              | 12901     | VideoOSD.xml                        |                                    |

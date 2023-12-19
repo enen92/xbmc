@@ -293,6 +293,7 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIDialogOK);
   Add(new CGUIDialogVideoInfo);
   Add(new CGUIDialogVideoVersion);
+  Add(new CGUIDialogSelect(WINDOW_DIALOG_SELECT_SIMPLE_MENU));
   Add(new CGUIDialogSelect(WINDOW_DIALOG_SELECT_VIDEO_VERSION));
   Add(new CGUIDialogSelect(WINDOW_DIALOG_SELECT_VIDEO_EXTRA));
 
@@ -336,6 +337,7 @@ bool CGUIWindowManager::DestroyWindows()
     DestroyWindow(WINDOW_MUSIC_NAV);
     DestroyWindow(WINDOW_DIALOG_MUSIC_INFO);
     DestroyWindow(WINDOW_DIALOG_VIDEO_INFO);
+    DestroyWindow(WINDOW_DIALOG_SELECT_SIMPLE_MENU);
     DestroyWindow(WINDOW_DIALOG_SELECT_VIDEO_EXTRA);
     DestroyWindow(WINDOW_DIALOG_SELECT_VIDEO_VERSION);
     DestroyWindow(WINDOW_DIALOG_VIDEO_VERSION);
