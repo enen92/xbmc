@@ -39,6 +39,7 @@
 #include "utils/Variant.h"
 #include "utils/XTimeUtils.h"
 #include "utils/log.h"
+#include "pictures/SlideShowDelegator.h"
 
 #include <memory>
 #include <random>
@@ -144,6 +145,7 @@ CGUIWindowSlideShow::CGUIWindowSlideShow(void)
   m_Resolution = RES_INVALID;
   m_loadType = KEEP_IN_MEMORY;
   m_bLoadNextPic = false;
+  CServiceBroker::GetSlideShowDelegator().SetDelegate(this);
   Reset();
 }
 
