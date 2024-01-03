@@ -10,7 +10,6 @@
 #include "FileItem.h"
 #include "GUIInfoManager.h"
 #include "GUIUserMessages.h"
-#include "PlayListPlayer.h"
 #include "ServiceBroker.h"
 #include "TextureDatabase.h"
 #include "ThumbLoader.h"
@@ -18,8 +17,6 @@
 #include "UPnPInternal.h"
 #include "URL.h"
 #include "application/Application.h"
-#include "application/ApplicationComponents.h"
-#include "application/ApplicationPlayer.h"
 #include "filesystem/SpecialProtocol.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
@@ -348,7 +345,7 @@ CUPnPRenderer::UpdateState()
         avt->SetStateVariable("CurrentMediaDuration", "00:00:00");
       }
     }
-    else if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SLIDESHOW)
+    else if (slideShow.InSlideShow())
     {
       avt->SetStateVariable("TransportState", "PLAYING");
 
@@ -370,6 +367,18 @@ CUPnPRenderer::UpdateState()
     {
       Reset(avt);
     }
+}
+
+NPT_String CUPnPRenderer::GetTransportState()
+{
+  NPT_AutoLock lock(m_state);
+  NPT_String transportState;
+  PLT_Service *avt;
+  if (NPT_FAILED(FindServiceByType("urn:schemas-upnp-org:service:AVTransport:1", avt)))
+      return transportState;
+
+  avt->GetStateVariableValue("TransportState", transportState);
+  return transportState;
 }
 
 NPT_Result CUPnPRenderer::Reset(PLT_Service *avt)
@@ -475,7 +484,9 @@ CUPnPRenderer::GetMetadata(NPT_String& meta)
 NPT_Result
 CUPnPRenderer::OnNext(PLT_ActionReference& action)
 {
-    if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SLIDESHOW) {
+    CSlideShowDelegator& slideShow = CServiceBroker::GetSlideShowDelegator();
+    if (slideShow.NumSlides() > 0)
+    {
       CServiceBroker::GetAppMessenger()->SendMsg(
           TMSG_GUI_ACTION, WINDOW_SLIDESHOW, -1,
           static_cast<void*>(new CAction(ACTION_NEXT_PICTURE)));
@@ -491,17 +502,16 @@ CUPnPRenderer::OnNext(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnPause(PLT_ActionReference& action)
 {
-    if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SLIDESHOW) {
+    CSlideShowDelegator& slideShow = CServiceBroker::GetSlideShowDelegator();
+    if (slideShow.NumSlides() > 0)
+    {
       CServiceBroker::GetAppMessenger()->SendMsg(
           TMSG_GUI_ACTION, WINDOW_SLIDESHOW, -1,
           static_cast<void*>(new CAction(ACTION_NEXT_PICTURE)));
     }
     else
     {
-      const auto& components = CServiceBroker::GetAppComponents();
-      const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-      if (!appPlayer->IsPausedPlayback())
-        CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_PAUSE);
+      CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_PAUSE);
     }
     return NPT_SUCCESS;
 }
@@ -512,16 +522,16 @@ CUPnPRenderer::OnPause(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnPlay(PLT_ActionReference& action)
 {
-  if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SLIDESHOW)
+  CSlideShowDelegator& slideShow = CServiceBroker::GetSlideShowDelegator();
+  if (slideShow.InSlideShow())
     return NPT_SUCCESS;
 
-  const auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-  if (appPlayer->IsPausedPlayback())
+  const NPT_String transportState = GetTransportState();
+  if (transportState == "PAUSED_PLAYBACK")
   {
     CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_PAUSE);
   }
-  else if (appPlayer && !appPlayer->IsPlaying())
+  else if (transportState != "PLAYING")
   {
     NPT_String uri, meta;
     PLT_Service* service;
@@ -542,7 +552,9 @@ CUPnPRenderer::OnPlay(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnPrevious(PLT_ActionReference& action)
 {
-    if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SLIDESHOW) {
+    CSlideShowDelegator& slideShow = CServiceBroker::GetSlideShowDelegator();
+    if (slideShow.NumSlides() > 0)
+    {
       CServiceBroker::GetAppMessenger()->SendMsg(
           TMSG_GUI_ACTION, WINDOW_SLIDESHOW, -1,
           static_cast<void*>(new CAction(ACTION_PREV_PICTURE)));
@@ -558,7 +570,9 @@ CUPnPRenderer::OnPrevious(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnStop(PLT_ActionReference& action)
 {
-    if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SLIDESHOW) {
+    CSlideShowDelegator& slideShow = CServiceBroker::GetSlideShowDelegator();
+    if (slideShow.NumSlides() > 0)
+    {
       CServiceBroker::GetAppMessenger()->SendMsg(
           TMSG_GUI_ACTION, WINDOW_SLIDESHOW, -1,
           static_cast<void*>(new CAction(ACTION_NEXT_PICTURE)));
@@ -583,10 +597,9 @@ CUPnPRenderer::OnSetAVTransportURI(PLT_ActionReference& action)
 
     // if not playing already, just keep around uri & metadata
     // and wait for play command
-    const auto& components = CServiceBroker::GetAppComponents();
-    const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-    if (!appPlayer->IsPlaying() &&
-        CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() != WINDOW_SLIDESHOW)
+    CSlideShowDelegator& slideShow = CServiceBroker::GetSlideShowDelegator();
+    if (GetTransportState() != "PLAYING" &&
+        !slideShow.InSlideShow())
     {
       service->SetStateVariable("TransportState", "STOPPED");
       service->SetStateVariable("TransportStatus", "OK");
@@ -597,7 +610,6 @@ CUPnPRenderer::OnSetAVTransportURI(PLT_ActionReference& action)
       service->SetStateVariable("NextAVTransportURIMetaData", "");
 
       NPT_CHECK_SEVERE(action->SetArgumentsOutFromStateVariable());
-      return NPT_SUCCESS;
     }
 
     return PlayMedia(uri, meta, action.AsPointer());
@@ -621,23 +633,26 @@ CUPnPRenderer::OnSetNextAVTransportURI(PLT_ActionReference& action)
         return NPT_FAILURE;
     }
 
-    const auto& components = CServiceBroker::GetAppComponents();
-    const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-    if (appPlayer->IsPlaying())
+    CSlideShowDelegator& slideShow = CServiceBroker::GetSlideShowDelegator();
+    if (GetTransportState() == "PLAYING" && !slideShow.IsPlaying() )
     {
 
       PLAYLIST::Id playlistId = PLAYLIST::TYPE_MUSIC;
       if (item->IsVideo())
         playlistId = PLAYLIST::TYPE_VIDEO;
 
-      {
+      /*{
         std::unique_lock<CCriticalSection> lock(CServiceBroker::GetWinSystem()->GetGfxContext());
         CServiceBroker::GetPlaylistPlayer().ClearPlaylist(playlistId);
         CServiceBroker::GetPlaylistPlayer().Add(playlistId, item);
 
         CServiceBroker::GetPlaylistPlayer().SetCurrentItemIdx(-1);
         CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(playlistId);
-      }
+      }*/
+      auto playlist = new CFileItemList();
+      playlist->AddFront(item, 0);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_PLAYLISTPLAYER_ADD, playlistId, -1,
+                                                 static_cast<void*>(playlist));
 
         service->SetStateVariable("NextAVTransportURI", uri);
         service->SetStateVariable("NextAVTransportURIMetaData", meta);
@@ -646,7 +661,7 @@ CUPnPRenderer::OnSetNextAVTransportURI(PLT_ActionReference& action)
 
         return NPT_SUCCESS;
     }
-    else if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SLIDESHOW)
+    else if (slideShow.IsPlaying())
     {
       return NPT_FAILURE;
     }
@@ -737,9 +752,7 @@ CUPnPRenderer::OnSetMute(PLT_ActionReference& action)
 NPT_Result
 CUPnPRenderer::OnSeek(PLT_ActionReference& action)
 {
-  const auto& components = CServiceBroker::GetAppComponents();
-  const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-  if (!appPlayer->IsPlaying())
+  if (GetTransportState() != "PLAYING")
     return NPT_ERROR_INVALID_STATE;
 
   NPT_String unit, target;
