@@ -280,6 +280,10 @@ void CUPnPRenderer::Announce(ANNOUNCEMENT::AnnouncementFlag flag,
       avt->SetStateVariable("TransportPlaySpeed",
                             NPT_String::FromInteger(data["player"]["speed"].asInteger()));
     }
+    else if (message == "OnStop")
+    {
+      Reset(avt);
+    }
   }
   else if (flag == ANNOUNCEMENT::Application && message == "OnVolumeChanged")
   {
@@ -319,9 +323,7 @@ CUPnPRenderer::UpdateState()
 
     avt->SetStateVariable("TransportStatus", "OK");
     CSlideShowDelegator& slideShow = CServiceBroker::GetSlideShowDelegator();
-    const auto& components = CServiceBroker::GetAppComponents();
-    const auto appPlayer = components.GetComponent<CApplicationPlayer>();
-    if (appPlayer->IsPlaying() || appPlayer->IsPausedPlayback())
+    if (state == "PLAYING" || state == "PAUSED_PLAYBACK")
     {
       avt->SetStateVariable("NumberOfTracks", "1");
       avt->SetStateVariable("CurrentTrack", "1");
@@ -366,17 +368,28 @@ CUPnPRenderer::UpdateState()
     }
     else
     {
-      avt->SetStateVariable("TransportState", "STOPPED");
-      avt->SetStateVariable("TransportPlaySpeed", "1");
-      avt->SetStateVariable("NumberOfTracks", "0");
-      avt->SetStateVariable("CurrentTrack", "0");
-      avt->SetStateVariable("RelativeTimePosition", "00:00:00");
-      avt->SetStateVariable("AbsoluteTimePosition", "00:00:00");
-      avt->SetStateVariable("CurrentTrackDuration", "00:00:00");
-      avt->SetStateVariable("CurrentMediaDuration", "00:00:00");
-      avt->SetStateVariable("NextAVTransportURI", "");
-      avt->SetStateVariable("NextAVTransportURIMetaData", "");
+      Reset(avt);
     }
+}
+
+NPT_Result CUPnPRenderer::Reset(PLT_Service *avt)
+{
+  if (!avt)
+  {
+    return NPT_ERROR_INTERNAL;
+  }
+
+  avt->SetStateVariable("TransportState", "STOPPED");
+  avt->SetStateVariable("TransportPlaySpeed", "1");
+  avt->SetStateVariable("NumberOfTracks", "0");
+  avt->SetStateVariable("CurrentTrack", "0");
+  avt->SetStateVariable("RelativeTimePosition", "00:00:00");
+  avt->SetStateVariable("AbsoluteTimePosition", "00:00:00");
+  avt->SetStateVariable("CurrentTrackDuration", "00:00:00");
+  avt->SetStateVariable("CurrentMediaDuration", "00:00:00");
+  avt->SetStateVariable("NextAVTransportURI", "");
+  avt->SetStateVariable("NextAVTransportURIMetaData", "");
+  return NPT_SUCCESS;
 }
 
 /*----------------------------------------------------------------------
