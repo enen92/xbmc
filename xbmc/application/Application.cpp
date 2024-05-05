@@ -810,16 +810,7 @@ void CApplication::Render()
     return;
 
   // render gui layer
-  const bool renderGUI = appPower->GetRenderGUI();
-  if (m_guiRenderLastState != std::nullopt && renderGUI && m_guiRenderLastState != renderGUI)
-  {
-    CGUIComponent* gui = CServiceBroker::GetGUI();
-    if (gui)
-      CServiceBroker::GetGUI()->GetWindowManager().MarkDirty();
-  }
-  m_guiRenderLastState = renderGUI;
-
-  if (renderGUI && !m_skipGuiRender)
+  if (appPower->GetRenderGUI() && !m_skipGuiRender)
   {
     if (CServiceBroker::GetWinSystem()->GetGfxContext().GetStereoMode())
     {
@@ -1428,6 +1419,10 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
 
   case TMSG_RENDERER_FLUSH:
     appPlayer->FlushRenderer();
+    break;
+
+  case TMSG_RESTART_RENDERING:
+    CServiceBroker::GetGUI()->GetWindowManager().MarkDirty();
     break;
 
   case TMSG_HIBERNATE:
