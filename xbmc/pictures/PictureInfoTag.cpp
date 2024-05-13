@@ -8,7 +8,7 @@
 
 #include "PictureInfoTag.h"
 
-#include "ImageMetadataParser.h"
+#include "pictures/metadata/ImageMetadataParser.h"
 #include "ServiceBroker.h"
 #include "addons/ExtsMimeSupportList.h"
 #include "addons/ImageDecoder.h"

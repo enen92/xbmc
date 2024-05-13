@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "ImageMetadata.h"
+#include "pictures/metadata/ImageMetadata.h"
 #include "XBDateTime.h"
 #include "utils/IArchivable.h"
 #include "utils/ISerializable.h"
