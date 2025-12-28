@@ -29,6 +29,8 @@ CGUIWindowScreensaver::CGUIWindowScreensaver()
   m_renderOrder = RENDER_ORDER_WINDOW_SCREENSAVER;
 }
 
+CGUIWindowScreensaver::~CGUIWindowScreensaver() = default;
+
 void CGUIWindowScreensaver::Process(unsigned int currentTime, CDirtyRegionList& regions)
 {
   MarkDirtyRegion();

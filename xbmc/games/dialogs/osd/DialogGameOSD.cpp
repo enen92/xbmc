@@ -27,6 +27,8 @@ CDialogGameOSD::CDialogGameOSD()
   m_loadType = KEEP_IN_MEMORY;
 }
 
+CDialogGameOSD::~CDialogGameOSD() = default;
+
 bool CDialogGameOSD::OnAction(const CAction& action)
 {
   switch (action.GetID())

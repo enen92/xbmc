@@ -15,11 +15,19 @@
 class IRunnable;
 class CEvent;
 
-class CGUIDialogBusy : private CGUIDialog
+class CGUIDialogBusy : public CGUIDialog
 {
-  friend class CGUIWindowManager;
-
 public:
+  // Passkey idiom: only CGUIWindowManager can construct the passkey
+  class Passkey
+  {
+    friend class CGUIWindowManager;
+    Passkey() = default;
+  };
+
+  explicit CGUIDialogBusy(Passkey);
+  ~CGUIDialogBusy() override;
+
   /*! \brief Wait for a runnable to execute off-thread.
    Creates a thread to run the given runnable, and while waiting
    it displays the busy dialog.
@@ -40,9 +48,6 @@ public:
   static bool WaitOnEvent(CEvent &event, unsigned int displaytime = 100, bool allowCancel = true);
 
 private:
-  CGUIDialogBusy();
-  ~CGUIDialogBusy() override;
-
   void Open_Internal(bool bProcessRenderLoop, const std::string& param = "") override;
   bool OnBack(int actionID) override;
   void DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions) override;

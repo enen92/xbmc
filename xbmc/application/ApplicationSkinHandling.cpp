@@ -178,7 +178,7 @@ bool CApplicationSkinHandling::LoadSkin(const std::string& skinID)
   CServiceBroker::GetTextureCache()->Initialize();
 
   if (g_SkinInfo->HasSkinFile("DialogFullScreenInfo.xml"))
-    CServiceBroker::GetGUI()->GetWindowManager().Add(new CGUIDialogFullScreenInfo);
+    CServiceBroker::GetGUI()->GetWindowManager().Add(std::make_shared<CGUIDialogFullScreenInfo>());
 
   CLog::Log(LOGINFO, "  skin loaded...");
 
@@ -332,7 +332,7 @@ bool CApplicationSkinHandling::LoadCustomWindows()
             continue;
           }
 
-          CGUIWindow* pWindow = nullptr;
+          std::shared_ptr<CGUIWindow> window;
           bool hasVisibleCondition = false;
 
           if (StringUtils::EqualsNoCase(strType, "dialog"))
@@ -346,35 +346,35 @@ bool CApplicationSkinHandling::LoadCustomWindows()
                  !StringUtils::EqualsNoCase(pRootElement->Attribute("modality"), "modal")))
               modality = DialogModalityType::MODELESS;
 
-            pWindow = new CGUIDialog(windowId, skinFile, modality);
+            window = std::make_shared<CGUIDialog>(windowId, skinFile, modality);
           }
           else if (StringUtils::EqualsNoCase(strType, "submenu"))
           {
-            pWindow = new CGUIDialogSubMenu(windowId, skinFile);
+            window = std::make_shared<CGUIDialogSubMenu>(windowId, skinFile);
           }
           else if (StringUtils::EqualsNoCase(strType, "buttonmenu"))
           {
-            pWindow = new CGUIDialogButtonMenu(windowId, skinFile);
+            window = std::make_shared<CGUIDialogButtonMenu>(windowId, skinFile);
           }
           else
           {
-            pWindow = new CGUIWindow(windowId, skinFile);
+            window = std::make_shared<CGUIWindow>(windowId, skinFile);
           }
 
-          if (!pWindow)
+          if (!window)
           {
             CLog::Log(LOGERROR, "Failed to create custom window from {}", skinFile);
             continue;
           }
 
-          pWindow->SetCustom(true);
+          window->SetCustom(true);
 
           // Determining whether our custom dialog is modeless (visible condition is present)
           // will be done on load. Therefore we need to initialize the custom dialog on gui init.
-          pWindow->SetLoadType(hasVisibleCondition ? CGUIWindow::LOAD_ON_GUI_INIT
-                                                   : CGUIWindow::KEEP_IN_MEMORY);
+          window->SetLoadType(hasVisibleCondition ? CGUIWindow::LOAD_ON_GUI_INIT
+                                                  : CGUIWindow::KEEP_IN_MEMORY);
 
-          CServiceBroker::GetGUI()->GetWindowManager().AddCustomWindow(pWindow);
+          CServiceBroker::GetGUI()->GetWindowManager().AddCustomWindow(std::move(window));
         }
       }
     }

@@ -26,7 +26,7 @@ class CDialogGameOSD : public CGUIDialog
 public:
   CDialogGameOSD();
 
-  ~CDialogGameOSD() override = default;
+  ~CDialogGameOSD() override;
 
   // Implementation of CGUIControl via CGUIDialog
   bool OnAction(const CAction& action) override;

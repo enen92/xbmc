@@ -210,7 +210,8 @@ namespace XBMCAddon
       iWindowId = _window->get()->GetID();
 
       if (!existingWindow)
-        CServiceBroker::GetGUI()->GetWindowManager().Add(window->get());
+        CServiceBroker::GetGUI()->GetWindowManager().Add(
+            std::shared_ptr<CGUIWindow>(window->get()));
     }
 
     int Window::getNextAvailableWindowId()

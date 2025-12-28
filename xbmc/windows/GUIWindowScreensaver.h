@@ -24,6 +24,7 @@ class CGUIWindowScreensaver : public CGUIDialog
 {
 public:
   CGUIWindowScreensaver();
+  ~CGUIWindowScreensaver() override;
 
   bool OnMessage(CGUIMessage& message) override;
   bool OnAction(const CAction& action) override

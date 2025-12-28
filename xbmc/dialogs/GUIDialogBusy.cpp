@@ -107,7 +107,7 @@ bool CGUIDialogBusy::WaitOnEvent(CEvent &event, unsigned int displaytime /* = 10
   return !cancelled;
 }
 
-CGUIDialogBusy::CGUIDialogBusy(void)
+CGUIDialogBusy::CGUIDialogBusy(Passkey)
   : CGUIDialog(WINDOW_DIALOG_BUSY, "DialogBusy.xml", DialogModalityType::MODAL)
 {
   m_loadType = LOAD_ON_GUI_INIT;

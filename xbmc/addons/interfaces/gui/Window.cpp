@@ -186,11 +186,12 @@ KODI_GUI_WINDOW_HANDLE Interface_GUIWindow::create(KODI_HANDLE kodiBase,
   if (id < 0)
     return nullptr;
 
-  auto window{as_dialog ? std::make_unique<CGUIAddonWindowDialog>(id, strSkinPath, addon)
-                        : std::make_unique<CGUIAddonWindow>(id, strSkinPath, addon, is_media)};
+  std::shared_ptr<CGUIAddonWindow> window{
+      as_dialog ? std::make_shared<CGUIAddonWindowDialog>(id, strSkinPath, addon)
+                : std::make_shared<CGUIAddonWindow>(id, strSkinPath, addon, is_media)};
 
   Interface_GUIGeneral::lock();
-  CServiceBroker::GetGUI()->GetWindowManager().Add(window.get());
+  CServiceBroker::GetGUI()->GetWindowManager().Add(window);
   Interface_GUIGeneral::unlock();
 
   if (!CServiceBroker::GetGUI()->GetWindowManager().GetWindow(id))
@@ -199,7 +200,7 @@ KODI_GUI_WINDOW_HANDLE Interface_GUIWindow::create(KODI_HANDLE kodiBase,
     return nullptr;
   }
   window->SetCoordsRes(res);
-  return window.release();
+  return window.get();
 }
 
 void Interface_GUIWindow::destroy(KODI_HANDLE kodiBase, KODI_GUI_WINDOW_HANDLE handle)

@@ -57,9 +57,9 @@ public:
   bool SendMessage(int message, int senderID, int destID, int param1 = 0, int param2 = 0);
   bool SendMessage(CGUIMessage& message, int window);
   void Initialize();
-  bool Add(CGUIWindow* pWindow);
-  void AddUniqueInstance(CGUIWindow *window);
-  void AddCustomWindow(CGUIWindow* pWindow);
+  bool Add(std::shared_ptr<CGUIWindow> window);
+  void AddUniqueInstance(std::shared_ptr<CGUIWindow> window);
+  void AddCustomWindow(std::shared_ptr<CGUIWindow> window);
   void Remove(int id);
   void Delete(int id);
   void ActivateWindow(int iWindowID, const std::string &strPath = "");
