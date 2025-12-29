@@ -107,7 +107,7 @@ bool CGUIDialogSimpleMenu::ShowPlaylistSelection(CFileItem& item)
     return false;
   }
 
-  CGUIDialogSelect* dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+  auto dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
       WINDOW_DIALOG_SELECT)};
   while (true)
   {

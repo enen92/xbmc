@@ -322,7 +322,9 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
           else
           {
             // ask the user what to do
-            CGUIDialogSelect* selectDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+            auto selectDialog =
+                CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+                    WINDOW_DIALOG_SELECT);
             selectDialog->Reset();
             selectDialog->SetHeading(scraper->Content() == ADDON::ContentType::TVSHOWS ? 20356
                                                                                        : 196);

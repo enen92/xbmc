@@ -65,8 +65,8 @@ void CApplicationVolumeHandling::VolumeChanged()
 void CApplicationVolumeHandling::ShowVolumeBar(const CAction* action)
 {
   const auto& wm = CServiceBroker::GetGUI()->GetWindowManager();
-  auto* volumeBar = wm.GetWindow<CGUIDialogVolumeBar>(WINDOW_DIALOG_VOLUME_BAR);
-  if (volumeBar != nullptr && volumeBar->IsVolumeBarEnabled())
+  auto volumeBar = wm.GetWindow<CGUIDialogVolumeBar>(WINDOW_DIALOG_VOLUME_BAR);
+  if (volumeBar && volumeBar->IsVolumeBarEnabled())
   {
     volumeBar->Open();
     if (action)

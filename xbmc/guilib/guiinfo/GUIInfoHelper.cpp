@@ -87,22 +87,22 @@ bool CheckWindowCondition(const CGUIWindow* window, int condition)
   return true;
 }
 
-CGUIWindow* GetWindowWithCondition(int contextWindow, int condition)
+std::shared_ptr<CGUIWindow> GetWindowWithCondition(int contextWindow, int condition)
 {
   const CGUIWindowManager& windowMgr = CServiceBroker::GetGUI()->GetWindowManager();
 
-  CGUIWindow* window = windowMgr.GetWindow(contextWindow);
-  if (CheckWindowCondition(window, condition))
+  auto window = windowMgr.GetWindow(contextWindow);
+  if (CheckWindowCondition(window.get(), condition))
     return window;
 
   // try topmost dialog
   window = windowMgr.GetWindow(windowMgr.GetTopmostModalDialog());
-  if (CheckWindowCondition(window, condition))
+  if (CheckWindowCondition(window.get(), condition))
     return window;
 
   // try active window
   window = windowMgr.GetWindow(windowMgr.GetActiveWindow());
-  if (CheckWindowCondition(window, condition))
+  if (CheckWindowCondition(window.get(), condition))
     return window;
 
   return nullptr;
@@ -110,14 +110,14 @@ CGUIWindow* GetWindowWithCondition(int contextWindow, int condition)
 
 } // unnamed namespace
 
-CGUIWindow* GetWindow(int contextWindow)
+std::shared_ptr<CGUIWindow> GetWindow(int contextWindow)
 {
   return GetWindowWithCondition(contextWindow, 0);
 }
 
 CFileItemPtr GetCurrentListItemFromWindow(int contextWindow)
 {
-  CGUIWindow* window = GetWindowWithCondition(contextWindow, WINDOW_CONDITION_HAS_LIST_ITEMS);
+  auto window = GetWindowWithCondition(contextWindow, WINDOW_CONDITION_HAS_LIST_ITEMS);
   if (window)
     return window->GetCurrentListItem();
 
@@ -126,16 +126,16 @@ CFileItemPtr GetCurrentListItemFromWindow(int contextWindow)
 
 CGUIMediaWindow* GetMediaWindow(int contextWindow)
 {
-  CGUIWindow* window = GetWindowWithCondition(contextWindow, WINDOW_CONDITION_IS_MEDIA_WINDOW);
+  auto window = GetWindowWithCondition(contextWindow, WINDOW_CONDITION_IS_MEDIA_WINDOW);
   if (window)
-    return static_cast<CGUIMediaWindow*>(window);
+    return static_cast<CGUIMediaWindow*>(window.get());
 
   return nullptr;
 }
 
 CGUIControl* GetActiveContainer(int containerId, int contextWindow)
 {
-  CGUIWindow* window = GetWindow(contextWindow);
+  auto window = GetWindow(contextWindow);
   if (!window)
     return nullptr;
 
@@ -143,7 +143,7 @@ CGUIControl* GetActiveContainer(int containerId, int contextWindow)
   if (!containerId) // No container specified, so we lookup the current view container
   {
     if (window->IsMediaWindow())
-      containerId = static_cast<CGUIMediaWindow*>(window)->GetViewContainerID();
+      containerId = static_cast<CGUIMediaWindow*>(window.get())->GetViewContainerID();
     else
       control = window->GetFocusedControl();
   }

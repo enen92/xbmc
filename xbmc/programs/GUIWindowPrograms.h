@@ -12,6 +12,8 @@
 #include "dialogs/GUIDialogProgress.h"
 #include "windows/GUIMediaWindow.h"
 
+#include <memory>
+
 class CGUIWindowPrograms :
       public CGUIMediaWindow, public IBackgroundLoaderObserver
 {
@@ -29,7 +31,7 @@ protected:
   bool OnAddMediaSource() override;
   std::string GetStartFolder(const std::string &dir) override;
 
-  CGUIDialogProgress* m_dlgProgress;
+  std::shared_ptr<CGUIDialogProgress> m_dlgProgress;
 
   CProgramThumbLoader m_thumbLoader;
 };

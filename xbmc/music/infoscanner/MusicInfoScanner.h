@@ -16,6 +16,8 @@
 #include "threads/Thread.h"
 #include "utils/ScraperUrl.h"
 
+#include <memory>
+
 class CAlbum;
 class CArtist;
 class CGUIDialogProgressBarHandle;
@@ -67,7 +69,7 @@ public:
   InfoRet UpdateAlbumInfo(CAlbum& album,
                           const ADDON::ScraperPtr& scraper,
                           bool bAllowSelection,
-                          CGUIDialogProgress* pDialog = nullptr);
+                          std::shared_ptr<CGUIDialogProgress> pDialog = nullptr);
 
   /*! \brief Scrape additional artist information and update the music database with it.
   Given an artist, search for it using the given scraper.
@@ -81,7 +83,7 @@ public:
   InfoRet UpdateArtistInfo(CArtist& artist,
                            const ADDON::ScraperPtr& scraper,
                            bool bAllowSelection,
-                           CGUIDialogProgress* pDialog = nullptr);
+                           std::shared_ptr<CGUIDialogProgress> pDialog = nullptr);
 
 protected:
   virtual void Process();
@@ -117,7 +119,7 @@ protected:
   InfoRet UpdateDatabaseAlbumInfo(CAlbum& album,
                                   const ADDON::ScraperPtr& scraper,
                                   bool bAllowSelection,
-                                  CGUIDialogProgress* pDialog = nullptr);
+                                  std::shared_ptr<CGUIDialogProgress> pDialog = nullptr);
 
   /*! \brief Scrape additional artist information and update the database.
    Search for the given artist using the given scraper.
@@ -131,7 +133,7 @@ protected:
   InfoRet UpdateDatabaseArtistInfo(CArtist& artist,
                                    const ADDON::ScraperPtr& scraper,
                                    bool bAllowSelection,
-                                   CGUIDialogProgress* pDialog = nullptr);
+                                   std::shared_ptr<CGUIDialogProgress> pDialog = nullptr);
 
   /*! \brief Using the scrapers download metadata for an album
    Given a CAlbum style struct containing some data about an album, query
@@ -148,7 +150,7 @@ protected:
                             const ADDON::ScraperPtr& scraper,
                             MUSIC_GRABBER::CMusicAlbumInfo& albumInfo,
                             bool bUseScrapedMBID,
-                            CGUIDialogProgress* pDialog = nullptr);
+                            std::shared_ptr<CGUIDialogProgress> pDialog = nullptr);
 
   /*! \brief Using the scrapers download metadata for an artist
    Given a CAlbum style struct containing some data about an artist, query
@@ -165,7 +167,7 @@ protected:
                              const ADDON::ScraperPtr& scraper,
                              MUSIC_GRABBER::CMusicArtistInfo& artistInfo,
                              bool bUseScrapedMBID,
-                             CGUIDialogProgress* pDialog = nullptr);
+                             std::shared_ptr<CGUIDialogProgress> pDialog = nullptr);
 
   /*! \brief Get the types of art for an artist or album that are to be
   automatically fetched from local files during scanning

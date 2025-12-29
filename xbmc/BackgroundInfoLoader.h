@@ -36,7 +36,7 @@ public:
   bool IsLoading();
   void Run() override;
   void SetObserver(IBackgroundLoaderObserver* pObserver);
-  void SetProgressCallback(IProgressCallback* pCallback);
+  void SetProgressCallback(std::shared_ptr<IProgressCallback> pCallback);
   virtual bool LoadItem(CFileItem* pItem) { return false; }
   virtual bool LoadItemCached(CFileItem* pItem) { return false; }
   virtual bool LoadItemLookup(CFileItem* pItem) { return false; }
@@ -57,7 +57,7 @@ protected:
   std::unique_ptr<CThread> m_thread{};
 
   IBackgroundLoaderObserver* m_pObserver{nullptr};
-  IProgressCallback* m_pProgressCallback{nullptr};
+  std::shared_ptr<IProgressCallback> m_pProgressCallback{nullptr};
 
 private:
   void Reset();

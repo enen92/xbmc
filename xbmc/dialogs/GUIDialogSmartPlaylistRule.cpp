@@ -360,7 +360,8 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   // sort the items
   items.Sort(SortByLabel, SortOrderAscending, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_IGNORETHEWHENSORTING) ? SortAttributeIgnoreArticle : SortAttributeNone);
 
-  CGUIDialogSelect* pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   pDialog->Reset();
   pDialog->SetItems(items);
   std::string strHeading =
@@ -450,7 +451,8 @@ void CGUIDialogSmartPlaylistRule::OnCancel()
 void CGUIDialogSmartPlaylistRule::OnField()
 {
   const auto fields = PLAYLIST::CSmartPlaylistRule::GetFields(m_type);
-  CGUIDialogSelect* dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   dialog->Reset();
   dialog->SetHeading(CVariant{20427});
   int selected = -1;
@@ -486,7 +488,8 @@ void CGUIDialogSmartPlaylistRule::OnField()
 void CGUIDialogSmartPlaylistRule::OnOperator()
 {
   const auto labels = GetValidOperators(m_rule);
-  CGUIDialogSelect* dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   dialog->Reset();
   dialog->SetHeading(CVariant{ 16023 });
   for (auto label : labels)
@@ -570,7 +573,8 @@ void CGUIDialogSmartPlaylistRule::OnDeinitWindow(int nextWindowID)
 bool CGUIDialogSmartPlaylistRule::EditRule(PLAYLIST::CSmartPlaylistRule& rule,
                                            const std::string& type)
 {
-  CGUIDialogSmartPlaylistRule *editor = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSmartPlaylistRule>(WINDOW_DIALOG_SMART_PLAYLIST_RULE);
+  auto editor = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSmartPlaylistRule>(
+      WINDOW_DIALOG_SMART_PLAYLIST_RULE);
   if (!editor) return false;
 
   editor->m_rule = rule;

@@ -136,8 +136,9 @@ void CGUIWindowDebugInfo::Process(unsigned int currentTime, CDirtyRegionList &di
   {
     if (!info.empty())
       info += "\n";
-    CGUIWindow *window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog());
-    CGUIWindow *pointer = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_POINTER);
+    auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(
+        CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog());
+    auto pointer = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_POINTER);
     CPoint point;
     if (pointer)
       point = CPoint(pointer->GetXPosition(), pointer->GetYPosition());

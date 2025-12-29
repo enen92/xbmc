@@ -291,11 +291,11 @@ void CGUIAgentControllerList::OnControllerSelect(const CFileItem& selectedAgentI
 void CGUIAgentControllerList::ShowControllerDialog(const CAgentController& agentController)
 {
   // Get the dialog
-  PERIPHERALS::CGUIDialogPeripheralSettings* pSettingsDialog =
+  auto pSettingsDialog =
       CServiceBroker::GetGUI()
           ->GetWindowManager()
           .GetWindow<PERIPHERALS::CGUIDialogPeripheralSettings>(WINDOW_DIALOG_PERIPHERAL_SETTINGS);
-  if (pSettingsDialog == nullptr)
+  if (!pSettingsDialog)
     return;
 
   const PERIPHERALS::PeripheralPtr peripheral = agentController.GetPeripheral();

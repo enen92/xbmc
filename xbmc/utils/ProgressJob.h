@@ -10,6 +10,7 @@
 
 #include "jobs/Job.h"
 
+#include <memory>
 #include <string>
 
 class CGUIDialogProgress;
@@ -45,7 +46,10 @@ public:
    \param updateProgress (optional) Whether to show progress updates.
    \param updateInformation (optional) Whether to show progress information.
    */
-  void SetProgressIndicators(CGUIDialogProgressBarHandle* progressBar, CGUIDialogProgress* progressDialog, bool updateProgress = true, bool updateInformation = true);
+  void SetProgressIndicators(CGUIDialogProgressBarHandle* progressBar,
+                             std::shared_ptr<CGUIDialogProgress> progressDialog,
+                             bool updateProgress = true,
+                             bool updateInformation = true);
 
   bool HasProgressIndicator() const;
 
@@ -71,12 +75,15 @@ protected:
   /*!
    \brief Returns the progress dialog indicating the progress of the job.
    */
-  CGUIDialogProgress* GetProgressDialog() const { return m_progressDialog; }
+  std::shared_ptr<CGUIDialogProgress> GetProgressDialog() const { return m_progressDialog; }
 
   /*!
    \brief Sets the progress bar indicating the progress of the job.
    */
-  void SetProgressDialog(CGUIDialogProgress* progressDialog) { m_progressDialog = progressDialog; }
+  void SetProgressDialog(std::shared_ptr<CGUIDialogProgress> progressDialog)
+  {
+    m_progressDialog = std::move(progressDialog);
+  }
 
   /*!
    \brief Whether to automatically close the progress indicator in MarkFinished().
@@ -158,5 +165,5 @@ private:
   bool m_updateProgress{true};
   bool m_updateInformation{true};
   CGUIDialogProgressBarHandle* m_progress{nullptr};
-  CGUIDialogProgress* m_progressDialog{nullptr};
+  std::shared_ptr<CGUIDialogProgress> m_progressDialog;
 };

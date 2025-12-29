@@ -23,8 +23,8 @@ bool CGUIDialogSelectSavestate::ShowAndGetSavestate(const std::string& gamePath,
   savestatePath = "";
 
   // Can't ask the user if there's no dialog
-  CDialogGameSaves* dialog = GetDialog();
-  if (dialog == nullptr)
+  auto dialog = GetDialog();
+  if (!dialog)
     return true;
 
   if (!dialog->Open(gamePath))
@@ -45,13 +45,12 @@ bool CGUIDialogSelectSavestate::ShowAndGetSavestate(const std::string& gamePath,
   return false;
 }
 
-CDialogGameSaves* CGUIDialogSelectSavestate::GetDialog()
+std::shared_ptr<CDialogGameSaves> CGUIDialogSelectSavestate::GetDialog()
 {
-  CDialogGameSaves* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CDialogGameSaves>(
-          WINDOW_DIALOG_GAME_SAVES);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CDialogGameSaves>(
+      WINDOW_DIALOG_GAME_SAVES);
 
-  if (dialog != nullptr)
+  if (dialog)
     dialog->Reset();
 
   return dialog;

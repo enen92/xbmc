@@ -19,6 +19,7 @@
 #include "music/infoscanner/MusicInfoScraper.h"
 #include "windows/GUIMediaWindow.h"
 
+#include <memory>
 #include <vector>
 
 enum MusicSelectAction
@@ -97,7 +98,7 @@ protected:
   virtual void OnRemoveSource(int iItem);
 
   typedef std::vector <CFileItem*>::iterator ivecItems; ///< CFileItem* vector Iterator
-  CGUIDialogProgress* m_dlgProgress; ///< Progress dialog
+  std::shared_ptr<CGUIDialogProgress> m_dlgProgress; ///< Progress dialog
 
   CMusicDatabase m_musicdatabase;
   MUSIC_INFO::CMusicInfoLoader m_musicInfoLoader;

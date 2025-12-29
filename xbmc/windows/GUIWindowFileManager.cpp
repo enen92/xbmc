@@ -1118,7 +1118,8 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
   if (btnid == CONTROL_BTNCALCSIZE)
   {
     // setup the progress dialog, and show it
-    CGUIDialogProgress *progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
+    auto progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
+        WINDOW_DIALOG_PROGRESS);
     if (progress)
     {
       progress->SetHeading(CVariant{13394});
@@ -1180,7 +1181,8 @@ bool CGUIWindowFileManager::SelectItem(int list, int &item)
 }
 
 // recursively calculates the selected folder size
-int64_t CGUIWindowFileManager::CalculateFolderSize(const std::string &strDirectory, CGUIDialogProgress *pProgress)
+int64_t CGUIWindowFileManager::CalculateFolderSize(const std::string& strDirectory,
+                                                   std::shared_ptr<CGUIDialogProgress> pProgress)
 {
   const CURL pathToUrl(strDirectory);
   if (pProgress)

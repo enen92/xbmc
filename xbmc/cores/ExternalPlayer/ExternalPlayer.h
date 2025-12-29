@@ -12,6 +12,7 @@
 #include "cores/IPlayer.h"
 #include "threads/Thread.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -71,7 +72,7 @@ private:
   POINT m_ptCursorpos;
   PROCESS_INFORMATION m_processInfo;
 #endif
-  CGUIDialogOK* m_dialog;
+  std::shared_ptr<CGUIDialogOK> m_dialog;
 #if defined(TARGET_WINDOWS_DESKTOP)
   int m_xPos;
   int m_yPos;

@@ -216,7 +216,7 @@ bool CPVRGUIActionsRecordings::ShowRecordingInfo(const CFileItem& item) const
     return false;
   }
 
-  CGUIDialogPVRRecordingInfo* pDlgInfo =
+  auto pDlgInfo =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRRecordingInfo>(
           WINDOW_DIALOG_PVR_RECORDING_INFO);
   if (!pDlgInfo)
@@ -371,7 +371,7 @@ bool CPVRGUIActionsRecordings::UndeleteRecording(const CFileItem& item) const
 bool CPVRGUIActionsRecordings::ShowRecordingSettings(
     const std::shared_ptr<CPVRRecording>& recording) const
 {
-  CGUIDialogPVRRecordingSettings* pDlgInfo =
+  auto pDlgInfo =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRRecordingSettings>(
           WINDOW_DIALOG_PVR_RECORDING_SETTING);
   if (!pDlgInfo)

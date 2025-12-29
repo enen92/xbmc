@@ -53,7 +53,7 @@ KODI_GUI_HANDLE Interface_GUIDialogExtendedProgress::new_dialog(KODI_HANDLE kodi
   }
 
   // setup the progress dialog
-  CGUIDialogExtendedProgressBar* dialog =
+  auto dialog =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogExtendedProgressBar>(
           WINDOW_DIALOG_EXT_PROGRESS);
   if (!title || !dialog)
@@ -61,7 +61,7 @@ KODI_GUI_HANDLE Interface_GUIDialogExtendedProgress::new_dialog(KODI_HANDLE kodi
     CLog::LogF(LOGERROR,
                "Invalid handler data (title='{}', "
                "dialog='{}') on addon '{}'",
-               static_cast<const void*>(title), static_cast<void*>(dialog), addon->ID());
+               static_cast<const void*>(title), static_cast<void*>(dialog.get()), addon->ID());
     return nullptr;
   }
 

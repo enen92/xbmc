@@ -150,9 +150,9 @@ public:
    */
   template<typename T,
            typename std::enable_if<std::is_base_of<CGUIWindow, T>::value>::type* = nullptr>
-  T* GetWindow(int id) const
+  std::shared_ptr<T> GetWindow(int id) const
   {
-    return dynamic_cast<T*>(GetWindow(id));
+    return std::dynamic_pointer_cast<T>(GetWindow(id));
   }
 
   /*! \brief Return the window with the given id or null.
@@ -160,7 +160,7 @@ public:
    * \param id the window id
    * \return the window with the given id or null
    */
-  CGUIWindow* GetWindow(int id) const;
+  std::shared_ptr<CGUIWindow> GetWindow(int id) const;
 
   /*! \brief Return the dialog window with the given id or null.
    *

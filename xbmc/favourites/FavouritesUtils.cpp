@@ -118,7 +118,7 @@ bool ShouldEnableMoveItems()
     return false;
 
   const auto& mgr = CServiceBroker::GetGUI()->GetWindowManager();
-  const CGUIWindowFavourites* window = mgr.GetWindow<CGUIWindowFavourites>(WINDOW_FAVOURITES);
+  const auto window = mgr.GetWindow<CGUIWindowFavourites>(WINDOW_FAVOURITES);
   if (window && window->IsActive())
   {
     const CGUIViewState* state = window->GetViewState();

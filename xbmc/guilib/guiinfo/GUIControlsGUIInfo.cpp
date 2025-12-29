@@ -249,7 +249,7 @@ bool CGUIControlsGUIInfo::GetLabel(std::string& value,
       const CGUIControl* control = nullptr;
       if (info.GetData1())
       { // container specified
-        CGUIWindow* window{GUIINFO::GetWindow(contextWindow)};
+        auto window = GUIINFO::GetWindow(contextWindow);
         if (window)
           control = window->GetControl(info.GetData1());
       }
@@ -277,7 +277,7 @@ bool CGUIControlsGUIInfo::GetLabel(std::string& value,
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case CONTROL_GET_LABEL:
     {
-      CGUIWindow* window{GUIINFO::GetWindow(contextWindow)};
+      auto window = GUIINFO::GetWindow(contextWindow);
       if (window)
       {
         const CGUIControl* control = window->GetControl(info.GetData1());
@@ -299,7 +299,7 @@ bool CGUIControlsGUIInfo::GetLabel(std::string& value,
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case WINDOW_PROPERTY:
     {
-      const CGUIWindow* window{nullptr};
+      std::shared_ptr<const CGUIWindow> window;
       if (info.GetData1())
       { // window specified
         window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(info.GetData1());
@@ -330,8 +330,8 @@ bool CGUIControlsGUIInfo::GetLabel(std::string& value,
     case SYSTEM_CURRENT_CONTROL:
     case SYSTEM_CURRENT_CONTROL_ID:
     {
-      const CGUIWindow* window{CServiceBroker::GetGUI()->GetWindowManager().GetWindow(
-          CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog())};
+      auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(
+          CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog());
       if (window)
       {
         CGUIControl* control = window->GetFocusedControl();
@@ -348,9 +348,8 @@ bool CGUIControlsGUIInfo::GetLabel(std::string& value,
     }
     case SYSTEM_PROGRESS_BAR:
     {
-      const CGUIDialogProgress* bar{
-          CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
-              WINDOW_DIALOG_PROGRESS)};
+      auto bar = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
+          WINDOW_DIALOG_PROGRESS);
       if (bar && bar->IsDialogRunning())
         value = std::to_string(bar->GetPercentage());
       return true;
@@ -418,9 +417,8 @@ bool CGUIControlsGUIInfo::GetInt(int& value,
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case SYSTEM_PROGRESS_BAR:
     {
-      const CGUIDialogProgress* bar{
-          CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
-              WINDOW_DIALOG_PROGRESS)};
+      auto bar = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
+          WINDOW_DIALOG_PROGRESS);
       if (bar && bar->IsDialogRunning())
         value = bar->GetPercentage();
       return true;
@@ -543,15 +541,16 @@ bool CGUIControlsGUIInfo::GetBool(bool& value,
     case CONTAINER_CONTENT:
     {
       std::string content;
-      CGUIWindow* window{GUIINFO::GetWindow(contextWindow)};
+      auto window = GUIINFO::GetWindow(contextWindow);
       if (window)
       {
         if (window->GetID() == WINDOW_DIALOG_MUSIC_INFO)
-          content = static_cast<CGUIDialogMusicInfo*>(window)->GetContent();
+          content = static_cast<CGUIDialogMusicInfo*>(window.get())->GetContent();
         else if (window->GetID() == WINDOW_DIALOG_SONG_INFO)
-          content = static_cast<CGUIDialogSongInfo*>(window)->GetContent();
+          content = static_cast<CGUIDialogSongInfo*>(window.get())->GetContent();
         else if (window->GetID() == WINDOW_DIALOG_VIDEO_INFO)
-          content = static_cast<CGUIDialogVideoInfo*>(window)->CurrentDirectory().GetContent();
+          content =
+              static_cast<CGUIDialogVideoInfo*>(window.get())->CurrentDirectory().GetContent();
       }
       if (content.empty())
       {
@@ -574,7 +573,7 @@ bool CGUIControlsGUIInfo::GetBool(bool& value,
     {
       if (info.GetData1())
       {
-        CGUIWindow* window{GUIINFO::GetWindow(contextWindow)};
+        auto window = GUIINFO::GetWindow(contextWindow);
         if (window)
         {
           const CGUIControl* control = window->GetControl(info.GetData1());
@@ -598,7 +597,7 @@ bool CGUIControlsGUIInfo::GetBool(bool& value,
     }
     case CONTAINER_HAS_FOCUS:
     { // grab our container
-      CGUIWindow* window{GUIINFO::GetWindow(contextWindow)};
+      auto window = GUIINFO::GetWindow(contextWindow);
       if (window)
       {
         const CGUIControl* control = window->GetControl(info.GetData1());
@@ -659,7 +658,7 @@ bool CGUIControlsGUIInfo::GetBool(bool& value,
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case CONTROL_IS_VISIBLE:
     {
-      CGUIWindow* window{GUIINFO::GetWindow(contextWindow)};
+      auto window = GUIINFO::GetWindow(contextWindow);
       if (window)
       {
         // Note: This'll only work for unique id's
@@ -674,7 +673,7 @@ bool CGUIControlsGUIInfo::GetBool(bool& value,
     }
     case CONTROL_IS_ENABLED:
     {
-      CGUIWindow* window{GUIINFO::GetWindow(contextWindow)};
+      auto window = GUIINFO::GetWindow(contextWindow);
       if (window)
       {
         // Note: This'll only work for unique id's
@@ -689,7 +688,7 @@ bool CGUIControlsGUIInfo::GetBool(bool& value,
     }
     case CONTROL_HAS_FOCUS:
     {
-      const CGUIWindow* window{GUIINFO::GetWindow(contextWindow)};
+      auto window = GUIINFO::GetWindow(contextWindow);
       if (window)
       {
         value = (window->GetFocusedControlID() == static_cast<int>(info.GetData1()));
@@ -699,7 +698,7 @@ bool CGUIControlsGUIInfo::GetBool(bool& value,
     }
     case CONTROL_GROUP_HAS_FOCUS:
     {
-      CGUIWindow* window{GUIINFO::GetWindow(contextWindow)};
+      auto window = GUIINFO::GetWindow(contextWindow);
       if (window)
       {
         value = window->ControlGroupHasFocus(info.GetData1(), info.GetData2());
@@ -714,7 +713,7 @@ bool CGUIControlsGUIInfo::GetBool(bool& value,
     case WINDOW_IS_MEDIA:
     { // note: This doesn't return true for dialogs (content, favourites, login, videoinfo)
       const CGUIWindowManager& windowMgr{CServiceBroker::GetGUI()->GetWindowManager()};
-      const CGUIWindow* window{windowMgr.GetWindow(windowMgr.GetActiveWindow())};
+      auto window = windowMgr.GetWindow(windowMgr.GetActiveWindow());
       if (window)
       {
         value = window->IsMediaWindow();
@@ -727,7 +726,7 @@ bool CGUIControlsGUIInfo::GetBool(bool& value,
       if (info.GetData1())
       {
         const CGUIWindowManager& windowMgr{CServiceBroker::GetGUI()->GetWindowManager()};
-        const CGUIWindow* window{windowMgr.GetWindow(contextWindow)};
+        auto window = windowMgr.GetWindow(contextWindow);
         if (!window)
         {
           // try topmost dialog
@@ -787,8 +786,7 @@ bool CGUIControlsGUIInfo::GetBool(bool& value,
       }
       else
       {
-        const CGUIWindow* window{
-            CServiceBroker::GetGUI()->GetWindowManager().GetWindow(m_nextWindowID)};
+        auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(m_nextWindowID);
         if (window &&
             StringUtils::EqualsNoCase(
                 URIUtils::GetFileName(window->GetProperty("xmlfile").asString()), info.GetData3()))
@@ -808,8 +806,7 @@ bool CGUIControlsGUIInfo::GetBool(bool& value,
       }
       else
       {
-        const CGUIWindow* window{
-            CServiceBroker::GetGUI()->GetWindowManager().GetWindow(m_prevWindowID)};
+        auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(m_prevWindowID);
         if (window &&
             StringUtils::EqualsNoCase(
                 URIUtils::GetFileName(window->GetProperty("xmlfile").asString()), info.GetData3()))
@@ -832,12 +829,11 @@ bool CGUIControlsGUIInfo::GetBool(bool& value,
       return true;
     case SYSTEM_HAS_INPUT_HIDDEN:
     {
-      const CGUIDialogNumeric* pNumeric{
-          CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(
-              WINDOW_DIALOG_NUMERIC)};
-      const CGUIDialogKeyboardGeneric* pKeyboard{
+      auto pNumeric = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(
+          WINDOW_DIALOG_NUMERIC);
+      auto pKeyboard =
           CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogKeyboardGeneric>(
-              WINDOW_DIALOG_KEYBOARD)};
+              WINDOW_DIALOG_KEYBOARD);
 
       if (pNumeric && pNumeric->IsActive())
         value = pNumeric->IsInputHidden();

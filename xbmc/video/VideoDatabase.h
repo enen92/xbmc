@@ -799,7 +799,8 @@ public:
   void DeleteMusicVideo(int idMusicVideo, bool bKeepId = false);
   void DeleteDetailsForTvShow(int idTvShow);
   void DeleteStreamDetails(int idFile);
-  void RemoveContentForPath(const std::string& strPath, CGUIDialogProgress* progress = nullptr);
+  void RemoveContentForPath(const std::string& strPath,
+                            std::shared_ptr<CGUIDialogProgress> progress = nullptr);
   void UpdateFanart(const CFileItem& item, VideoDbContentType type);
   void DeleteSet(int idSet);
   void DeleteTag(int idTag, VideoDbContentType mediaType);

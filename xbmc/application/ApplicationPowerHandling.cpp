@@ -166,8 +166,7 @@ bool CApplicationPowerHandling::WakeUpScreenSaver(bool bPowerOffKeyPressed /* = 
         m_iScreenSaveLock = 2;
         CGUIMessage msg(GUI_MSG_CHECK_LOCK, 0, 0);
 
-        CGUIWindow* pWindow =
-            CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SCREENSAVER);
+        auto pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SCREENSAVER);
         if (pWindow)
           pWindow->OnMessage(msg);
       }

@@ -509,7 +509,8 @@ bool CPlayerController::OnAction(const CAction &action)
       {
         std::vector<ProgramInfo> programs;
         appPlayer->GetPrograms(programs);
-        CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+        auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+            WINDOW_DIALOG_SELECT);
         if (dialog)
         {
           int playing = 0;
@@ -535,7 +536,8 @@ bool CPlayerController::OnAction(const CAction &action)
       {
         std::vector<CVariant> indexList = CServiceBroker::GetSettingsComponent()->GetSettings()->GetList(CSettings::SETTING_VIDEOSCREEN_WHITELIST);
 
-        CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+        auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+            WINDOW_DIALOG_SELECT);
         if (dialog)
         {
           int current = 0;

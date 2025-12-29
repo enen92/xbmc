@@ -176,7 +176,7 @@ private:
 
 void CWeatherJob::SetFromProperties()
 {
-  CGUIWindow* window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_WEATHER);
+  auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_WEATHER);
   if (window)
   {
     m_info.currentConditions =
@@ -246,7 +246,7 @@ void CWeatherJob::SetFromPropertiesV2()
   if (gui == nullptr)
     return;
 
-  const CGUIWindow* window{gui->GetWindowManager().GetWindow(WINDOW_WEATHER)};
+  auto window = gui->GetWindowManager().GetWindow(WINDOW_WEATHER);
   if (window == nullptr)
     return;
 

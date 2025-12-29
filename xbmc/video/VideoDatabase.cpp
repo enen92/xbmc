@@ -6227,8 +6227,8 @@ void CVideoDatabase::SetStackTimes(const std::string& filePath,
   }
 }
 
-void CVideoDatabase::RemoveContentForPath(const std::string& strPath,
-                                          CGUIDialogProgress* progress /* = nullptr */)
+void CVideoDatabase::RemoveContentForPath(
+    const std::string& strPath, std::shared_ptr<CGUIDialogProgress> progress /* = nullptr */)
 {
   if(URIUtils::IsMultiPath(strPath))
   {
@@ -10107,8 +10107,10 @@ void CVideoDatabase::CleanDatabase(CGUIDialogProgressBarHandle* handle,
     }
     else if (showProgress)
     {
-      progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
-          WINDOW_DIALOG_PROGRESS);
+      progress = CServiceBroker::GetGUI()
+                     ->GetWindowManager()
+                     .GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS)
+                     .get();
       if (progress)
       {
         progress->SetHeading(CVariant{700});
@@ -10581,7 +10583,8 @@ std::vector<int> CVideoDatabase::CleanMediaType(const std::string &mediaType, co
             del = false;
           else
           {
-            CGUIDialogYesNo* pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
+            auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(
+                WINDOW_DIALOG_YES_NO);
             if (pDialog)
             {
               CURL sourceUrl(sourcePath);
@@ -10723,8 +10726,10 @@ void CVideoDatabase::ExportToXML(const std::string &path, bool singleFile /* = t
     if (nullptr == pDS3)
       return;
 
-    progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
-        WINDOW_DIALOG_PROGRESS);
+    progress = CServiceBroker::GetGUI()
+                   ->GetWindowManager()
+                   .GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS)
+                   .get();
 
     // Sort by idFile
     // Always get the default version first (needed for XML import)
@@ -11488,7 +11493,10 @@ void CVideoDatabase::ImportFromXML(const std::string &path)
     TiXmlElement *root = xmlDoc.RootElement();
     if (!root) return;
 
-    progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
+    progress = CServiceBroker::GetGUI()
+                   ->GetWindowManager()
+                   .GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS)
+                   .get();
     if (progress)
     {
       progress->SetHeading(CVariant{648});

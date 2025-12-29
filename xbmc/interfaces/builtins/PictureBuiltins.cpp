@@ -22,7 +22,7 @@ static int Show(const std::vector<std::string>& params)
 {
   CGUIMessage msg(GUI_MSG_SHOW_PICTURE, 0, 0);
   msg.SetStringParam(params[0]);
-  CGUIWindow *pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
+  auto pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
   if (pWindow)
     pWindow->OnMessage(msg);
 
@@ -74,7 +74,7 @@ static int Slideshow(const std::vector<std::string>& params)
   strParams.push_back(params[0]);
   strParams.push_back(beginSlidePath);
   msg.SetStringParams(strParams);
-  CGUIWindow *pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
+  auto pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
   if (pWindow)
     pWindow->OnMessage(msg);
 

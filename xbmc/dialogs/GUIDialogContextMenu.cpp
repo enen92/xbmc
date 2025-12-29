@@ -698,7 +698,8 @@ int CGUIDialogContextMenu::ShowAndGetChoice(const CContextButtons &choices)
   if (choices.empty())
     return -1;
 
-  CGUIDialogContextMenu *pMenu = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogContextMenu>(WINDOW_DIALOG_CONTEXT_MENU);
+  auto pMenu = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogContextMenu>(
+      WINDOW_DIALOG_CONTEXT_MENU);
   if (pMenu)
   {
     pMenu->m_buttons = choices;
@@ -717,7 +718,8 @@ int CGUIDialogContextMenu::ShowAndGetChoice(const CContextButtons &choices)
 
 void CGUIDialogContextMenu::PositionAtCurrentFocus()
 {
-  CGUIWindow *window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog());
+  auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(
+      CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog());
   if (window)
   {
     const CGUIControl *focusedControl = window->GetFocusedControl();

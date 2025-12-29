@@ -14,6 +14,7 @@
 #include "guilib/GUIListItem.h"
 #include "utils/Artwork.h"
 
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -107,10 +108,10 @@ namespace KODI::VIDEO
                            bool useLocal = true,
                            CScraperUrl* pURL = nullptr,
                            bool fetchEpisodes = true,
-                           CGUIDialogProgress* pDlgProgress = nullptr);
+                           std::shared_ptr<CGUIDialogProgress> pDlgProgress = nullptr);
 
     static void ApplyThumbToFolder(const std::string &folder, const std::string &imdbThumb);
-    static bool DownloadFailed(CGUIDialogProgress* pDlgProgress);
+    static bool DownloadFailed(std::shared_ptr<CGUIDialogProgress> pDlgProgress);
 
     /*! \brief Update the set information from a SET.NFO in the Movie Set Information Folder
      Gets set details from the VideoInfoTag of a movie
@@ -163,24 +164,24 @@ namespace KODI::VIDEO
                                   bool useLocal,
                                   CScraperUrl* pURL,
                                   bool fetchEpisodes,
-                                  CGUIDialogProgress* pDlgProgress);
+                                  std::shared_ptr<CGUIDialogProgress> pDlgProgress);
     InfoRet RetrieveInfoForMovie(CFileItem* pItem,
                                  bool bDirNames,
                                  ADDON::ScraperPtr& scraper,
                                  bool useLocal,
                                  CScraperUrl* pURL,
-                                 CGUIDialogProgress* pDlgProgress);
+                                 std::shared_ptr<CGUIDialogProgress> pDlgProgress);
     InfoRet RetrieveInfoForMusicVideo(CFileItem* pItem,
                                       bool bDirNames,
                                       ADDON::ScraperPtr& scraper,
                                       bool useLocal,
                                       CScraperUrl* pURL,
-                                      CGUIDialogProgress* pDlgProgress);
+                                      std::shared_ptr<CGUIDialogProgress> pDlgProgress);
     InfoRet RetrieveInfoForEpisodes(CFileItem* item,
                                     long showID,
                                     const ADDON::ScraperPtr& scraper,
                                     bool useLocal,
-                                    CGUIDialogProgress* progress = nullptr,
+                                    std::shared_ptr<CGUIDialogProgress> progress = nullptr,
                                     bool alreadyHasArt = false);
 
     /*! \brief Update the progress bar with the heading and line and check for cancellation
@@ -189,7 +190,9 @@ namespace KODI::VIDEO
      \param line1   string to set for the first line
      \return true if the user has cancelled the scanner, false otherwise
      */
-    bool ProgressCancelled(CGUIDialogProgress* progress, int heading, const std::string &line1);
+    bool ProgressCancelled(std::shared_ptr<CGUIDialogProgress> progress,
+                           int heading,
+                           const std::string& line1);
 
     /*! \brief Find a url for the given video using the given scraper
      \param title title of the video to lookup
@@ -199,7 +202,11 @@ namespace KODI::VIDEO
      \param progress CGUIDialogProgress bar
      \return >0 on success, <0 on failure (cancellation), and 0 on no info found
      */
-    int FindVideo(const std::string &title, int year, const ADDON::ScraperPtr &scraper, CScraperUrl &url, CGUIDialogProgress *progress);
+    int FindVideo(const std::string& title,
+                  int year,
+                  const ADDON::ScraperPtr& scraper,
+                  CScraperUrl& url,
+                  std::shared_ptr<CGUIDialogProgress> progress);
 
     /*! \brief Find a url for the given video using the given scraper
      \param item the video to lookup
@@ -208,7 +215,10 @@ namespace KODI::VIDEO
      \param progress CGUIDialogProgress bar
      \return >0 on success, <0 on failure (cancellation), and 0 on no info found
      */
-    int FindVideoUsingTag(CFileItem& item, const ADDON::ScraperPtr &scraper, CScraperUrl &url, CGUIDialogProgress *progress);
+    int FindVideoUsingTag(CFileItem& item,
+                          const ADDON::ScraperPtr& scraper,
+                          CScraperUrl& url,
+                          std::shared_ptr<CGUIDialogProgress> progress);
 
     /*! \brief Retrieve detailed information for an item from an online source, optionally supplemented with local data
      @todo sort out some better return codes.
@@ -225,7 +235,7 @@ namespace KODI::VIDEO
                     CScraperUrl& url,
                     const ADDON::ScraperPtr& scraper,
                     VIDEO::IVideoInfoTagLoader* nfoFile = nullptr,
-                    CGUIDialogProgress* pDialog = nullptr);
+                    std::shared_ptr<CGUIDialogProgress> pDialog = nullptr);
 
     /*! \brief Extract episode and season numbers from a processed regexp
      \param reg Regular expression object with at least 2 matches
@@ -311,7 +321,7 @@ namespace KODI::VIDEO
                                   const ADDON::ScraperPtr& scraper,
                                   bool useLocal,
                                   const CVideoInfoTag& showInfo,
-                                  CGUIDialogProgress* pDlgProgress = nullptr);
+                                  std::shared_ptr<CGUIDialogProgress> pDlgProgress = nullptr);
 
     bool EnumerateSeriesFolder(CFileItem* item, EPISODELIST& episodeList);
     bool ProcessItemByVideoInfoTag(const CFileItem *item, EPISODELIST &episodeList);

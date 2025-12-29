@@ -26,27 +26,28 @@ CAutorunMediaJob::CAutorunMediaJob(const std::string &label, const std::string &
 
 bool CAutorunMediaJob::DoWork()
 {
-  CGUIDialogSelect* pDialog= CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
 
   // wake up and turn off the screensaver if it's active
   auto& components = CServiceBroker::GetAppComponents();
   const auto appPower = components.GetComponent<CApplicationPowerHandling>();
   appPower->WakeUpScreenSaverAndDPMS();
 
-  pDialog->Reset();
+  dialog->Reset();
   if (!m_label.empty())
-    pDialog->SetHeading(CVariant{m_label});
+    dialog->SetHeading(CVariant{m_label});
   else
-    pDialog->SetHeading(CVariant{g_localizeStrings.Get(21331)});
+    dialog->SetHeading(CVariant{g_localizeStrings.Get(21331)});
 
-  pDialog->Add(g_localizeStrings.Get(21332));
-  pDialog->Add(g_localizeStrings.Get(21333));
-  pDialog->Add(g_localizeStrings.Get(21334));
-  pDialog->Add(g_localizeStrings.Get(21335));
+  dialog->Add(g_localizeStrings.Get(21332));
+  dialog->Add(g_localizeStrings.Get(21333));
+  dialog->Add(g_localizeStrings.Get(21334));
+  dialog->Add(g_localizeStrings.Get(21335));
 
-  pDialog->Open();
+  dialog->Open();
 
-  int selection = pDialog->GetSelectedItem();
+  int selection = dialog->GetSelectedItem();
   if (selection >= 0)
   {
     std::string strAction =

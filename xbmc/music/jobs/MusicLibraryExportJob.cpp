@@ -12,12 +12,13 @@
 #include "music/MusicDatabase.h"
 #include "settings/LibExportSettings.h"
 
-CMusicLibraryExportJob::CMusicLibraryExportJob(const CLibExportSettings& settings, CGUIDialogProgress* progressDialog)
-  : CMusicLibraryProgressJob(NULL),
+CMusicLibraryExportJob::CMusicLibraryExportJob(const CLibExportSettings& settings,
+                                               std::shared_ptr<CGUIDialogProgress> progressDialog)
+  : CMusicLibraryProgressJob(nullptr),
     m_settings(settings)
 {
   if (progressDialog)
-    SetProgressIndicators(NULL, progressDialog);
+    SetProgressIndicators(nullptr, std::move(progressDialog));
   SetAutoClose(true);
 }
 

@@ -812,9 +812,8 @@ bool CGUIDialogAddonInfo::ShowForItem(const CFileItemPtr& item)
   if (!item)
     return false;
 
-  CGUIDialogAddonInfo* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogAddonInfo>(
-          WINDOW_DIALOG_ADDON_INFO);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogAddonInfo>(
+      WINDOW_DIALOG_ADDON_INFO);
   if (!dialog)
     return false;
   if (!dialog->SetItem(item))

@@ -375,7 +375,7 @@ bool CTextureCache::CleanAllUnusedImages()
 
   bool failure = false;
   CServiceBroker::GetJobManager()->Submit([this, progress, &failure]()
-                                          { failure = CleanAllUnusedImagesJob(progress); });
+                                          { failure = CleanAllUnusedImagesJob(progress.get()); });
 
   // Wait for clean to complete or be canceled, but render every 10ms so that the
   // pointer movements work on dialog even when clean is reporting progress infrequently

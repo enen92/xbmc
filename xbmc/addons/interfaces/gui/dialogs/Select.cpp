@@ -47,16 +47,15 @@ int Interface_GUIDialogSelect::open(KODI_HANDLE kodiBase,
     return -1;
   }
 
-  CGUIDialogSelect* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-          WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (!heading || !entries || !dialog)
   {
     CLog::LogF(LOGERROR,
                "Invalid handler data (heading='{}', entries='{}', "
                "dialog='{}') on addon '{}'",
                static_cast<const void*>(heading), static_cast<const void*>(entries),
-               static_cast<void*>(dialog), addon->ID());
+               static_cast<void*>(dialog.get()), addon->ID());
     return -1;
   }
 
@@ -91,9 +90,8 @@ bool Interface_GUIDialogSelect::open_multi_select(KODI_HANDLE kodiBase,
     return false;
   }
 
-  CGUIDialogSelect* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-          WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (!heading || !entryIDs || !entryNames || !entriesSelected || !dialog)
   {
     CLog::LogF(LOGERROR,
@@ -101,7 +99,7 @@ bool Interface_GUIDialogSelect::open_multi_select(KODI_HANDLE kodiBase,
                "entryIDs='{}', entryNames='{}', entriesSelected='{}', dialog='{}') on addon '{}'",
                static_cast<const void*>(heading), static_cast<const void*>(entryIDs),
                static_cast<const void*>(entryNames), static_cast<void*>(entriesSelected),
-               static_cast<void*>(dialog), addon->ID());
+               static_cast<void*>(dialog.get()), addon->ID());
     return false;
   }
 

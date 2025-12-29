@@ -88,8 +88,9 @@ void CMusicInfoScanner::Process()
   {
     if (m_showDialog && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_MUSICLIBRARY_BACKGROUNDUPDATE))
     {
-      CGUIDialogExtendedProgressBar* dialog =
-        CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogExtendedProgressBar>(WINDOW_DIALOG_EXT_PROGRESS);
+      auto dialog =
+          CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogExtendedProgressBar>(
+              WINDOW_DIALOG_EXT_PROGRESS);
       if (dialog)
         m_handle = dialog->GetHandle(g_localizeStrings.Get(314));
     }
@@ -894,10 +895,11 @@ void CMusicInfoScanner::FileItemsToAlbums(const CFileItemList& items,
   }
 }
 
-CInfoScanner::InfoRet CMusicInfoScanner::UpdateAlbumInfo(CAlbum& album,
-                                                         const ADDON::ScraperPtr& scraper,
-                                                         bool bAllowSelection,
-                                                         CGUIDialogProgress* pDialog)
+CInfoScanner::InfoRet CMusicInfoScanner::UpdateAlbumInfo(
+    CAlbum& album,
+    const ADDON::ScraperPtr& scraper,
+    bool bAllowSelection,
+    std::shared_ptr<CGUIDialogProgress> pDialog)
 {
   m_musicDatabase.Open();
   InfoRet result = UpdateDatabaseAlbumInfo(album, scraper, bAllowSelection, pDialog);
@@ -905,10 +907,11 @@ CInfoScanner::InfoRet CMusicInfoScanner::UpdateAlbumInfo(CAlbum& album,
   return result;
 }
 
-CInfoScanner::InfoRet CMusicInfoScanner::UpdateArtistInfo(CArtist& artist,
-                                                          const ADDON::ScraperPtr& scraper,
-                                                          bool bAllowSelection,
-                                                          CGUIDialogProgress* pDialog)
+CInfoScanner::InfoRet CMusicInfoScanner::UpdateArtistInfo(
+    CArtist& artist,
+    const ADDON::ScraperPtr& scraper,
+    bool bAllowSelection,
+    std::shared_ptr<CGUIDialogProgress> pDialog)
 {
   m_musicDatabase.Open();
   InfoRet result = UpdateDatabaseArtistInfo(artist, scraper, bAllowSelection, pDialog);
@@ -1295,7 +1298,7 @@ CInfoScanner::InfoRet CMusicInfoScanner::UpdateDatabaseAlbumInfo(
     CAlbum& album,
     const ADDON::ScraperPtr& scraper,
     bool bAllowSelection,
-    CGUIDialogProgress* pDialog /* = NULL */)
+    std::shared_ptr<CGUIDialogProgress> pDialog /* = nullptr */)
 {
   if (!scraper)
     return InfoRet::INFO_ERROR;
@@ -1377,7 +1380,7 @@ CInfoScanner::InfoRet CMusicInfoScanner::UpdateDatabaseArtistInfo(
     CArtist& artist,
     const ADDON::ScraperPtr& scraper,
     bool bAllowSelection,
-    CGUIDialogProgress* pDialog /* = NULL */)
+    std::shared_ptr<CGUIDialogProgress> pDialog /* = nullptr */)
 {
   if (!scraper)
     return InfoRet::INFO_ERROR;
@@ -1456,11 +1459,12 @@ CInfoScanner::InfoRet CMusicInfoScanner::UpdateDatabaseArtistInfo(
 
 #define THRESHOLD .95f
 
-CInfoScanner::InfoRet CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album,
-                                                           const ADDON::ScraperPtr& info,
-                                                           CMusicAlbumInfo& albumInfo,
-                                                           bool bUseScrapedMBID,
-                                                           CGUIDialogProgress* pDialog)
+CInfoScanner::InfoRet CMusicInfoScanner::DownloadAlbumInfo(
+    const CAlbum& album,
+    const ADDON::ScraperPtr& info,
+    CMusicAlbumInfo& albumInfo,
+    bool bUseScrapedMBID,
+    std::shared_ptr<CGUIDialogProgress> pDialog)
 {
   if (m_handle)
   {
@@ -1563,7 +1567,7 @@ CInfoScanner::InfoRet CMusicInfoScanner::DownloadAlbumInfo(const CAlbum& album,
       ScannerWait(1000);
   }
 
-  CGUIDialogSelect *pDlg = NULL;
+  std::shared_ptr<CGUIDialogSelect> pDlg;
   int iSelectedAlbum=0;
   if ((result == InfoType::NONE || result == InfoType::OVERRIDE) && !bMusicBrainz)
   {
@@ -1718,7 +1722,7 @@ CInfoScanner::InfoRet CMusicInfoScanner::DownloadArtistInfo(
     const ADDON::ScraperPtr& info,
     MUSIC_GRABBER::CMusicArtistInfo& artistInfo,
     bool bUseScrapedMBID,
-    CGUIDialogProgress* pDialog)
+    std::shared_ptr<CGUIDialogProgress> pDialog)
 {
   if (m_handle)
   {
@@ -1844,7 +1848,8 @@ CInfoScanner::InfoRet CMusicInfoScanner::DownloadArtistInfo(
       if (pDialog && scraper.GetArtistCount() > 1)
       {
         // if we found more then 1 album, let user choose one
-        CGUIDialogSelect *pDlg = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+        auto pDlg = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+            WINDOW_DIALOG_SELECT);
         if (pDlg)
         {
           pDlg->SetHeading(CVariant{g_localizeStrings.Get(21890)});

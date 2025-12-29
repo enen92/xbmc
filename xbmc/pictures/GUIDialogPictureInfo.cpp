@@ -113,8 +113,9 @@ bool CGUIDialogPictureInfo::OnAction(const CAction& action)
     case ACTION_PAUSE:
       if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SLIDESHOW)
       {
-        CGUIWindow* pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
-        return pWindow->OnAction(action);
+        auto pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
+        if (pWindow)
+          return pWindow->OnAction(action);
       }
       break;
 

@@ -126,7 +126,8 @@ void CGUIDialogNetworkSetup::OnSettingAction(const std::shared_ptr<const CSettin
 // \return True if the network address is valid, false otherwise.
 bool CGUIDialogNetworkSetup::ShowAndGetNetworkAddress(std::string &path)
 {
-  CGUIDialogNetworkSetup *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNetworkSetup>(WINDOW_DIALOG_NETWORK_SETUP);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNetworkSetup>(
+      WINDOW_DIALOG_NETWORK_SETUP);
   if (!dialog) return false;
   dialog->Initialize();
   if (!dialog->SetPath(path))

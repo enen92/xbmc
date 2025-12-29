@@ -389,9 +389,8 @@ bool CGUIControlColorButtonSetting::OnClick()
   std::shared_ptr<CSettingString> settingHexColor =
       std::static_pointer_cast<CSettingString>(m_pSetting);
 
-  CGUIDialogColorPicker* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogColorPicker>(
-          WINDOW_DIALOG_COLOR_PICKER);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogColorPicker>(
+      WINDOW_DIALOG_COLOR_PICKER);
   if (!dialog)
     return false;
 
@@ -639,9 +638,8 @@ bool CGUIControlListSetting::OnClick()
   if (!m_pButton)
     return false;
 
-  CGUIDialogSelect* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-          WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (!dialog)
     return false;
 

@@ -104,7 +104,7 @@ CGUIAudioManager &CGUIComponent::GetAudioManager()
 
 bool CGUIComponent::ConfirmDelete(const std::string& path)
 {
-  CGUIDialogYesNo* pDialog = GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
+  auto pDialog = GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
   if (pDialog)
   {
     pDialog->SetHeading(CVariant{122});

@@ -4303,7 +4303,7 @@ bool CMusicDatabase::CleanupSongsByIds(const std::string& strSongIds)
   return false;
 }
 
-bool CMusicDatabase::CleanupSongs(CGUIDialogProgress* progressDialog /*= nullptr*/)
+bool CMusicDatabase::CleanupSongs(std::shared_ptr<CGUIDialogProgress> progressDialog /*= nullptr*/)
 {
   try
   {
@@ -4593,7 +4593,7 @@ bool CMusicDatabase::CleanupOrphanedItems()
   return true;
 }
 
-int CMusicDatabase::Cleanup(CGUIDialogProgress* progressDialog /*= nullptr*/)
+int CMusicDatabase::Cleanup(std::shared_ptr<CGUIDialogProgress> progressDialog /*= nullptr*/)
 {
   if (nullptr == m_pDB)
     return ERROR_DATABASE;
@@ -4809,12 +4809,11 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery /*=false*/) const
   // Do we have to look for cddb information
   if (pCdInfo->HasCDDBInfo() && !cddb.isCDCached(pCdInfo))
   {
-    CGUIDialogProgress* pDialogProgress =
+    auto pDialogProgress =
         CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
             WINDOW_DIALOG_PROGRESS);
-    CGUIDialogSelect* pDlgSelect =
-        CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-            WINDOW_DIALOG_SELECT);
+    auto pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+        WINDOW_DIALOG_SELECT);
 
     if (!pDialogProgress)
       return false;
@@ -4906,7 +4905,7 @@ void CMusicDatabase::DeleteCDDBInfo() const
     return;
   }
   // Show a selectdialog that the user can select the album to delete
-  CGUIDialogSelect* pDlg = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+  auto pDlg = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
       WINDOW_DIALOG_SELECT);
   if (pDlg)
   {
@@ -11897,7 +11896,7 @@ std::string CMusicDatabase::GetItemById(const std::string& itemType, int id) con
 }
 
 void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,
-                                 CGUIDialogProgress* progressDialog /*= nullptr*/)
+                                 std::shared_ptr<CGUIDialogProgress> progressDialog /*= nullptr*/)
 {
   if (!settings.IsItemExported(ELIBEXPORT_ALBUMARTISTS) &&
       !settings.IsItemExported(ELIBEXPORT_SONGARTISTS) &&
@@ -12279,7 +12278,8 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,
         CVariant{20196}, CVariant{StringUtils::Format(g_localizeStrings.Get(15011), iFailCount)});
 }
 
-bool CMusicDatabase::ExportSongHistory(TiXmlNode* pNode, CGUIDialogProgress* progressDialog)
+bool CMusicDatabase::ExportSongHistory(TiXmlNode* pNode,
+                                       std::shared_ptr<CGUIDialogProgress> progressDialog)
 {
   try
   {
@@ -12349,7 +12349,8 @@ bool CMusicDatabase::ExportSongHistory(TiXmlNode* pNode, CGUIDialogProgress* pro
   return false;
 }
 
-void CMusicDatabase::ImportFromXML(const std::string& xmlFile, CGUIDialogProgress* progressDialog)
+void CMusicDatabase::ImportFromXML(const std::string& xmlFile,
+                                   std::shared_ptr<CGUIDialogProgress> progressDialog)
 {
   try
   {
@@ -12465,7 +12466,7 @@ void CMusicDatabase::ImportFromXML(const std::string& xmlFile, CGUIDialogProgres
 
 bool CMusicDatabase::ImportSongHistory(const std::string& xmlFile,
                                        const int total,
-                                       CGUIDialogProgress* progressDialog)
+                                       std::shared_ptr<CGUIDialogProgress> progressDialog)
 {
   if (!m_pDS)
     return false;

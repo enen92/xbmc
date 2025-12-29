@@ -57,7 +57,7 @@ void CPVRGUIProgressHandler::UpdateProgress(std::string_view text,
 
 void CPVRGUIProgressHandler::Process()
 {
-  CGUIDialogExtendedProgressBar* progressBar =
+  auto progressBar =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogExtendedProgressBar>(
           WINDOW_DIALOG_EXT_PROGRESS);
   if (m_bStop || !progressBar)

@@ -251,7 +251,8 @@ void CGUIWindowSettingsProfile::OnInitWindow()
 
 bool CGUIWindowSettingsProfile::GetAutoLoginProfileChoice(int &iProfile)
 {
-  CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (!dialog) return false;
 
   const std::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();

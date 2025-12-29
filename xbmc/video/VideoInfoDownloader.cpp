@@ -100,9 +100,10 @@ void CVideoInfoDownloader::Process()
   m_state = DO_NOTHING;
 }
 
-int CVideoInfoDownloader::FindMovie(const std::string &movieTitle, int movieYear,
+int CVideoInfoDownloader::FindMovie(const std::string& movieTitle,
+                                    int movieYear,
                                     MOVIELIST& movieList,
-                                    CGUIDialogProgress *pProgress /* = NULL */)
+                                    std::shared_ptr<CGUIDialogProgress> pProgress /* = nullptr */)
 {
   //CLog::Log(LOGDEBUG,"CVideoInfoDownloader::FindMovie({})", strMovie);
 
@@ -150,7 +151,7 @@ bool CVideoInfoDownloader::GetArtwork(CVideoInfoTag &details)
 bool CVideoInfoDownloader::GetDetails(const ADDON::CScraper::UniqueIDs& uniqueIDs,
                                       const CScraperUrl& url,
                                       CVideoInfoTag& movieDetails,
-                                      CGUIDialogProgress* pProgress /* = NULL */)
+                                      std::shared_ptr<CGUIDialogProgress> pProgress /* = nullptr */)
 {
   //CLog::Log(LOGDEBUG,"CVideoInfoDownloader::GetDetails({})", url.m_strURL);
   m_url = url;
@@ -184,9 +185,10 @@ bool CVideoInfoDownloader::GetDetails(const ADDON::CScraper::UniqueIDs& uniqueID
     return m_info->GetVideoDetails(*m_http, m_uniqueIDs, url, true /*fMovie*/, movieDetails);
 }
 
-bool CVideoInfoDownloader::GetEpisodeDetails(const CScraperUrl &url,
-                                             CVideoInfoTag &movieDetails,
-                                             CGUIDialogProgress *pProgress /* = NULL */)
+bool CVideoInfoDownloader::GetEpisodeDetails(
+    const CScraperUrl& url,
+    CVideoInfoTag& movieDetails,
+    std::shared_ptr<CGUIDialogProgress> pProgress /* = nullptr */)
 {
   //CLog::Log(LOGDEBUG,"CVideoInfoDownloader::GetDetails({})", url.m_strURL);
   m_url = url;
@@ -219,9 +221,10 @@ bool CVideoInfoDownloader::GetEpisodeDetails(const CScraperUrl &url,
     return m_info->GetVideoDetails(*m_http, m_uniqueIDs, url, false /*fMovie*/, movieDetails);
 }
 
-bool CVideoInfoDownloader::GetEpisodeList(const CScraperUrl& url,
-                                          VIDEO::EPISODELIST& movieDetails,
-                                          CGUIDialogProgress* pProgress /* = NULL */)
+bool CVideoInfoDownloader::GetEpisodeList(
+    const CScraperUrl& url,
+    VIDEO::EPISODELIST& movieDetails,
+    std::shared_ptr<CGUIDialogProgress> pProgress /* = nullptr */)
 {
   //CLog::Log(LOGDEBUG,"CVideoInfoDownloader::GetDetails({})", url.m_strURL);
   m_url = url;

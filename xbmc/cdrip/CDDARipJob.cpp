@@ -87,7 +87,7 @@ bool CCDDARipJob::DoWork()
   }
 
   // setup the progress dialog
-  CGUIDialogExtendedProgressBar* pDlgProgress =
+  auto pDlgProgress =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogExtendedProgressBar>(
           WINDOW_DIALOG_EXT_PROGRESS);
   CGUIDialogProgressBarHandle* handle = pDlgProgress->GetHandle(g_localizeStrings.Get(605));

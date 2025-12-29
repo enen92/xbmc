@@ -256,9 +256,8 @@ bool CPVRGUIActionsChannels::StartChannelScan(int clientId)
   /* multiple clients found */
   else if (possibleScanClients.size() > 1)
   {
-    CGUIDialogSelect* pDialog =
-        CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-            WINDOW_DIALOG_SELECT);
+    auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+        WINDOW_DIALOG_SELECT);
     if (!pDialog)
     {
       CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_SELECT!");
@@ -363,11 +362,13 @@ std::shared_ptr<CPVRChannelGroupMember> CPVRGUIActionsChannels::GetChannelGroupM
 CPVRChannelNumberInputHandler& CPVRGUIActionsChannels::GetChannelNumberInputHandler()
 {
   // window/dialog specific input handler
-  auto* windowInputHandler{dynamic_cast<CPVRChannelNumberInputHandler*>(
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow(
-          CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog()))};
-  if (windowInputHandler)
-    return *windowInputHandler;
+  auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(
+      CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog());
+  if (window)
+  {
+    if (auto handler = dynamic_cast<CPVRChannelNumberInputHandler*>(window.get()))
+      return *handler;
+  }
 
   // default
   return m_channelNumberInputHandler;

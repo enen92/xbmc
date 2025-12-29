@@ -23,6 +23,7 @@
 
 #include <cctype>
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -95,7 +96,7 @@ public:
   bool CommitTransaction() override;
   void EmptyCache();
   void Clean() const;
-  int Cleanup(CGUIDialogProgress* progressDialog = nullptr);
+  int Cleanup(std::shared_ptr<CGUIDialogProgress> progressDialog = nullptr);
   bool LookupCDDBInfo(bool bRequery = false) const;
   void DeleteCDDBInfo() const;
 
@@ -698,12 +699,14 @@ public:
   // XML
   /////////////////////////////////////////////////
   void ExportToXML(const CLibExportSettings& settings,
-                   CGUIDialogProgress* progressDialog = nullptr);
-  bool ExportSongHistory(TiXmlNode* pNode, CGUIDialogProgress* progressDialog = nullptr);
-  void ImportFromXML(const std::string& xmlFile, CGUIDialogProgress* progressDialog = nullptr);
+                   std::shared_ptr<CGUIDialogProgress> progressDialog = nullptr);
+  bool ExportSongHistory(TiXmlNode* pNode,
+                         std::shared_ptr<CGUIDialogProgress> progressDialog = nullptr);
+  void ImportFromXML(const std::string& xmlFile,
+                     std::shared_ptr<CGUIDialogProgress> progressDialog = nullptr);
   bool ImportSongHistory(const std::string& xmlFile,
                          const int total,
-                         CGUIDialogProgress* progressDialog = nullptr);
+                         std::shared_ptr<CGUIDialogProgress> progressDialog = nullptr);
 
   /////////////////////////////////////////////////
   // Properties
@@ -912,7 +915,7 @@ private:
 
   bool DeleteRemovedLinks();
 
-  bool CleanupSongs(CGUIDialogProgress* progressDialog = nullptr);
+  bool CleanupSongs(std::shared_ptr<CGUIDialogProgress> progressDialog = nullptr);
   bool CleanupSongsByIds(const std::string& strSongIds);
   bool CleanupPaths();
   bool CleanupAlbums();

@@ -710,7 +710,8 @@ void CGUIWindowVideoNav::OnDeleteItem(const CFileItemPtr& pItem)
   else if (StringUtils::StartsWithNoCase(pItem->GetPath(), "videodb://movies/sets/") &&
            pItem->GetPath().size() > 22 && pItem->IsFolder())
   {
-    CGUIDialogYesNo* pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
+    auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(
+        WINDOW_DIALOG_YES_NO);
 
     if (!pDialog)
       return;

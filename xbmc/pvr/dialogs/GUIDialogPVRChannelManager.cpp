@@ -494,9 +494,8 @@ bool CGUIDialogPVRChannelManager::OnClickButtonGroupManager()
   PromptAndSaveList();
 
   /* Load group manager dialog */
-  CGUIDialogPVRGroupManager* pDlgInfo =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRGroupManager>(
-          WINDOW_DIALOG_PVR_GROUP_MANAGER);
+  auto pDlgInfo = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRGroupManager>(
+      WINDOW_DIALOG_PVR_GROUP_MANAGER);
   if (!pDlgInfo)
     return false;
 
@@ -516,9 +515,8 @@ bool CGUIDialogPVRChannelManager::OnClickButtonNewChannel()
   int iSelection = 0;
   if (m_clientsWithSettingsList.size() > 1)
   {
-    CGUIDialogSelect* pDlgSelect =
-        CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-            WINDOW_DIALOG_SELECT);
+    auto pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+        WINDOW_DIALOG_SELECT);
     if (!pDlgSelect)
       return false;
 
@@ -741,9 +739,8 @@ bool CGUIDialogPVRChannelManager::OnContextButton(int itemNumber, CONTEXT_BUTTON
   }
   else if (button == CONTEXT_BUTTON_DELETE)
   {
-    CGUIDialogYesNo* pDialog =
-        CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(
-            WINDOW_DIALOG_YES_NO);
+    auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(
+        WINDOW_DIALOG_YES_NO);
     if (!pDialog)
       return true;
 
@@ -998,7 +995,7 @@ void CGUIDialogPVRChannelManager::PromptAndSaveList()
   if (!HasChangedItems())
     return;
 
-  CGUIDialogYesNo* pDialogYesNo =
+  auto pDialogYesNo =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
   if (pDialogYesNo)
   {
@@ -1021,9 +1018,8 @@ void CGUIDialogPVRChannelManager::SaveList()
     return;
 
   /* display the progress dialog */
-  CGUIDialogProgress* pDlgProgress =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
-          WINDOW_DIALOG_PROGRESS);
+  auto pDlgProgress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
+      WINDOW_DIALOG_PROGRESS);
   pDlgProgress->SetHeading(CVariant{190});
   pDlgProgress->SetLine(0, CVariant{""});
   pDlgProgress->SetLine(1, CVariant{328});

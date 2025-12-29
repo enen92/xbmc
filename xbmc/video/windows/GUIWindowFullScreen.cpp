@@ -126,7 +126,9 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
 
   case ACTION_SHOW_INFO:
     {
-      CGUIDialogFullScreenInfo* pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogFullScreenInfo>(WINDOW_DIALOG_FULLSCREEN_INFO);
+      auto pDialog =
+          CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogFullScreenInfo>(
+              WINDOW_DIALOG_FULLSCREEN_INFO);
       if (pDialog)
       {
         CFileItem item(g_application.CurrentFileItem());

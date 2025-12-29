@@ -246,9 +246,8 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
 
 bool CGUIDialogVideoManagerExtras::ManageVideoExtras(const std::shared_ptr<CFileItem>& item)
 {
-  CGUIDialogVideoManagerExtras* dialog{
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogVideoManagerExtras>(
-          WINDOW_DIALOG_MANAGE_VIDEO_EXTRAS)};
+  auto dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogVideoManagerExtras>(
+      WINDOW_DIALOG_MANAGE_VIDEO_EXTRAS)};
   if (!dialog)
   {
     CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_MANAGE_VIDEO_EXTRAS instance!");

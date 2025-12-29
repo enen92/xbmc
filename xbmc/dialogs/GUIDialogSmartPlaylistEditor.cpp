@@ -292,7 +292,8 @@ void CGUIDialogSmartPlaylistEditor::OnName()
 void CGUIDialogSmartPlaylistEditor::OnLimit()
 {
   std::vector<int> limits = {0, 10, 25, 50, 100, 250, 500, 1000};
-  CGUIDialogSelect* dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   dialog->Reset();
   int selected = -1;
   for (auto limit = limits.begin(); limit != limits.end(); limit++)
@@ -317,7 +318,8 @@ void CGUIDialogSmartPlaylistEditor::OnLimit()
 void CGUIDialogSmartPlaylistEditor::OnType()
 {
   std::vector<PLAYLIST_TYPE> allowedTypes = GetAllowedTypes(m_mode);
-  CGUIDialogSelect* dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   dialog->Reset();
   for (auto allowedType: allowedTypes)
     dialog->Add(GetLocalizedType(allowedType));
@@ -345,7 +347,8 @@ void CGUIDialogSmartPlaylistEditor::OnType()
 void CGUIDialogSmartPlaylistEditor::OnOrder()
 {
   std::vector<SortBy> orders = PLAYLIST::CSmartPlaylistRule::GetOrders(m_playlist.GetType());
-  CGUIDialogSelect* dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   dialog->Reset();
   for (auto order: orders)
     dialog->Add(g_localizeStrings.Get(SortUtils::GetSortLabel(order)));
@@ -372,7 +375,8 @@ void CGUIDialogSmartPlaylistEditor::OnGroupBy()
 {
   std::vector<Field> groups = PLAYLIST::CSmartPlaylistRule::GetGroups(m_playlist.GetType());
   Field currentGroup = PLAYLIST::CSmartPlaylistRule::TranslateGroup(m_playlist.GetGroup().c_str());
-  CGUIDialogSelect* dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   dialog->Reset();
   for (auto group : groups)
     dialog->Add(PLAYLIST::CSmartPlaylistRule::GetLocalizedGroup(group));
@@ -619,7 +623,9 @@ void CGUIDialogSmartPlaylistEditor::OnRuleAdd()
 
 bool CGUIDialogSmartPlaylistEditor::NewPlaylist(const std::string &type)
 {
-  CGUIDialogSmartPlaylistEditor *editor = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSmartPlaylistEditor>(WINDOW_DIALOG_SMART_PLAYLIST_EDITOR);
+  auto editor =
+      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSmartPlaylistEditor>(
+          WINDOW_DIALOG_SMART_PLAYLIST_EDITOR);
   if (!editor) return false;
 
   editor->m_path = "";
@@ -632,7 +638,9 @@ bool CGUIDialogSmartPlaylistEditor::NewPlaylist(const std::string &type)
 
 bool CGUIDialogSmartPlaylistEditor::EditPlaylist(const std::string &path, const std::string &type)
 {
-  CGUIDialogSmartPlaylistEditor *editor = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSmartPlaylistEditor>(WINDOW_DIALOG_SMART_PLAYLIST_EDITOR);
+  auto editor =
+      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSmartPlaylistEditor>(
+          WINDOW_DIALOG_SMART_PLAYLIST_EDITOR);
   if (!editor) return false;
 
   editor->m_mode = type;

@@ -111,7 +111,8 @@ int EpgGridControl(const std::vector<std::string>& params)
     return 0;
   }
 
-  CGUIWindowPVRGuideBase* guideWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowPVRGuideBase>(activeWindow);
+  auto guideWindow =
+      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowPVRGuideBase>(activeWindow);
   if (!guideWindow)
   {
     CLog::Log(LOGERROR, "EpgGridControl(n) - Unable to get Guide window instance");

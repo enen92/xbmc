@@ -587,7 +587,7 @@ bool CInputManager::HandleKey(const CKey& key)
     // first determine if we should use keyboard input directly
     bool useKeyboard =
         key.FromKeyboard() && (iWin == WINDOW_DIALOG_KEYBOARD || iWin == WINDOW_DIALOG_NUMERIC);
-    CGUIWindow* window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(iWin);
+    auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(iWin);
     if (window)
     {
       CGUIControl* control = window->GetFocusedControl();

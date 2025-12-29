@@ -287,7 +287,7 @@ bool CProfileManager::LoadProfile(unsigned int index)
 
   if (index == MASTER_PROFILE_ID && IsMasterProfile())
   {
-    CGUIWindow* pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_HOME);
+    auto pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_HOME);
     if (pWindow)
       pWindow->ResetControlStates();
 

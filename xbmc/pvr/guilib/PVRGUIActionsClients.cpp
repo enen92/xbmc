@@ -56,9 +56,8 @@ bool CPVRGUIActionsClients::ProcessSettingsMenuHooks() const
   // if there is only one settings hook, execute it directly, otherwise let the user select
   if (settingsHooks.size() > 1)
   {
-    CGUIDialogSelect* pDialog =
-        CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-            WINDOW_DIALOG_SELECT);
+    auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+        WINDOW_DIALOG_SELECT);
     if (!pDialog)
     {
       CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_SELECT!");

@@ -63,8 +63,9 @@ bool CGUIDialogLockSettings::ShowAndGetLock(LockMode& lockMode,
 
 bool CGUIDialogLockSettings::ShowAndGetLock(CProfile::CLock &locks, int buttonLabel /* = 20091 */, bool conditional /* = false */, bool details /* = true */)
 {
-  CGUIDialogLockSettings *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogLockSettings>(WINDOW_DIALOG_LOCK_SETTINGS);
-  if (dialog == NULL)
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogLockSettings>(
+      WINDOW_DIALOG_LOCK_SETTINGS);
+  if (!dialog)
     return false;
 
   dialog->m_locks = locks;
@@ -88,8 +89,9 @@ bool CGUIDialogLockSettings::ShowAndGetLock(CProfile::CLock &locks, int buttonLa
 
 bool CGUIDialogLockSettings::ShowAndGetUserAndPassword(std::string &user, std::string &password, const std::string &url, bool *saveUserDetails)
 {
-  CGUIDialogLockSettings *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogLockSettings>(WINDOW_DIALOG_LOCK_SETTINGS);
-  if (dialog == NULL)
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogLockSettings>(
+      WINDOW_DIALOG_LOCK_SETTINGS);
+  if (!dialog)
     return false;
 
   dialog->m_getUser = true;
@@ -150,7 +152,8 @@ void CGUIDialogLockSettings::OnSettingAction(const std::shared_ptr<const CSettin
   const std::string &settingId = setting->GetId();
   if (settingId == SETTING_LOCKCODE)
   {
-    CGUIDialogSelect* dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+    auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+        WINDOW_DIALOG_SELECT);
     if (!dialog)
       return;
 

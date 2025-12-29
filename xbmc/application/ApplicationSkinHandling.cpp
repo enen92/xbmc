@@ -106,7 +106,7 @@ bool CApplicationSkinHandling::LoadSkin(const std::string& skinID)
   int currentFocusedControlID = -1;
   if (currentWindowID != WINDOW_INVALID)
   {
-    CGUIWindow* pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(currentWindowID);
+    auto pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(currentWindowID);
     if (pWindow)
       currentFocusedControlID = pWindow->GetFocusedControlID();
   }
@@ -191,7 +191,7 @@ bool CApplicationSkinHandling::LoadSkin(const std::string& skinID)
     CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(currentWindowID);
     if (currentFocusedControlID != -1)
     {
-      CGUIWindow* pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(currentWindowID);
+      auto pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(currentWindowID);
       if (pWindow && pWindow->HasSaveLastControl())
       {
         CGUIMessage msg(GUI_MSG_SETFOCUS, currentWindowID, currentFocusedControlID, 0);

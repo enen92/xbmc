@@ -180,9 +180,8 @@ bool CGUIDialogPVRGroupManager::ActionButtonDeleteGroup(const CGUIMessage& messa
     if (!m_selectedGroup)
       return bReturn;
 
-    CGUIDialogYesNo* pDialog =
-        CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(
-            WINDOW_DIALOG_YES_NO);
+    auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(
+        WINDOW_DIALOG_YES_NO);
     if (!pDialog)
       return bReturn;
 

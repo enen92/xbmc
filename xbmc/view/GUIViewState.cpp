@@ -369,7 +369,8 @@ void CGUIViewState::SetSortMethod(const SortDescription& sortDescription)
 bool CGUIViewState::ChooseSortMethod()
 {
 
-  CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (!dialog)
     return false;
   dialog->Reset();

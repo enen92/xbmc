@@ -83,7 +83,8 @@ bool CPartyModeManager::Enable(PartyModeContext context /*= PARTYMODECONTEXT_MUS
   else
     m_type = "songs";
 
-  CGUIDialogProgress* pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
+  auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
+      WINDOW_DIALOG_PROGRESS);
   int iHeading = (m_bIsVideo ? 20250 : 20121);
   int iLine0 = (m_bIsVideo ? 20251 : 20123);
   pDialog->SetHeading(CVariant{iHeading});

@@ -385,9 +385,8 @@ void CGUIWindowPVRChannelsBase::UpdateEpg(const std::shared_ptr<CFileItem>& item
 
 void CGUIWindowPVRChannelsBase::ShowChannelManager() const
 {
-  CGUIDialogPVRChannelManager* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRChannelManager>(
-          WINDOW_DIALOG_PVR_CHANNEL_MANAGER);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRChannelManager>(
+      WINDOW_DIALOG_PVR_CHANNEL_MANAGER);
   if (!dialog)
     return;
 
@@ -400,9 +399,8 @@ void CGUIWindowPVRChannelsBase::ShowChannelManager() const
 void CGUIWindowPVRChannelsBase::ShowGroupManager() const
 {
   /* Load group manager dialog */
-  CGUIDialogPVRGroupManager* pDlgInfo =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRGroupManager>(
-          WINDOW_DIALOG_PVR_GROUP_MANAGER);
+  auto pDlgInfo = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRGroupManager>(
+      WINDOW_DIALOG_PVR_GROUP_MANAGER);
   if (!pDlgInfo)
     return;
 

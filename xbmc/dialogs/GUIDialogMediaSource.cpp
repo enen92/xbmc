@@ -126,7 +126,8 @@ bool CGUIDialogMediaSource::OnMessage(CGUIMessage& message)
 // \return True if the media source is added, false otherwise.
 bool CGUIDialogMediaSource::ShowAndAddMediaSource(const std::string &type)
 {
-  CGUIDialogMediaSource *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogMediaSource>(WINDOW_DIALOG_MEDIA_SOURCE);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogMediaSource>(
+      WINDOW_DIALOG_MEDIA_SOURCE);
   if (!dialog) return false;
   dialog->Initialize();
   dialog->SetShare(CMediaSource());
@@ -167,7 +168,8 @@ bool CGUIDialogMediaSource::ShowAndEditMediaSource(const std::string &type, cons
 bool CGUIDialogMediaSource::ShowAndEditMediaSource(const std::string &type, const CMediaSource &share)
 {
   std::string strOldName = share.strName;
-  CGUIDialogMediaSource *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogMediaSource>(WINDOW_DIALOG_MEDIA_SOURCE);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogMediaSource>(
+      WINDOW_DIALOG_MEDIA_SOURCE);
   if (!dialog) return false;
   dialog->Initialize();
   dialog->SetShare(share);

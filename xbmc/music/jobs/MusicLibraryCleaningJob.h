@@ -10,6 +10,7 @@
 
 #include "music/jobs/MusicLibraryProgressJob.h"
 
+#include <memory>
 #include <set>
 
 /*!
@@ -22,7 +23,7 @@ public:
    \brief Creates a new music library cleaning job.
    \param[in] progressDialog Progress dialog to be used to display the cleaning progress
   */
-  CMusicLibraryCleaningJob(CGUIDialogProgress* progressDialog);
+  CMusicLibraryCleaningJob(std::shared_ptr<CGUIDialogProgress> progressDialog);
   ~CMusicLibraryCleaningJob() override;
 
   // specialization of CJob

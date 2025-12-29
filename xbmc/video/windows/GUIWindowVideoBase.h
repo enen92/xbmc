@@ -13,6 +13,8 @@
 #include "video/VideoThumbLoader.h"
 #include "windows/GUIMediaWindow.h"
 
+#include <memory>
+
 class CGUIWindowVideoBase : public CGUIMediaWindow, public IBackgroundLoaderObserver
 {
 public:
@@ -115,7 +117,7 @@ protected:
   void UpdateVideoVersionItems();
   void UpdateVideoVersionItemsLabel(const std::string& directory);
 
-  CGUIDialogProgress* m_dlgProgress;
+  std::shared_ptr<CGUIDialogProgress> m_dlgProgress;
   CVideoDatabase m_database;
 
   CVideoThumbLoader m_thumbLoader;

@@ -1219,7 +1219,7 @@ void CPeripheralCecAdapter::CecSourceActivated(void* cbParam,
   {
     bool bShowingSlideshow =
         (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SLIDESHOW);
-    CGUIWindowSlideShow* pSlideShow =
+    auto pSlideShow =
         bShowingSlideshow
             ? CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowSlideShow>(
                   WINDOW_SLIDESHOW)

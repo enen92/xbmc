@@ -107,11 +107,11 @@ namespace XBMCAddon
       {
         // user specified window id, use this one if it exists
         // It is not possible to capture key presses or button presses
-        CGUIWindow* pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(existingWindowId);
+        auto pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(existingWindowId);
         if (!pWindow)
           throw WindowException("Window id does not exist");
 
-        setWindow(new ProxyExistingWindowInterceptor(pWindow));
+        setWindow(new ProxyExistingWindowInterceptor(pWindow.get()));
       }
     }
 

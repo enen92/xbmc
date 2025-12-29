@@ -10,6 +10,7 @@
 
 #include "games/GameTypes.h"
 
+#include <memory>
 #include <string>
 
 class CGUIDialogSelect;
@@ -50,7 +51,7 @@ private:
    * \return A select dialog with its properties initialized, or nullptr if
    *         the dialog isn't found
    */
-  static CGUIDialogSelect* GetDialog(const std::string& title);
+  static std::shared_ptr<CGUIDialogSelect> GetDialog(const std::string& title);
 
   /*!
    * \brief Log the candidates and installable game clients

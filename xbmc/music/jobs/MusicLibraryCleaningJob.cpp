@@ -11,11 +11,12 @@
 #include "dialogs/GUIDialogProgress.h"
 #include "music/MusicDatabase.h"
 
-CMusicLibraryCleaningJob::CMusicLibraryCleaningJob(CGUIDialogProgress* progressDialog)
+CMusicLibraryCleaningJob::CMusicLibraryCleaningJob(
+    std::shared_ptr<CGUIDialogProgress> progressDialog)
   : CMusicLibraryProgressJob(nullptr)
 {
   if (progressDialog)
-    SetProgressIndicators(nullptr, progressDialog);
+    SetProgressIndicators(nullptr, std::move(progressDialog));
   SetAutoClose(true);
 }
 

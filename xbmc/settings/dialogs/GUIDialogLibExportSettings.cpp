@@ -44,7 +44,8 @@ CGUIDialogLibExportSettings::CGUIDialogLibExportSettings()
 
 bool CGUIDialogLibExportSettings::Show(CLibExportSettings& settings)
 {
-  CGUIDialogLibExportSettings *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogLibExportSettings>(WINDOW_DIALOG_LIBEXPORT_SETTINGS);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogLibExportSettings>(
+      WINDOW_DIALOG_LIBEXPORT_SETTINGS);
   if (!dialog)
     return false;
 

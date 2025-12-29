@@ -74,8 +74,8 @@ public:
   // Fetch full album/artist information including art types list
   bool DoWork() override
   {
-    CGUIDialogMusicInfo *dialog = CServiceBroker::GetGUI()->GetWindowManager().
-	  GetWindow<CGUIDialogMusicInfo>(WINDOW_DIALOG_MUSIC_INFO);
+    auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogMusicInfo>(
+        WINDOW_DIALOG_MUSIC_INFO);
     if (!dialog)
       return false;
     if (dialog->IsCancelled())
@@ -203,11 +203,10 @@ public:
 class CRefreshInfoJob : public CProgressJob
 {
 public:
-  CRefreshInfoJob(CGUIDialogProgress* progressDialog)
-    : CProgressJob(nullptr)
+  CRefreshInfoJob(std::shared_ptr<CGUIDialogProgress> progressDialog) : CProgressJob(nullptr)
   {
     if (progressDialog)
-      SetProgressIndicators(nullptr, progressDialog);
+      SetProgressIndicators(nullptr, std::move(progressDialog));
     SetAutoClose(true);
   }
 
@@ -216,8 +215,8 @@ public:
   // Refresh album/artist information including art types list
   bool DoWork() override
   {
-    CGUIDialogMusicInfo *dialog = CServiceBroker::GetGUI()->GetWindowManager().
-	  GetWindow<CGUIDialogMusicInfo>(WINDOW_DIALOG_MUSIC_INFO);
+    auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogMusicInfo>(
+        WINDOW_DIALOG_MUSIC_INFO);
     if (!dialog)
       return false;
     if (dialog->IsCancelled())
@@ -227,7 +226,7 @@ public:
     CArtist& m_artist = dialog->GetArtist();
     CAlbum& m_album = dialog->GetAlbum();
 
-    CGUIDialogProgress* dlgProgress = GetProgressDialog();
+    auto dlgProgress = GetProgressDialog();
     CMusicDatabase database;
     database.Open();
     if (tag.GetType() == MediaTypeArtist)
@@ -618,8 +617,8 @@ void CGUIDialogMusicInfo::RefreshInfo()
     return;
   }
 
-  CGUIDialogProgress* dlgProgress = CServiceBroker::GetGUI()->GetWindowManager().
-    GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
+  auto dlgProgress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
+      WINDOW_DIALOG_PROGRESS);
   if (!dlgProgress)
     return;
 
@@ -1025,22 +1024,22 @@ void CGUIDialogMusicInfo::ShowFor(CFileItem* pItem)
   else
     return; // nothing to do
 
-
-  CGUIDialogMusicInfo *pDlgMusicInfo = CServiceBroker::GetGUI()->GetWindowManager().
-	  GetWindow<CGUIDialogMusicInfo>(WINDOW_DIALOG_MUSIC_INFO);
-    if (pDlgMusicInfo)
+  auto pDlgMusicInfo = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogMusicInfo>(
+      WINDOW_DIALOG_MUSIC_INFO);
+  if (pDlgMusicInfo)
+  {
+    if (pDlgMusicInfo->SetItem(&musicitem))
     {
-      if (pDlgMusicInfo->SetItem(&musicitem))
-      {
-        pDlgMusicInfo->Open();
-        if (pItem->GetMusicInfoTag()->GetType() == MediaTypeAlbum &&
+      pDlgMusicInfo->Open();
+      if (pItem->GetMusicInfoTag()->GetType() == MediaTypeAlbum &&
           pDlgMusicInfo->HasUpdatedUserrating())
-        {
-          auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowMusicBase>(WINDOW_MUSIC_NAV);
-          if (window)
-            window->RefreshContent("albums");
-        }
+      {
+        auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowMusicBase>(
+            WINDOW_MUSIC_NAV);
+        if (window)
+          window->RefreshContent("albums");
       }
+    }
     }
 }
 

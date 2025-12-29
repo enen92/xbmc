@@ -404,9 +404,8 @@ CGUIDialogPVRGuideSearch::Result CGUIWindowPVRSearchBase::OpenDialogSearch(const
 CGUIDialogPVRGuideSearch::Result CGUIWindowPVRSearchBase::OpenDialogSearch(
     const std::shared_ptr<CPVREpgSearchFilter>& searchFilter)
 {
-  CGUIDialogPVRGuideSearch* dlgSearch =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRGuideSearch>(
-          WINDOW_DIALOG_PVR_GUIDE_SEARCH);
+  auto dlgSearch = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRGuideSearch>(
+      WINDOW_DIALOG_PVR_GUIDE_SEARCH);
 
   if (!dlgSearch)
     return CGUIDialogPVRGuideSearch::Result::CANCEL;

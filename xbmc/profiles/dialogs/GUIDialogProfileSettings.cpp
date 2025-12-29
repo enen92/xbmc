@@ -55,8 +55,9 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
   if (firstLogin && iProfile > profileManager->GetNumberOfProfiles())
     return false;
 
-  CGUIDialogProfileSettings *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProfileSettings>(WINDOW_DIALOG_PROFILE_SETTINGS);
-  if (dialog == NULL)
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProfileSettings>(
+      WINDOW_DIALOG_PROFILE_SETTINGS);
+  if (!dialog)
     return false;
 
   dialog->m_needsSaving = false;

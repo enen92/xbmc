@@ -97,8 +97,7 @@ std::string CWeatherManager::GetProperty(const std::string& property) const
 {
   // Note: We must not access window manager while holding our lock!
   CGUIComponent* gui{CServiceBroker::GetGUI()};
-  const CGUIWindow* window{gui != nullptr ? gui->GetWindowManager().GetWindow(WINDOW_WEATHER)
-                                          : nullptr};
+  const auto window{gui != nullptr ? gui->GetWindowManager().GetWindow(WINDOW_WEATHER) : nullptr};
 
   // Trigger refresh of data if outdated
   const_cast<CWeatherManager*>(this)->RefreshIfNeeded();

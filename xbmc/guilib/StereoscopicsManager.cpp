@@ -207,7 +207,8 @@ RENDER_STEREO_MODE CStereoscopicsManager::GetStereoModeByUserChoice() const
   if (mode == RENDER_STEREO_MODE_OFF)
     mode = GetStereoModeOfPlayingVideo();
 
-  CGUIDialogSelect* pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   pDlgSelect->Reset();
 
   // "Select stereoscopic 3D mode"
@@ -570,7 +571,8 @@ void CStereoscopicsManager::OnStreamChange()
     {
       CServiceBroker::GetAppMessenger()->SendMsg(TMSG_MEDIA_PAUSE);
 
-      CGUIDialogSelect* pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+      auto pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+          WINDOW_DIALOG_SELECT);
       pDlgSelect->Reset();
       pDlgSelect->SetHeading(CVariant{g_localizeStrings.Get(36527)});
 

@@ -315,7 +315,7 @@ void CGUIControl::OnPrevControl()
 
 bool CGUIControl::SendWindowMessage(CGUIMessage &message) const
 {
-  CGUIWindow *pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(GetParentID());
+  auto pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(GetParentID());
   if (pWindow)
     return pWindow->OnMessage(message);
   return CServiceBroker::GetGUI()->GetWindowManager().SendMessage(message);

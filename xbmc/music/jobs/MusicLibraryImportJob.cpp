@@ -11,12 +11,13 @@
 #include "dialogs/GUIDialogProgress.h"
 #include "music/MusicDatabase.h"
 
-CMusicLibraryImportJob::CMusicLibraryImportJob(const std::string& xmlFile, CGUIDialogProgress* progressDialog)
-  : CMusicLibraryProgressJob(nullptr)
-  ,  m_xmlFile(xmlFile)
+CMusicLibraryImportJob::CMusicLibraryImportJob(const std::string& xmlFile,
+                                               std::shared_ptr<CGUIDialogProgress> progressDialog)
+  : CMusicLibraryProgressJob(nullptr),
+    m_xmlFile(xmlFile)
 {
   if (progressDialog)
-    SetProgressIndicators(nullptr, progressDialog);
+    SetProgressIndicators(nullptr, std::move(progressDialog));
   SetAutoClose(true);
 }
 

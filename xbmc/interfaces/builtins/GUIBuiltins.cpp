@@ -88,9 +88,11 @@ static int ActivateWindow(const std::vector<std::string>& params2)
     bool bIsSameStartFolder = true;
     if (!params.empty())
     {
-      CGUIWindow *activeWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow());
+      auto activeWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(
+          CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow());
       if (activeWindow && activeWindow->IsMediaWindow())
-        bIsSameStartFolder = static_cast<CGUIMediaWindow*>(activeWindow)->IsSameStartFolder(params[0]);
+        bIsSameStartFolder =
+            std::dynamic_pointer_cast<CGUIMediaWindow>(activeWindow)->IsSameStartFolder(params[0]);
     }
 
     // activate window only if window and path differ from the current active window
@@ -239,7 +241,9 @@ static int CancelAlarm(const std::vector<std::string>& params)
  */
 static int ClearProperty(const std::vector<std::string>& params)
 {
-  CGUIWindow *window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(params.size() > 1 ? CWindowTranslator::TranslateWindow(params[1]) : CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog());
+  auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(
+      params.size() > 1 ? CWindowTranslator::TranslateWindow(params[1])
+                        : CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog());
   if (window)
     window->SetProperty(params[0],"");
 
@@ -263,9 +267,9 @@ static int CloseDialog(const std::vector<std::string>& params)
   else
   {
     int id = CWindowTranslator::TranslateWindow(params[0]);
-    CGUIWindow *window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(id);
+    auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(id);
     if (window && window->IsDialog())
-      static_cast<CGUIDialog*>(window)->Close(bForce);
+      std::dynamic_pointer_cast<CGUIDialog>(window)->Close(bForce);
   }
 
   return 0;
@@ -362,7 +366,9 @@ static int SetLanguage(const std::vector<std::string>& params)
  */
 static int SetProperty(const std::vector<std::string>& params)
 {
-  CGUIWindow *window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(params.size() > 2 ? CWindowTranslator::TranslateWindow(params[2]) : CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog());
+  auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(
+      params.size() > 2 ? CWindowTranslator::TranslateWindow(params[2])
+                        : CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog());
   if (window)
     window->SetProperty(params[0],params[1]);
 

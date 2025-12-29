@@ -68,10 +68,9 @@ CFileItemPtr CGUIDialogPeripherals::GetItem(unsigned int pos) const
 
 void CGUIDialogPeripherals::Show(CPeripherals& manager)
 {
-  CGUIDialogPeripherals* pDialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPeripherals>(
-          WINDOW_DIALOG_PERIPHERALS);
-  if (pDialog == nullptr)
+  auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPeripherals>(
+      WINDOW_DIALOG_PERIPHERALS);
+  if (!pDialog)
     return;
 
   pDialog->Reset();
@@ -102,7 +101,7 @@ void CGUIDialogPeripherals::Show(CPeripherals& manager)
         continue;
       }
 
-      CGUIDialogPeripheralSettings* pSettingsDialog =
+      auto pSettingsDialog =
           CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPeripheralSettings>(
               WINDOW_DIALOG_PERIPHERAL_SETTINGS);
       if (pItem && pSettingsDialog)

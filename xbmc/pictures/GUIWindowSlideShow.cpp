@@ -857,7 +857,9 @@ bool CGUIWindowSlideShow::OnAction(const CAction &action)
   {
   case ACTION_SHOW_INFO:
     {
-      CGUIDialogPictureInfo *pictureInfo = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPictureInfo>(WINDOW_DIALOG_PICTURE_INFO);
+      auto pictureInfo =
+          CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPictureInfo>(
+              WINDOW_DIALOG_PICTURE_INFO);
       if (pictureInfo)
       {
         // no need to set the picture here, it's done in Render()

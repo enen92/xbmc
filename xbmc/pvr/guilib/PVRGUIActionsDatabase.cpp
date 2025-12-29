@@ -47,9 +47,8 @@ public:
 
   bool Select()
   {
-    CGUIDialogSelect* pDlgSelect =
-        CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-            WINDOW_DIALOG_SELECT);
+    auto pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+        WINDOW_DIALOG_SELECT);
     if (!pDlgSelect)
     {
       CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_SELECT!");
@@ -154,9 +153,8 @@ private:
 
 bool CPVRGUIActionsDatabase::ResetDatabase(bool bResetEPGOnly) const
 {
-  CGUIDialogProgress* pDlgProgress =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
-          WINDOW_DIALOG_PROGRESS);
+  auto pDlgProgress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
+      WINDOW_DIALOG_PROGRESS);
   if (!pDlgProgress)
   {
     CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_PROGRESS!");

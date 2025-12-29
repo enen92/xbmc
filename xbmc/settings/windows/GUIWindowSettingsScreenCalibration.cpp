@@ -66,7 +66,7 @@ void CGUIWindowSettingsScreenCalibration::ResetCalibration()
 {
   // We ask to reset the calibration
   // Reset will be applied to: windowed mode or per fullscreen resolution
-  CGUIDialogYesNo* pDialog =
+  auto pDialog =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
   pDialog->SetHeading(CVariant{20325});
   std::string strText = StringUtils::Format(

@@ -68,11 +68,13 @@ bool CFileOperationJob::DoWork()
   FileOperationList ops;
   double totalTime = 0.0;
 
-  if (m_displayProgress && GetProgressDialog() == NULL)
+  if (m_displayProgress && !GetProgressDialog())
   {
-    CGUIDialogExtendedProgressBar* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogExtendedProgressBar>(WINDOW_DIALOG_EXT_PROGRESS);
-    SetProgressBar(dialog->GetHandle(GetActionString(m_action)));
+    auto dialog =
+        CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogExtendedProgressBar>(
+            WINDOW_DIALOG_EXT_PROGRESS);
+    if (dialog)
+      SetProgressBar(dialog->GetHandle(GetActionString(m_action)));
   }
 
   bool success = DoProcess(m_action, m_items, m_strDestFile, ops, totalTime);

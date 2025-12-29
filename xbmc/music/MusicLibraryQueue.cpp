@@ -46,7 +46,7 @@ CMusicLibraryQueue& CMusicLibraryQueue::GetInstance()
 
 void CMusicLibraryQueue::ExportLibrary(const CLibExportSettings& settings, bool showDialog /* = false */)
 {
-  CGUIDialogProgress* progress = NULL;
+  std::shared_ptr<CGUIDialogProgress> progress;
   if (showDialog)
   {
     progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
@@ -83,7 +83,7 @@ void CMusicLibraryQueue::ExportLibrary(const CLibExportSettings& settings, bool 
 
 void CMusicLibraryQueue::ImportLibrary(const std::string& xmlFile, bool showDialog /* = false */)
 {
-  CGUIDialogProgress* progress = nullptr;
+  std::shared_ptr<CGUIDialogProgress> progress;
   if (showDialog)
   {
     progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
@@ -191,7 +191,7 @@ void CMusicLibraryQueue::StopLibraryScanning()
 
 void CMusicLibraryQueue::CleanLibrary(bool showDialog /* = false */)
 {
-  CGUIDialogProgress* progress = NULL;
+  std::shared_ptr<CGUIDialogProgress> progress;
   if (showDialog)
   {
     progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);

@@ -260,8 +260,9 @@ CVideoInfoScanner::~CVideoInfoScanner()
 
       if (m_showDialog && !settings->GetBool(CSettings::SETTING_VIDEOLIBRARY_BACKGROUNDUPDATE))
       {
-        CGUIDialogExtendedProgressBar* dialog =
-          CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogExtendedProgressBar>(WINDOW_DIALOG_EXT_PROGRESS);
+        auto dialog =
+            CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogExtendedProgressBar>(
+                WINDOW_DIALOG_EXT_PROGRESS);
         if (dialog)
            m_handle = dialog->GetHandle(g_localizeStrings.Get(314));
       }
@@ -685,7 +686,7 @@ CVideoInfoScanner::~CVideoInfoScanner()
                                             bool useLocal,
                                             CScraperUrl* pURL,
                                             bool fetchEpisodes,
-                                            CGUIDialogProgress* pDlgProgress)
+                                            std::shared_ptr<CGUIDialogProgress> pDlgProgress)
   {
     if (pDlgProgress)
     {
@@ -807,13 +808,14 @@ CVideoInfoScanner::~CVideoInfoScanner()
     return FoundSomeInfo;
   }
 
-  CInfoScanner::InfoRet CVideoInfoScanner::RetrieveInfoForTvShow(CFileItem* pItem,
-                                                                 bool bDirNames,
-                                                                 ScraperPtr& info2,
-                                                                 bool useLocal,
-                                                                 CScraperUrl* pURL,
-                                                                 bool fetchEpisodes,
-                                                                 CGUIDialogProgress* pDlgProgress)
+  CInfoScanner::InfoRet CVideoInfoScanner::RetrieveInfoForTvShow(
+      CFileItem* pItem,
+      bool bDirNames,
+      ScraperPtr& info2,
+      bool useLocal,
+      CScraperUrl* pURL,
+      bool fetchEpisodes,
+      std::shared_ptr<CGUIDialogProgress> pDlgProgress)
   {
     const bool isSeason =
         pItem->HasVideoInfoTag() && pItem->GetVideoInfoTag()->m_type == MediaTypeSeason;
@@ -951,12 +953,13 @@ CVideoInfoScanner::~CVideoInfoScanner()
     return InfoRet::ADDED;
   }
 
-  CInfoScanner::InfoRet CVideoInfoScanner::RetrieveInfoForMovie(CFileItem* pItem,
-                                                                bool bDirNames,
-                                                                ScraperPtr& info2,
-                                                                bool useLocal,
-                                                                CScraperUrl* pURL,
-                                                                CGUIDialogProgress* pDlgProgress)
+  CInfoScanner::InfoRet CVideoInfoScanner::RetrieveInfoForMovie(
+      CFileItem* pItem,
+      bool bDirNames,
+      ScraperPtr& info2,
+      bool useLocal,
+      CScraperUrl* pURL,
+      std::shared_ptr<CGUIDialogProgress> pDlgProgress)
   {
     if (pItem->IsFolder() || !IsVideo(*pItem) || pItem->IsNFO() ||
         (PLAYLIST::IsPlayList(*pItem) && !URIUtils::HasExtension(pItem->GetPath(), ".strm")))
@@ -1128,7 +1131,7 @@ CVideoInfoScanner::~CVideoInfoScanner()
       ScraperPtr& info2,
       bool useLocal,
       CScraperUrl* pURL,
-      CGUIDialogProgress* pDlgProgress)
+      std::shared_ptr<CGUIDialogProgress> pDlgProgress)
   {
     if (pItem->IsFolder() || !IsVideo(*pItem) || pItem->IsNFO() ||
         (PLAYLIST::IsPlayList(*pItem) && !URIUtils::HasExtension(pItem->GetPath(), ".strm")))
@@ -1209,12 +1212,13 @@ CVideoInfoScanner::~CVideoInfoScanner()
     return InfoRet::NOT_FOUND;
   }
 
-  CInfoScanner::InfoRet CVideoInfoScanner::RetrieveInfoForEpisodes(CFileItem* item,
-                                                                   long showID,
-                                                                   const ADDON::ScraperPtr& scraper,
-                                                                   bool useLocal,
-                                                                   CGUIDialogProgress* progress,
-                                                                   bool alreadyHasArt /* = false */)
+  CInfoScanner::InfoRet CVideoInfoScanner::RetrieveInfoForEpisodes(
+      CFileItem* item,
+      long showID,
+      const ADDON::ScraperPtr& scraper,
+      bool useLocal,
+      std::shared_ptr<CGUIDialogProgress> progress,
+      bool alreadyHasArt /* = false */)
   {
     // enumerate episodes
     EPISODELIST files;
@@ -2307,7 +2311,7 @@ CVideoInfoScanner::~CVideoInfoScanner()
       const ADDON::ScraperPtr& scraper,
       bool useLocal,
       const CVideoInfoTag& showInfo,
-      CGUIDialogProgress* pDlgProgress /* = NULL */)
+      std::shared_ptr<CGUIDialogProgress> pDlgProgress /* = nullptr */)
   {
     if (pDlgProgress)
     {
@@ -2554,7 +2558,7 @@ CVideoInfoScanner::~CVideoInfoScanner()
                                      CScraperUrl& url,
                                      const ScraperPtr& scraper,
                                      IVideoInfoTagLoader* loader,
-                                     CGUIDialogProgress* pDialog /* = NULL */)
+                                     std::shared_ptr<CGUIDialogProgress> pDialog /* = nullptr */)
   {
     CVideoInfoTag movieDetails;
 
@@ -2841,7 +2845,7 @@ CVideoInfoScanner::~CVideoInfoScanner()
     }
   }
 
-  bool CVideoInfoScanner::DownloadFailed(CGUIDialogProgress* pDialog)
+  bool CVideoInfoScanner::DownloadFailed(std::shared_ptr<CGUIDialogProgress> pDialog)
   {
     if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bVideoScannerIgnoreErrors)
       return true;
@@ -2855,7 +2859,9 @@ CVideoInfoScanner::~CVideoInfoScanner()
            DialogResponse::CHOICE_YES;
   }
 
-  bool CVideoInfoScanner::ProgressCancelled(CGUIDialogProgress* progress, int heading, const std::string &line1)
+  bool CVideoInfoScanner::ProgressCancelled(std::shared_ptr<CGUIDialogProgress> progress,
+                                            int heading,
+                                            const std::string& line1)
   {
     if (progress)
     {
@@ -2867,7 +2873,11 @@ CVideoInfoScanner::~CVideoInfoScanner()
     return m_bStop;
   }
 
-  int CVideoInfoScanner::FindVideo(const std::string &title, int year, const ScraperPtr &scraper, CScraperUrl &url, CGUIDialogProgress *progress)
+  int CVideoInfoScanner::FindVideo(const std::string& title,
+                                   int year,
+                                   const ScraperPtr& scraper,
+                                   CScraperUrl& url,
+                                   std::shared_ptr<CGUIDialogProgress> progress)
   {
     MOVIELIST movielist;
     CVideoInfoDownloader imdb(scraper);

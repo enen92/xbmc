@@ -186,9 +186,8 @@ bool CGUIDialogAddonSettings::ShowForSingleInstance(
   }
 
   // Create the dialog
-  CGUIDialogAddonSettings* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogAddonSettings>(
-          WINDOW_DIALOG_ADDON_SETTINGS);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogAddonSettings>(
+      WINDOW_DIALOG_ADDON_SETTINGS);
   if (!dialog)
   {
     CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_ADDON_SETTINGS instance!");
@@ -216,9 +215,8 @@ bool CGUIDialogAddonSettings::ShowForSingleInstance(
 bool CGUIDialogAddonSettings::ShowForMultipleInstances(const ADDON::AddonPtr& addon,
                                                        bool saveToDisk)
 {
-  CGUIDialogSelect* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-          WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (!dialog)
   {
     CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_SELECT instance!");
@@ -394,9 +392,8 @@ void CGUIDialogAddonSettings::SaveAndClose()
     return;
 
   // get the dialog
-  CGUIDialogAddonSettings* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogAddonSettings>(
-          WINDOW_DIALOG_ADDON_SETTINGS);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogAddonSettings>(
+      WINDOW_DIALOG_ADDON_SETTINGS);
   if (dialog == nullptr || !dialog->IsActive())
     return;
 

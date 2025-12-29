@@ -349,7 +349,7 @@ namespace
 void SelectNextItem(int windowID)
 {
   auto& windowMgr = CServiceBroker::GetGUI()->GetWindowManager();
-  CGUIWindow* window = windowMgr.GetWindow(windowID);
+  auto window = windowMgr.GetWindow(windowID);
   if (window)
   {
     const int viewContainerID = window->GetViewContainerID();

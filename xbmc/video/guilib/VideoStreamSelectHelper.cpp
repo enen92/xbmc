@@ -284,7 +284,7 @@ bool SupportsSubtitleFeature(IPlayerSubtitleCaps feature,
 
 void KODI::VIDEO::GUILIB::OpenDialogSelectVideoStream()
 {
-  CGUIDialogSelect* dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+  auto dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
       WINDOW_DIALOG_SELECT_VIDEO_STREAM)};
   if (!dialog)
   {
@@ -361,7 +361,7 @@ void KODI::VIDEO::GUILIB::OpenDialogSelectVideoStream()
 
 void KODI::VIDEO::GUILIB::OpenDialogSelectAudioStream()
 {
-  CGUIDialogSelect* dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+  auto dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
       WINDOW_DIALOG_SELECT_AUDIO_STREAM)};
   if (!dialog)
   {
@@ -433,7 +433,7 @@ void KODI::VIDEO::GUILIB::OpenDialogSelectAudioStream()
 
 void KODI::VIDEO::GUILIB::OpenDialogSelectSubtitleStream()
 {
-  CGUIDialogSelect* dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+  auto dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
       WINDOW_DIALOG_SELECT_SUBTITLE_STREAM)};
   if (!dialog)
   {

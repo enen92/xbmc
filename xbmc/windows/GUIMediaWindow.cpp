@@ -1832,7 +1832,8 @@ bool CGUIMediaWindow::WaitForNetwork() const
   if (CServiceBroker::GetNetwork().IsAvailable())
     return true;
 
-  CGUIDialogProgress *progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
+  auto progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
+      WINDOW_DIALOG_PROGRESS);
   if (!progress)
     return true;
 

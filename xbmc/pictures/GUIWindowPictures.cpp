@@ -587,7 +587,8 @@ void CGUIWindowPictures::OnItemInfo(int itemNumber)
   if (item->IsFolder() || item->IsZIP() || item->IsRAR() || item->IsCBZ() || item->IsCBR() ||
       !item->IsPicture())
     return;
-  CGUIDialogPictureInfo *pictureInfo = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPictureInfo>(WINDOW_DIALOG_PICTURE_INFO);
+  auto pictureInfo = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPictureInfo>(
+      WINDOW_DIALOG_PICTURE_INFO);
   if (pictureInfo)
   {
     pictureInfo->SetPicture(item.get());

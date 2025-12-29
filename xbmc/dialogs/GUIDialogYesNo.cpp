@@ -107,7 +107,8 @@ bool CGUIDialogYesNo::ShowAndGetInput(const CVariant& heading,
                                       const CVariant& yesLabel,
                                       unsigned int autoCloseTime)
 {
-  CGUIDialogYesNo *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
+  auto dialog =
+      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
   if (!dialog)
     return false;
 
@@ -179,7 +180,8 @@ CGUIDialogYesNo::DialogResult CGUIDialogYesNo::ShowAndGetInput(
     unsigned int autoCloseTime,
     int defaultButtonId /* = CONTROL_NO_BUTTON */)
 {
-  CGUIDialogYesNo *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
+  auto dialog =
+      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
   if (!dialog)
     return DIALOG_RESULT_CANCEL;
 

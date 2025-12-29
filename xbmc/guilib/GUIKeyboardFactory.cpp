@@ -99,7 +99,7 @@ bool CGUIKeyboardFactory::ShowAndGetInput(std::string& aTextString,
 #endif
 
   auto& winManager = CServiceBroker::GetGUI()->GetWindowManager();
-  CGUIKeyboard* kb = nullptr;
+  std::shared_ptr<CGUIKeyboard> kb = nullptr;
   if (useKodiKeyboard)
     kb = winManager.GetWindow<CGUIDialogKeyboardGeneric>(WINDOW_DIALOG_KEYBOARD);
 #if defined(TARGET_DARWIN_EMBEDDED)
@@ -109,10 +109,10 @@ bool CGUIKeyboardFactory::ShowAndGetInput(std::string& aTextString,
 
   if (kb)
   {
-    g_activeKeyboard = kb;
+    g_activeKeyboard = kb.get();
     kb->startAutoCloseTimer(autoCloseMs);
     confirmed = kb->ShowAndGetInput(keyTypedCB, aTextString, aTextString, headingStr, hiddenInput);
-    g_activeKeyboard = NULL;
+    g_activeKeyboard = nullptr;
   }
 
   if (confirmed)

@@ -10,6 +10,8 @@
 
 #include "windows/GUIMediaWindow.h"
 
+#include <memory>
+
 class CGUIDialogProgress;
 
 namespace KODI
@@ -43,7 +45,7 @@ protected:
   bool PlayGame(const CFileItem& item);
   bool CanPlay(const CFileItem& item) const;
 
-  CGUIDialogProgress* m_dlgProgress = nullptr;
+  std::shared_ptr<CGUIDialogProgress> m_dlgProgress;
 };
 } // namespace GAME
 } // namespace KODI

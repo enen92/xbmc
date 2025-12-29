@@ -11,6 +11,8 @@
 #include "MusicLibraryProgressJob.h"
 #include "settings/LibExportSettings.h"
 
+#include <memory>
+
 class CGUIDialogProgress;
 
 /*!
@@ -25,7 +27,8 @@ public:
   \param[in] settings       Library export settings
   \param[in] progressDialog Progress dialog to be used to display the export progress
   */
-  CMusicLibraryExportJob(const CLibExportSettings& settings, CGUIDialogProgress* progressDialog);
+  CMusicLibraryExportJob(const CLibExportSettings& settings,
+                         std::shared_ptr<CGUIDialogProgress> progressDialog);
 
   ~CMusicLibraryExportJob() override;
 

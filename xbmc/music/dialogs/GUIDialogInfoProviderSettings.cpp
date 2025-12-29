@@ -50,7 +50,9 @@ CGUIDialogInfoProviderSettings::CGUIDialogInfoProviderSettings()
 
 bool CGUIDialogInfoProviderSettings::Show()
 {
-  CGUIDialogInfoProviderSettings *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogInfoProviderSettings>(WINDOW_DIALOG_INFOPROVIDER_SETTINGS);
+  auto dialog =
+      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogInfoProviderSettings>(
+          WINDOW_DIALOG_INFOPROVIDER_SETTINGS);
   if (!dialog)
     return false;
 
@@ -88,7 +90,9 @@ bool CGUIDialogInfoProviderSettings::Show()
 
 int CGUIDialogInfoProviderSettings::Show(ADDON::ScraperPtr& scraper)
 {
-  CGUIDialogInfoProviderSettings *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogInfoProviderSettings>(WINDOW_DIALOG_INFOPROVIDER_SETTINGS);
+  auto dialog =
+      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogInfoProviderSettings>(
+          WINDOW_DIALOG_INFOPROVIDER_SETTINGS);
   if (!dialog || !scraper)
     return -1;
   if (scraper->Content() != ContentType::ARTISTS && scraper->Content() != ContentType::ALBUMS)

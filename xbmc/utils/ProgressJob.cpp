@@ -43,11 +43,12 @@ bool CProgressJob::DoModal()
   m_progress = nullptr;
 
   // get a progress dialog if we don't already have one
-  if (m_progressDialog == nullptr)
+  if (!m_progressDialog)
   {
-    m_progressDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
+    m_progressDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
+        WINDOW_DIALOG_PROGRESS);
 
-    if (m_progressDialog == nullptr)
+    if (!m_progressDialog)
       return false;
   }
 
@@ -63,10 +64,13 @@ bool CProgressJob::DoModal()
   return result;
 }
 
-void CProgressJob::SetProgressIndicators(CGUIDialogProgressBarHandle* progressBar, CGUIDialogProgress* progressDialog, bool updateProgress /* = true */, bool updateInformation /* = true */)
+void CProgressJob::SetProgressIndicators(CGUIDialogProgressBarHandle* progressBar,
+                                         std::shared_ptr<CGUIDialogProgress> progressDialog,
+                                         bool updateProgress /* = true */,
+                                         bool updateInformation /* = true */)
 {
   SetProgressBar(progressBar);
-  SetProgressDialog(progressDialog);
+  SetProgressDialog(std::move(progressDialog));
   SetUpdateProgress(updateProgress);
   SetUpdateInformation(updateInformation);
 
@@ -76,7 +80,7 @@ void CProgressJob::SetProgressIndicators(CGUIDialogProgressBarHandle* progressBa
 
 void CProgressJob::ShowProgressDialog() const
 {
-  if (!IsModal() || m_progressDialog == nullptr || m_progressDialog->IsDialogRunning())
+  if (!IsModal() || !m_progressDialog || m_progressDialog->IsDialogRunning())
     return;
 
   // show the progress dialog as a modal dialog with a progress bar

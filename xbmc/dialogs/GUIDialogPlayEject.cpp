@@ -79,8 +79,8 @@ bool CGUIDialogPlayEject::ShowAndGetInput(const std::string& strLine1,
 {
 
   // Create the dialog
-  CGUIDialogPlayEject * pDialog = (CGUIDialogPlayEject *)CServiceBroker::GetGUI()->GetWindowManager().
-    GetWindow(WINDOW_DIALOG_PLAY_EJECT);
+  auto pDialog = std::static_pointer_cast<CGUIDialogPlayEject>(
+      CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PLAY_EJECT));
   if (!pDialog)
     return false;
 

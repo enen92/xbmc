@@ -101,7 +101,8 @@ void CAddonStatusHandler::Process()
   /* Some required settings are missing/invalid */
   else if (m_status == ADDON_STATUS_NEED_SETTINGS)
   {
-    CGUIDialogYesNo* pDialogYesNo = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
+    auto pDialogYesNo = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(
+        WINDOW_DIALOG_YES_NO);
     if (!pDialogYesNo) return;
 
     pDialogYesNo->SetHeading(CVariant{heading});

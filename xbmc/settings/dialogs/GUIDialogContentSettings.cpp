@@ -84,7 +84,8 @@ bool CGUIDialogContentSettings::Show(ADDON::ScraperPtr& scraper,
                                      VIDEO::SScanSettings& settings,
                                      ContentType content /* = ContentType::CONTENT_NONE */)
 {
-  CGUIDialogContentSettings *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogContentSettings>(WINDOW_DIALOG_CONTENT_SETTINGS);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogContentSettings>(
+      WINDOW_DIALOG_CONTENT_SETTINGS);
   if (!dialog)
     return false;
 
@@ -203,7 +204,8 @@ void CGUIDialogContentSettings::OnSettingAction(const std::shared_ptr<const CSet
     }
     std::ranges::sort(labels);
 
-    CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+    auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+        WINDOW_DIALOG_SELECT);
     if (dialog)
     {
       dialog->SetHeading(CVariant{ 20344 }); //Label "This directory contains"

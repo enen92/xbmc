@@ -35,9 +35,8 @@ std::string CGUIDialogSelectGameClient::ShowAndGetGameClient(const std::string& 
   std::string extension = URIUtils::GetExtension(gamePath);
 
   // "Select emulator for {0:s}"
-  CGUIDialogSelect* dialog =
-      GetDialog(StringUtils::Format(g_localizeStrings.Get(35258), extension));
-  if (dialog != nullptr)
+  auto dialog = GetDialog(StringUtils::Format(g_localizeStrings.Get(35258), extension));
+  if (dialog)
   {
     // Turn the addons into items
     CFileItemList items;
@@ -88,12 +87,11 @@ std::string CGUIDialogSelectGameClient::ShowAndGetGameClient(const std::string& 
   return gameClient;
 }
 
-CGUIDialogSelect* CGUIDialogSelectGameClient::GetDialog(const std::string& title)
+std::shared_ptr<CGUIDialogSelect> CGUIDialogSelectGameClient::GetDialog(const std::string& title)
 {
-  CGUIDialogSelect* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-          WINDOW_DIALOG_SELECT);
-  if (dialog != nullptr)
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
+  if (dialog)
   {
     dialog->Reset();
     dialog->SetHeading(CVariant{title});

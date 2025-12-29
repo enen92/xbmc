@@ -569,7 +569,8 @@ bool CGUIDialogVideoInfo::RefreshAll() const
 
 void CGUIDialogVideoInfo::OnSearch(std::string& strSearch)
 {
-  CGUIDialogProgress *progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
+  auto progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
+      WINDOW_DIALOG_PROGRESS);
   if (progress)
   {
     progress->SetHeading(CVariant{194});
@@ -587,7 +588,8 @@ void CGUIDialogVideoInfo::OnSearch(std::string& strSearch)
 
   if (items.Size())
   {
-    CGUIDialogSelect* pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+    auto pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+        WINDOW_DIALOG_SELECT);
     if (pDlgSelect)
     {
       pDlgSelect->Reset();
@@ -905,9 +907,8 @@ void CArtTypeChooser::UpdateArtType(const std::string& type, const std::string& 
 
 bool CArtTypeChooser::ChooseArtType()
 {
-  CGUIDialogSelect* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-          WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (!dialog || !m_item->HasVideoInfoTag())
     return false;
 
@@ -991,7 +992,8 @@ void CGUIDialogVideoInfo::OnGetFanart()
 
 void CGUIDialogVideoInfo::OnSetUserrating() const
 {
-  CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (dialog)
   {
     dialog->SetHeading(CVariant{ 38023 });
@@ -1303,7 +1305,8 @@ bool CGUIDialogVideoInfo::DeleteVideoItemFromDatabase(const std::shared_ptr<CFil
     return false;
   }
 
-  CGUIDialogYesNo* pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
+  auto pDialog =
+      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(WINDOW_DIALOG_YES_NO);
   if (pDialog == nullptr)
     return false;
 
@@ -1499,7 +1502,8 @@ bool CGUIDialogVideoInfo::GetMoviesForSet(const CFileItem *setItem, CFileItemLis
   if (!videodb.GetSortedVideos(MediaTypeMovie, "videodb://movies", SortDescription(), listItems) || listItems.Size() <= 0)
     return false;
 
-  CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (dialog == nullptr)
     return false;
 
@@ -1589,7 +1593,8 @@ bool CGUIDialogVideoInfo::GetSetForMovie(const CFileItem* movieItem,
     listItems.AddFront(keepItem, 1);
   }
 
-  CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (dialog == nullptr)
     return false;
 
@@ -1697,7 +1702,8 @@ bool CGUIDialogVideoInfo::GetItemsForTag(const std::string &strHeading, const st
   if (!videodb.GetSortedVideos(mediaType, videoUrl.ToString(), SortDescription(), listItems, filter) || listItems.Size() <= 0)
     return false;
 
-  CGUIDialogSelect *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (dialog == nullptr)
     return false;
 
@@ -2067,7 +2073,8 @@ bool CGUIDialogVideoInfo::LinkMovieToTvShow(const std::shared_ptr<CFileItem>& it
   if (list.Size() > 1 || (!bRemove && !list.IsEmpty()))
   {
     list.Sort(SortByLabel, SortOrderAscending, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_IGNORETHEWHENSORTING) ? SortAttributeIgnoreArticle : SortAttributeNone);
-    CGUIDialogSelect* pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+    auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+        WINDOW_DIALOG_SELECT);
     if (pDialog)
     {
       pDialog->Reset();

@@ -162,7 +162,7 @@ unsigned int CVideoPlayActionProcessor::ChooseStackPart() const
     parts[i]->SetLabel(StringUtils::Format(g_localizeStrings.Get(23051), i + 1)); // Part #
   }
 
-  CGUIDialogSelect* dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+  auto dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
       WINDOW_DIALOG_SELECT)};
 
   dialog->Reset();

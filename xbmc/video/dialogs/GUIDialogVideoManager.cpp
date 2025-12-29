@@ -247,9 +247,8 @@ void CGUIDialogVideoManager::CloseAll()
   Close(true);
 
   // close the video info dialog if exists
-  CGUIDialogVideoInfo* dialog{
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogVideoInfo>(
-          WINDOW_DIALOG_VIDEO_INFO)};
+  auto dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogVideoInfo>(
+      WINDOW_DIALOG_VIDEO_INFO)};
   if (dialog)
     dialog->Close(true);
 }
@@ -383,7 +382,7 @@ int CGUIDialogVideoManager::ChooseVideoAsset(const std::shared_ptr<CFileItem>& i
     return -1;
   }
 
-  CGUIDialogSelect* dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+  auto dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
       WINDOW_DIALOG_SELECT)};
   if (!dialog)
   {

@@ -473,7 +473,8 @@ std::string CGUIDialogNumeric::GetOutputString() const
 
 bool CGUIDialogNumeric::ShowAndGetSeconds(std::string &timeString, const std::string &heading)
 {
-  CGUIDialogNumeric *pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(WINDOW_DIALOG_NUMERIC);
+  auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(
+      WINDOW_DIALOG_NUMERIC);
   if (!pDialog) return false;
   int seconds = StringUtils::TimeStringToSeconds(timeString);
   KODI::TIME::SystemTime time = {};
@@ -493,7 +494,8 @@ bool CGUIDialogNumeric::ShowAndGetSeconds(std::string &timeString, const std::st
 
 bool CGUIDialogNumeric::ShowAndGetTime(KODI::TIME::SystemTime& time, const std::string& heading)
 {
-  CGUIDialogNumeric *pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(WINDOW_DIALOG_NUMERIC);
+  auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(
+      WINDOW_DIALOG_NUMERIC);
   if (!pDialog) return false;
   pDialog->SetMode(INPUT_TIME, time);
   pDialog->SetHeading(heading);
@@ -506,7 +508,8 @@ bool CGUIDialogNumeric::ShowAndGetTime(KODI::TIME::SystemTime& time, const std::
 
 bool CGUIDialogNumeric::ShowAndGetDate(KODI::TIME::SystemTime& date, const std::string& heading)
 {
-  CGUIDialogNumeric *pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(WINDOW_DIALOG_NUMERIC);
+  auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(
+      WINDOW_DIALOG_NUMERIC);
   if (!pDialog) return false;
   pDialog->SetMode(INPUT_DATE, date);
   pDialog->SetHeading(heading);
@@ -519,7 +522,8 @@ bool CGUIDialogNumeric::ShowAndGetDate(KODI::TIME::SystemTime& date, const std::
 
 bool CGUIDialogNumeric::ShowAndGetIPAddress(std::string &IPAddress, const std::string &heading)
 {
-  CGUIDialogNumeric *pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(WINDOW_DIALOG_NUMERIC);
+  auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(
+      WINDOW_DIALOG_NUMERIC);
   if (!pDialog) return false;
   pDialog->SetMode(INPUT_IP_ADDRESS, IPAddress);
   pDialog->SetHeading(heading);
@@ -533,7 +537,8 @@ bool CGUIDialogNumeric::ShowAndGetIPAddress(std::string &IPAddress, const std::s
 bool CGUIDialogNumeric::ShowAndGetNumber(std::string& strInput, const std::string &strHeading, unsigned int iAutoCloseTimeoutMs /* = 0 */, bool bSetHidden /* = false */)
 {
   // Prompt user for password input
-  CGUIDialogNumeric *pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(WINDOW_DIALOG_NUMERIC);
+  auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(
+      WINDOW_DIALOG_NUMERIC);
   pDialog->SetHeading( strHeading );
 
   if (bSetHidden)
@@ -625,7 +630,8 @@ int CGUIDialogNumeric::ShowAndVerifyPassword(std::string& strPassword, const std
 InputVerificationResult CGUIDialogNumeric::ShowAndVerifyInput(std::string& strToVerify, const std::string& dlgHeading, bool bVerifyInput)
 {
   // Prompt user for password input
-  CGUIDialogNumeric *pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(WINDOW_DIALOG_NUMERIC);
+  auto pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogNumeric>(
+      WINDOW_DIALOG_NUMERIC);
   pDialog->SetHeading(dlgHeading);
 
   std::string strInput;

@@ -41,11 +41,11 @@ using namespace PVR;
 
 namespace
 {
-PVR::CGUIWindowPVRSearchBase* GetSearchWindow(bool bRadio)
+std::shared_ptr<PVR::CGUIWindowPVRSearchBase> GetSearchWindow(bool bRadio)
 {
   const int windowSearchId = bRadio ? WINDOW_RADIO_SEARCH : WINDOW_TV_SEARCH;
 
-  PVR::CGUIWindowPVRSearchBase* windowSearch;
+  std::shared_ptr<PVR::CGUIWindowPVRSearchBase> windowSearch;
 
   const CGUIWindowManager& windowMgr = CServiceBroker::GetGUI()->GetWindowManager();
   if (bRadio)
@@ -74,9 +74,8 @@ bool CPVRGUIActionsEPG::ShowEPGInfo(const CFileItem& item) const
     return false;
   }
 
-  CGUIDialogPVRGuideInfo* pDlgInfo =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRGuideInfo>(
-          WINDOW_DIALOG_PVR_GUIDE_INFO);
+  auto pDlgInfo = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRGuideInfo>(
+      WINDOW_DIALOG_PVR_GUIDE_INFO);
   if (!pDlgInfo)
   {
     CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_PVR_GUIDE_INFO!");
@@ -95,9 +94,8 @@ bool CPVRGUIActionsEPG::ShowChannelEPG(const CFileItem& item) const
                      channel) != ParentalCheckResult::SUCCESS)
     return false;
 
-  CGUIDialogPVRChannelGuide* pDlgInfo =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRChannelGuide>(
-          WINDOW_DIALOG_PVR_CHANNEL_GUIDE);
+  auto pDlgInfo = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRChannelGuide>(
+      WINDOW_DIALOG_PVR_CHANNEL_GUIDE);
   if (!pDlgInfo)
   {
     CLog::LogF(LOGERROR, "Unable to get WINDOW_DIALOG_PVR_CHANNEL_GUIDE!");
@@ -110,7 +108,7 @@ bool CPVRGUIActionsEPG::ShowChannelEPG(const CFileItem& item) const
 
 bool CPVRGUIActionsEPG::FindSimilar(const CFileItem& item) const
 {
-  CGUIWindowPVRSearchBase* windowSearch = GetSearchWindow(CPVRItem(item).IsRadio());
+  auto windowSearch = GetSearchWindow(CPVRItem(item).IsRadio());
   if (!windowSearch)
     return false;
 
@@ -126,7 +124,7 @@ bool CPVRGUIActionsEPG::FindSimilar(const CFileItem& item) const
     CLog::LogF(LOGWARNING,
                "Have to close modal dialog with id {} before search window can be opened.", iId);
 
-    CGUIWindow* window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(iId);
+    auto window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(iId);
     if (window)
     {
       window->Close();
@@ -153,7 +151,7 @@ bool CPVRGUIActionsEPG::ExecuteSavedSearch(const CFileItem& item) const
     return false;
   }
 
-  CGUIWindowPVRSearchBase* windowSearch = GetSearchWindow(searchFilter->IsRadio());
+  auto windowSearch = GetSearchWindow(searchFilter->IsRadio());
   if (!windowSearch)
     return false;
 
@@ -172,7 +170,7 @@ bool CPVRGUIActionsEPG::EditSavedSearch(const CFileItem& item) const
     return false;
   }
 
-  CGUIWindowPVRSearchBase* windowSearch = GetSearchWindow(searchFilter->IsRadio());
+  auto windowSearch = GetSearchWindow(searchFilter->IsRadio());
   if (!windowSearch)
     return false;
 

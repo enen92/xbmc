@@ -29,7 +29,10 @@ CGUIDialogCache::CGUIDialogCache(std::chrono::milliseconds delay,
 {
   bSentCancel = false;
 
-  m_pDlg = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
+  m_pDlg = CServiceBroker::GetGUI()
+               ->GetWindowManager()
+               .GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS)
+               .get();
 
   if (!m_pDlg)
     return;

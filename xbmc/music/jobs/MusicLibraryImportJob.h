@@ -10,6 +10,8 @@
 
 #include "MusicLibraryProgressJob.h"
 
+#include <memory>
+
 class CGUIDialogProgress;
 
 /*!
@@ -24,7 +26,8 @@ public:
   \param[in] xmlFile       xml file to import
   \param[in] progressDialog Progress dialog to be used to display the import progress
   */
-  CMusicLibraryImportJob(const std::string &xmlFile, CGUIDialogProgress* progressDialog);
+  CMusicLibraryImportJob(const std::string& xmlFile,
+                         std::shared_ptr<CGUIDialogProgress> progressDialog);
 
   ~CMusicLibraryImportJob() override;
 

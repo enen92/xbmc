@@ -54,7 +54,8 @@ public:
   // Fetch full song information including art types list
   bool DoWork() override
   {
-    CGUIDialogSongInfo *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSongInfo>(WINDOW_DIALOG_SONG_INFO);
+    auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSongInfo>(
+        WINDOW_DIALOG_SONG_INFO);
     if (!dialog)
       return false;
     if (dialog->IsCancelled())
@@ -500,8 +501,8 @@ void CGUIDialogSongInfo::ShowFor(CFileItem* pItem)
   if (!pItem->HasMusicInfoTag())
     return;
 
-  CGUIDialogSongInfo *dialog = CServiceBroker::GetGUI()->GetWindowManager().
-    GetWindow<CGUIDialogSongInfo>(WINDOW_DIALOG_SONG_INFO);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSongInfo>(
+      WINDOW_DIALOG_SONG_INFO);
   if (dialog)
   {
     if (dialog->SetSong(pItem))  // Fetch full song info asynchronously

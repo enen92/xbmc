@@ -134,7 +134,7 @@ CPVRGUIActionsTimers::~CPVRGUIActionsTimers() = default;
 
 bool CPVRGUIActionsTimers::ShowTimerSettings(const std::shared_ptr<CPVRTimerInfoTag>& timer) const
 {
-  CGUIDialogPVRTimerSettings* pDlgInfo =
+  auto pDlgInfo =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogPVRTimerSettings>(
           WINDOW_DIALOG_PVR_TIMER_SETTING);
   if (!pDlgInfo)
@@ -347,7 +347,7 @@ public:
 
 private:
   const int m_iInstantRecordTime{0};
-  CGUIDialogSelect* m_pDlgSelect{nullptr}; // not owner!
+  std::shared_ptr<CGUIDialogSelect> m_pDlgSelect;
   std::map<PVRRECORD_INSTANTRECORDACTION, int> m_actions;
 };
 
@@ -920,9 +920,8 @@ void CPVRGUIActionsTimers::AnnounceReminder(const std::shared_ptr<CPVRTimerInfoT
   }
 
   // show the reminder dialog
-  CGUIDialogProgress* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
-          WINDOW_DIALOG_PROGRESS);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
+      WINDOW_DIALOG_PROGRESS);
   if (!dialog)
     return;
 

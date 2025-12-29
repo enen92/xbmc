@@ -277,7 +277,7 @@ bool CGUIDialogVideoManagerVersions::AddVideoVersion()
     return false;
   }
 
-  CGUIDialogSelect* dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+  auto dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
       WINDOW_DIALOG_SELECT)};
 
   if (!dialog)
@@ -440,7 +440,7 @@ bool CGUIDialogVideoManagerVersions::ChoosePlaylist(const std::shared_ptr<CFileI
 
 bool CGUIDialogVideoManagerVersions::ManageVideoVersions(const std::shared_ptr<CFileItem>& item)
 {
-  CGUIDialogVideoManagerVersions* dialog{
+  auto dialog{
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogVideoManagerVersions>(
           WINDOW_DIALOG_MANAGE_VIDEO_VERSIONS)};
   if (!dialog)
@@ -469,7 +469,7 @@ bool CGUIDialogVideoManagerVersions::ChooseVideoAndConvertToVideoVersion(
   }
 
   // choose a video
-  CGUIDialogSelect* dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+  auto dialog{CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
       WINDOW_DIALOG_SELECT)};
   if (!dialog)
   {

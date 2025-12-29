@@ -43,16 +43,15 @@ void Interface_GUIDialogTextViewer::open(KODI_HANDLE kodiBase,
     return;
   }
 
-  CGUIDialogTextViewer* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogTextViewer>(
-          WINDOW_DIALOG_TEXT_VIEWER);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogTextViewer>(
+      WINDOW_DIALOG_TEXT_VIEWER);
   if (!heading || !text || !dialog)
   {
     CLog::LogF(LOGERROR,
                "Invalid handler data (heading='{}', text='{}', "
                "dialog='{}') on addon '{}'",
                static_cast<const void*>(heading), static_cast<const void*>(text),
-               static_cast<void*>(dialog), addon->ID());
+               static_cast<void*>(dialog.get()), addon->ID());
     return;
   }
 

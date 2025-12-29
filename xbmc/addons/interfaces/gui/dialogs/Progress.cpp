@@ -54,17 +54,16 @@ KODI_GUI_HANDLE Interface_GUIDialogProgress::new_dialog(KODI_HANDLE kodiBase)
     return nullptr;
   }
 
-  CGUIDialogProgress* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
-          WINDOW_DIALOG_PROGRESS);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
+      WINDOW_DIALOG_PROGRESS);
   if (!dialog)
   {
     CLog::LogF(LOGERROR, "Invalid handler data (dialog='{}') on addon '{}'",
-               static_cast<void*>(dialog), addon->ID());
+               static_cast<void*>(dialog.get()), addon->ID());
     return nullptr;
   }
 
-  return dialog;
+  return dialog.get();
 }
 
 void Interface_GUIDialogProgress::delete_dialog(KODI_HANDLE kodiBase, KODI_GUI_HANDLE handle)

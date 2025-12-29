@@ -195,7 +195,8 @@ bool CGUIDialogMediaFilter::OnMessage(CGUIMessage& message)
 void CGUIDialogMediaFilter::ShowAndEditMediaFilter(const std::string& path,
                                                    PLAYLIST::CSmartPlaylist& filter)
 {
-  CGUIDialogMediaFilter *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogMediaFilter>(WINDOW_DIALOG_MEDIA_FILTER);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogMediaFilter>(
+      WINDOW_DIALOG_MEDIA_FILTER);
   if (dialog == NULL)
     return;
 

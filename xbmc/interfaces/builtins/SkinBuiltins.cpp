@@ -110,7 +110,8 @@ static int SelectBool(const std::vector<std::string>& params)
 {
   std::vector<std::pair<std::string, std::string>> settings;
 
-  CGUIDialogSelect* pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   pDlgSelect->Reset();
   pDlgSelect->SetHeading(CVariant{g_localizeStrings.Get(atoi(params[0].c_str()))});
 
@@ -327,7 +328,7 @@ static int SetColor(const std::vector<std::string>& params)
     value = params[2];
   }
 
-  CGUIDialogColorPicker* pDlgColorPicker =
+  auto pDlgColorPicker =
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogColorPicker>(
           WINDOW_DIALOG_COLOR_PICKER);
   pDlgColorPicker->Reset();

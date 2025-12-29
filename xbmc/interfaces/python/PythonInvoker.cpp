@@ -690,10 +690,9 @@ void CPythonInvoker::onError(const std::string& exceptionType /* = "" */,
   CPyThreadState releaseGil;
   std::unique_lock gc(CServiceBroker::GetWinSystem()->GetGfxContext());
 
-  CGUIDialogKaiToast* pDlgToast =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogKaiToast>(
-          WINDOW_DIALOG_KAI_TOAST);
-  if (pDlgToast != NULL)
+  auto pDlgToast = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogKaiToast>(
+      WINDOW_DIALOG_KAI_TOAST);
+  if (pDlgToast)
   {
     std::string message;
     if (m_addon && !m_addon->Name().empty())

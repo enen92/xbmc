@@ -11,6 +11,8 @@
 #include "PictureThumbLoader.h"
 #include "windows/GUIMediaWindow.h"
 
+#include <memory>
+
 class CGUIDialogProgress;
 
 class CGUIWindowPictures : public CGUIMediaWindow, public IBackgroundLoaderObserver
@@ -44,7 +46,7 @@ protected:
   void OnItemLoaded(CFileItem* pItem) override;
   void LoadPlayList(const std::string& strPlayList) override;
 
-  CGUIDialogProgress* m_dlgProgress;
+  std::shared_ptr<CGUIDialogProgress> m_dlgProgress;
 
   CPictureThumbLoader m_thumbLoader;
   bool m_slideShowStarted;

@@ -26,7 +26,7 @@ namespace KODI::GUILIB::GUIINFO
 
 std::string GetPlaylistLabel(int item, PLAYLIST::Id playlistid = PLAYLIST::Id::TYPE_NONE);
 
-CGUIWindow* GetWindow(int contextWindow);
+std::shared_ptr<CGUIWindow> GetWindow(int contextWindow);
 CGUIControl* GetActiveContainer(int containerId, int contextWindow);
 CGUIMediaWindow* GetMediaWindow(int contextWindow);
 std::shared_ptr<CGUIListItem> GetCurrentListItem(int contextWindow,

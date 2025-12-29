@@ -332,8 +332,8 @@ bool CGameClientProperties::InstallDependencies(const std::vector<std::string>& 
   const CGUIWindowManager& windowManager = gui->GetWindowManager();
 
   // Get GUI dialogs
-  auto* selectDialog = windowManager.GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
-  auto* progressDialog = windowManager.GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
+  auto selectDialog = windowManager.GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+  auto progressDialog = windowManager.GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
 
   // We can only install add-ons if the dialogs are present
   if (selectDialog == nullptr || progressDialog == nullptr)

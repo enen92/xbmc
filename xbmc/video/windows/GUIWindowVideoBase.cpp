@@ -363,7 +363,8 @@ CGUIWindowVideoBase::ShowInfoResult CGUIWindowVideoBase::ShowInfo(
 {
   using enum CGUIWindowVideoBase::ShowInfoResult;
 
-  CGUIDialogVideoInfo* pDlgInfo = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogVideoInfo>(WINDOW_DIALOG_VIDEO_INFO);
+  auto pDlgInfo = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogVideoInfo>(
+      WINDOW_DIALOG_VIDEO_INFO);
   if (!pDlgInfo)
     return RESULT_ERROR;
 
@@ -1255,7 +1256,8 @@ void CGUIWindowVideoBase::OnSearch()
 
   if (items.Size())
   {
-    CGUIDialogSelect* pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+    auto pDlgSelect = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+        WINDOW_DIALOG_SELECT);
     pDlgSelect->Reset();
     pDlgSelect->SetHeading(CVariant{283});
 
@@ -1400,7 +1402,8 @@ bool CGUIWindowVideoBase::OnUnAssignContent(const std::string &path, int header,
   db.Open();
   if (CGUIDialogYesNo::ShowAndGetInput(CVariant{header}, CVariant{text}, bCanceled, CVariant{ "" }, CVariant{ "" }, CGUIDialogYesNo::NO_TIMEOUT))
   {
-    CGUIDialogProgress *progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
+    auto progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(
+        WINDOW_DIALOG_PROGRESS);
     db.RemoveContentForPath(path, progress);
     db.Close();
     CUtil::DeleteVideoDatabaseDirectoryCache();

@@ -36,7 +36,8 @@ namespace XBMCAddon
       if (!CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_DIALOG_ADDON_SETTINGS))
         return false;
 
-      CGUIDialogAddonSettings* dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogAddonSettings>(WINDOW_DIALOG_ADDON_SETTINGS);
+      auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogAddonSettings>(
+          WINDOW_DIALOG_ADDON_SETTINGS);
       if (dialog->GetCurrentAddonID() != addon->ID())
         return false;
 

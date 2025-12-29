@@ -111,9 +111,8 @@ bool CPowerManager::Powerdown()
 {
   if (CanPowerdown() && m_instance->Powerdown())
   {
-    CGUIDialogBusyNoCancel* dialog =
-        CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogBusyNoCancel>(
-            WINDOW_DIALOG_BUSY_NOCANCEL);
+    auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogBusyNoCancel>(
+        WINDOW_DIALOG_BUSY_NOCANCEL);
     if (dialog)
       dialog->Open();
 
@@ -141,9 +140,8 @@ bool CPowerManager::Reboot()
   {
     CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::System, "OnRestart");
 
-    CGUIDialogBusyNoCancel* dialog =
-        CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogBusyNoCancel>(
-            WINDOW_DIALOG_BUSY_NOCANCEL);
+    auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogBusyNoCancel>(
+        WINDOW_DIALOG_BUSY_NOCANCEL);
     if (dialog)
       dialog->Open();
   }
@@ -188,9 +186,8 @@ void CPowerManager::OnSleep()
 {
   CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::System, "OnSleep");
 
-  CGUIDialogBusyNoCancel* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogBusyNoCancel>(
-          WINDOW_DIALOG_BUSY_NOCANCEL);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogBusyNoCancel>(
+      WINDOW_DIALOG_BUSY_NOCANCEL);
   if (dialog)
     dialog->Open();
 
@@ -221,9 +218,8 @@ void CPowerManager::OnWake()
   const auto appPower = components.GetComponent<CApplicationPowerHandling>();
   appPower->ResetShutdownTimers();
 
-  CGUIDialogBusyNoCancel* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogBusyNoCancel>(
-          WINDOW_DIALOG_BUSY_NOCANCEL);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogBusyNoCancel>(
+      WINDOW_DIALOG_BUSY_NOCANCEL);
   if (dialog)
     dialog->Close(true); // force close. no closing animation, sound etc at this early stage
 

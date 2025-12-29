@@ -321,9 +321,8 @@ bool FillArtTypesList(CFileItem& musicitem, CFileItemList& artlist)
 std::string ShowSelectArtTypeDialog(CFileItemList& artitems)
 {
   // Prompt for choice
-  CGUIDialogSelect* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-          WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (!dialog)
     return "";
 
@@ -356,9 +355,8 @@ std::string ShowSelectArtTypeDialog(CFileItemList& artitems)
 
 int ShowSelectRatingDialog(int iSelected)
 {
-  CGUIDialogSelect* dialog =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
-          WINDOW_DIALOG_SELECT);
+  auto dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(
+      WINDOW_DIALOG_SELECT);
   if (dialog)
   {
     dialog->SetHeading(CVariant{38023});

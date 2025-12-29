@@ -215,8 +215,7 @@ void Interface_GUIWindow::destroy(KODI_HANDLE kodiBase, KODI_GUI_WINDOW_HANDLE h
   }
 
   Interface_GUIGeneral::lock();
-  const CGUIWindow* pWindow =
-      CServiceBroker::GetGUI()->GetWindowManager().GetWindow(pAddonWindow->GetID());
+  auto pWindow = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(pAddonWindow->GetID());
   if (pWindow)
   {
     // first change to an existing window

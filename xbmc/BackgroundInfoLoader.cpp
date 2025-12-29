@@ -137,7 +137,7 @@ void CBackgroundInfoLoader::SetObserver(IBackgroundLoaderObserver* pObserver)
   m_pObserver = pObserver;
 }
 
-void CBackgroundInfoLoader::SetProgressCallback(IProgressCallback* pCallback)
+void CBackgroundInfoLoader::SetProgressCallback(std::shared_ptr<IProgressCallback> pCallback)
 {
   m_pProgressCallback = pCallback;
 }

@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 namespace KODI
@@ -25,7 +26,7 @@ public:
   static bool ShowAndGetSavestate(const std::string& gamePath, std::string& savestatePath);
 
 private:
-  static CDialogGameSaves* GetDialog();
+  static std::shared_ptr<CDialogGameSaves> GetDialog();
 };
 } // namespace GAME
 } // namespace KODI
