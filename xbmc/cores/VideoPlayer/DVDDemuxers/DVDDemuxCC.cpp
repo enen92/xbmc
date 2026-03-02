@@ -149,14 +149,14 @@ void CDVDDemuxCC::CaptionCallback(const cea_caption* cap, void* userdata)
   // path, producing a zero-gap transition. Emitting a CLEAR here would set the previous
   // subtitle's stop time to end_ms and then the next SHOW would start at start_ms —
   // any difference between those two timestamps causes a visible blank frame (flash).
-  const bool isRollup = (cap->mode[0] == 'R' && cap->mode[1] == 'U');
+  const bool isRollup = CEA_IS_ROLLUP(cap->mode);
   if (!cap->text && isRollup)
     return;
 
   const std::string text = cap->text ? cap->text : "";
   const double pts = DVD_MSEC_TO_TIME(static_cast<double>(cap->pts_ms));
-  CLog::Log(LOGDEBUG, "CDVDDemuxCC: cap field={} mode={} pts_ms={} text={}",
-            cap->field, cap->mode, cap->pts_ms, text.empty() ? "<clear>" : text);
+  CLog::Log(LOGDEBUG, "CDVDDemuxCC: cap field={} mode={:#x} pts_ms={} text={}",
+            cap->field, static_cast<int>(cap->mode), cap->pts_ms, text.empty() ? "<clear>" : text);
 
   DemuxPacket* pkt = CDVDDemuxUtils::AllocateDemuxPacket(static_cast<int>(text.size()));
   pkt->iSize = static_cast<int>(text.size());
